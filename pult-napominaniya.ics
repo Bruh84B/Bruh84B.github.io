@@ -8,7 +8,7 @@ BEGIN:VTIMEZONE
 TZID:Asia/Almaty
 BEGIN:STANDARD
 DTSTART:20240301T000000
-TZOFFSETFROM:+0500
+TZOFFSETFROM:+0600
 TZOFFSETTO:+0500
 TZNAME:+05
 END:STANDARD
@@ -21,9 +21,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Саундчек. Пять фейдеров\, один твой. 
  Какой сегодня?
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#soundch
- eck
-URL:https://bruh84b.github.io/#soundcheck
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -40,9 +38,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Как прошёл прогон? Две строки\, без п
  ротокола.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#questio
- n
-URL:https://bruh84b.github.io/#question
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -59,9 +55,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Перед любым шоу проверяют звук. Себ
  я — тоже. 10 секунд.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#soundch
- eck
-URL:https://bruh84b.github.io/#soundcheck
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -78,9 +72,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Шоу отыграно. Что забираешь с собой 
  из этого дня?
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#questio
- n
-URL:https://bruh84b.github.io/#question
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -97,9 +89,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Пульт включён. Отметь уровень — ост
  альное подстроится само.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#soundch
- eck
-URL:https://bruh84b.github.io/#soundcheck
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -116,9 +106,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Никто это не прочитает\, кроме тебя. 
  Поэтому можно честно.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#questio
- n
-URL:https://bruh84b.github.io/#question
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -135,9 +123,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Сколько заряда на входе? Честный от
  вет лучше красивого.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#soundch
- eck
-URL:https://bruh84b.github.io/#soundcheck
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -154,9 +140,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Свет в зале погас. Одна мысль перед 
  сном — сюда.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#questio
- n
-URL:https://bruh84b.github.io/#question
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -173,9 +157,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Если на нуле — тоже жми. Кнопка для 
  этого и существует.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#soundch
- eck
-URL:https://bruh84b.github.io/#soundcheck
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -192,9 +174,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:День был какой был. Отметь — и он за
  считан.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#questio
- n
-URL:https://bruh84b.github.io/#question
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -211,9 +191,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Сетлист на сегодня готов. Три трека\
  , играешь один. Или ноль — тоже вариант.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#soundch
- eck
-URL:https://bruh84b.github.io/#soundcheck
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -231,9 +209,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Демонтаж дня: что сработало\, что ос
  тавляем за сценой?
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#questio
- n
-URL:https://bruh84b.github.io/#question
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -250,9 +226,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Сила дня уже на пульте. Там про тебя\
  , глянь.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#soundch
- eck
-URL:https://bruh84b.github.io/#soundcheck
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -269,9 +243,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Нет сил писать — просто отметь энер
  гию. Это тоже считается.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#questio
- n
-URL:https://bruh84b.github.io/#question
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -288,9 +260,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Не надо быть в форме\, чтобы нажать к
  нопку.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#soundch
- eck
-URL:https://bruh84b.github.io/#soundcheck
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -307,9 +277,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Разгрузи голову перед сном. Две мин
  уты\, не больше.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#questio
- n
-URL:https://bruh84b.github.io/#question
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -326,9 +294,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:День всё равно начнётся. Вопрос — п
  о чьему райдеру.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#soundch
- eck
-URL:https://bruh84b.github.io/#soundcheck
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -345,9 +311,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Пара честных строк — и день закрыт. 
  Как смена: сдал — свободен.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#questio
- n
-URL:https://bruh84b.github.io/#question
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -364,9 +328,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:10 секунд на саундчек. Дальше решаеш
  ь сам.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#soundch
- eck
-URL:https://bruh84b.github.io/#soundcheck
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -383,9 +345,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Голова всё равно будет это крутить 
  до четырёх утра. Лучше выгрузи сейчас.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#questio
- n
-URL:https://bruh84b.github.io/#question
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -402,9 +362,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Если сегодня будет хаос — тем более
   нужен саундчек.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#soundch
- eck
-URL:https://bruh84b.github.io/#soundcheck
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -421,9 +379,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Что сегодня было настоящим? Одна ст
  рока.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#questio
- n
-URL:https://bruh84b.github.io/#question
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -440,9 +396,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Фейдер энергии ждёт. Врать ему бесс
  мысленно — он твой.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#soundch
- eck
-URL:https://bruh84b.github.io/#soundcheck
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -459,9 +413,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Дневник — это ты\, разговаривающий 
  с собой. Он сегодня на связи.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#questio
- n
-URL:https://bruh84b.github.io/#question
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -478,9 +430,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Свободных 10 секунд? Больше и не нужн
  о.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#soundch
- eck
-URL:https://bruh84b.github.io/#soundcheck
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -497,9 +447,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Вопрос вечера ждёт. Ответ — две стр
  оки\, не сочинение.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#questio
- n
-URL:https://bruh84b.github.io/#question
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -516,9 +464,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Одно задание\, без пафоса. Оно уже жд
  ёт на пульте.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#soundch
- eck
-URL:https://bruh84b.github.io/#soundcheck
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
@@ -535,9 +481,7 @@ DURATION:PT15M
 RRULE:FREQ=WEEKLY;INTERVAL=2
 SUMMARY:Тишина в зале. Самое время услышать 
  себя.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#questio
- n
-URL:https://bruh84b.github.io/#question
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY

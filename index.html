@@ -1,3 +1,4 @@
+<!doctype html>
 <!-- PWA:BEGIN -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -17,6 +18,7 @@
   }
 </script>
 <!-- PWA:END -->
+<meta charset="utf-8">
 <title>Пульт</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0C0E13">
@@ -37,7 +39,7 @@
     font-family:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif;
     font-size:16px; line-height:1.55; min-height:100vh;
   }
-  .wrap{max-width:520px; margin:0 auto; padding:20px 16px calc(96px + env(safe-area-inset-bottom))}
+  .wrap{max-width:520px; margin:0 auto; padding:calc(20px + env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom))}
   /* ---------- header ---------- */
   header{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:6px}
   .logo{font-family:"Unbounded",sans-serif; font-weight:700; font-size:20px; letter-spacing:.06em; color:var(--text)}
@@ -106,7 +108,7 @@
   textarea:focus{outline:none; border-color:var(--amber-line)}
   input[type=text]{width:100%; background:var(--panel2); border:1px solid var(--line); border-radius:10px; color:var(--text); font-family:"Golos Text",sans-serif; font-size:16px; padding:11px 12px; margin-top:10px}
   input[type=text]:focus{outline:none; border-color:var(--amber-line)}
-  select{background:var(--panel2); border:1px solid var(--line); border-radius:10px; color:var(--text); font-family:"Golos Text",sans-serif; font-size:15px; padding:10px 12px; margin-top:10px}
+  select{background:var(--panel2); border:1px solid var(--line); border-radius:10px; color:var(--text); font-family:"Golos Text",sans-serif; font-size:16px; padding:10px 12px; margin-top:10px}
   .savestate{font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--dim); margin-top:6px; min-height:14px}
   /* ---------- rhythm ---------- */
   .rhythm{display:flex; align-items:center; gap:14px}
@@ -161,13 +163,15 @@
   .s-body{display:none; padding:0 13px 14px; border-top:1px solid var(--line)}
   .s-item.open .s-body{display:block}
   .s-body p{margin-top:10px; font-size:14.5px}
-  /* ---------- people ---------- */
-  .p-row{display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--line); padding:11px 0}
+  /* ---------- people / custom lists ---------- */
+  .p-row{display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--line); padding:8px 0}
   .p-row:last-child{border-bottom:none}
   .p-name{font-weight:600; font-size:15px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis}
+  .p-name.thin{font-weight:400; font-size:14px; color:var(--muted)}
   .p-days{font-family:"JetBrains Mono",monospace; font-size:12px; color:var(--muted); flex:none}
-  .p-btn{flex:none; background:var(--panel2); color:var(--amber); border:1px solid var(--amber-line); border-radius:10px; padding:8px 12px; font-size:13px; font-weight:600; font-family:"Golos Text",sans-serif; cursor:pointer; min-height:40px}
-  .p-del{flex:none; background:none; border:none; color:var(--dim); font-size:16px; cursor:pointer; padding:6px}
+  .p-btn{flex:none; background:var(--panel2); color:var(--amber); border:1px solid var(--amber-line); border-radius:10px; padding:10px 12px; font-size:13px; font-weight:600; font-family:"Golos Text",sans-serif; cursor:pointer; min-height:44px}
+  .p-del{flex:none; background:none; border:none; color:var(--dim); font-size:18px; cursor:pointer; padding:10px; min-width:44px; min-height:44px}
+  .backup-box{width:100%; min-height:80px; font-family:"JetBrains Mono",monospace; font-size:12px}
   /* ---------- misc ---------- */
   .quiet-note{background:linear-gradient(135deg,rgba(111,168,245,.10),rgba(162,139,240,.10)); border:1px solid rgba(111,168,245,.3); border-radius:var(--r); padding:14px 15px; margin-bottom:14px; font-size:14.5px}
   .quiet-note b{color:var(--blue)}
@@ -442,10 +446,19 @@ let S = load();
 function load(){
   try{
     const raw = localStorage.getItem(KEY);
-    if(raw){ const o = JSON.parse(raw); if(o && typeof o === "object"){
-      o.days = o.days||{}; o.people = o.people||[]; o.weeks = o.weeks||{};
-      o.customMissions = o.customMissions||[]; o.customQuestions = o.customQuestions||[];
-      return o; } }
+    if(raw){
+      try{
+        const o = JSON.parse(raw);
+        if(o && typeof o === "object"){
+          o.days = o.days||{}; o.people = o.people||[]; o.weeks = o.weeks||{};
+          o.customMissions = o.customMissions||[]; o.customQuestions = o.customQuestions||[];
+          return o;
+        }
+      }catch(parseErr){
+        /* битый JSON не выбрасываем: прячем сырую строку, чтобы данные можно было спасти вручную */
+        try{ localStorage.setItem(KEY+"_broken_"+Date.now(), raw); }catch(e2){}
+      }
+    }
   }catch(e){}
   return {days:{}, people:[], weeks:{}, customMissions:[], customQuestions:[], lastVisit:null};
 }
@@ -509,21 +522,21 @@ function dailyPick(key){
   return {strength, action, missions, restMissions, question};
 }
 
-/* фиксируем контент дня в записи — чтобы история не «переезжала» при росте пулов */
+/* фиксируем контент дня в записи — история не «переезжает» при росте пулов */
 function ensureDayContent(key){
   const rec = day(key);
-  if(!rec.setlist || !rec.q){
-    const p = dailyPick(key);
-    if(!rec.setlist) rec.setlist = p.missions.map(m=>({cat:m.cat, min:m.min, text:m.text}));
-    if(!rec.restlist) rec.restlist = p.restMissions.map(m=>({cat:m.cat, min:m.min, text:m.text}));
-    if(!rec.q) rec.q = p.question;
-    if(!rec.sAction) rec.sAction = p.action;
-    save();
-  }
+  let dirty = false;
+  const p = (!rec.setlist || !rec.restlist || !rec.q || !rec.sAction) ? dailyPick(key) : null;
+  if(!rec.setlist){ rec.setlist = p.missions.map(m=>({cat:m.cat, min:m.min, text:m.text})); dirty = true; }
+  if(!rec.restlist){ rec.restlist = p.restMissions.map(m=>({cat:m.cat, min:m.min, text:m.text})); dirty = true; }
+  if(!rec.q){ rec.q = p.question; dirty = true; }
+  if(!rec.sAction){ rec.sAction = p.action; dirty = true; }
+  if(dirty) save();
   return rec;
 }
 
-function totalXp(){
+/* ---- XP: монотонный счёт. Начислили — навсегда; снятие галочки ничего не отнимает. ---- */
+function computeLegacyXp(){
   let xp = 0;
   for(const k in S.days){
     const r = S.days[k];
@@ -537,12 +550,32 @@ function totalXp(){
   xp += Object.keys(S.weeks||{}).length * XP.weekly;
   return xp;
 }
+function totalXp(){
+  if(typeof S.xp !== "number"){ S.xp = computeLegacyXp(); save(); }
+  return S.xp;
+}
+function award(points){ totalXp(); S.xp += points; save(); }
+function awardOnce(rec, tag, points){
+  rec.xpAwarded = rec.xpAwarded || {};
+  if(rec.xpAwarded[tag]) return false;
+  rec.xpAwarded[tag] = true;
+  award(points);
+  return true;
+}
 function levelFor(xp){
   let cur = LEVELS[0], next = null;
   for(let i=0;i<LEVELS.length;i++){ if(xp >= LEVELS[i].xp) cur = LEVELS[i]; else { next = LEVELS[i]; break; } }
   return {cur, next};
 }
 function activeDaysCount(){ return Object.keys(S.days).filter(k=>isActive(S.days[k])).length; }
+function lastActiveDayBefore(dn){
+  let best = null;
+  for(const k in S.days){
+    const n = dayNum(k);
+    if(n < dn && isActive(S.days[k]) && (best===null || n > best)) best = n;
+  }
+  return best;
+}
 
 /* ================= UI helpers ================= */
 
@@ -558,7 +591,8 @@ const MONTHS = ["января","февраля","марта","апреля","м�
 const WDAYS = ["воскресенье","понедельник","вторник","среда","четверг","пятница","суббота"];
 function fmtDate(key){
   const [y,m,d] = key.split("-").map(Number);
-  return d+" "+MONTHS[m-1];
+  const yearNow = new Date().getFullYear();
+  return d+" "+MONTHS[m-1]+(y!==yearNow ? " "+y : "");
 }
 function greeting(){
   const h = new Date().getHours();
@@ -569,11 +603,46 @@ function greeting(){
 }
 const ELBL = ["","на нуле","мало","середина","норм","заряжен"];
 
+/* ================= drafts ================= */
+
+function draftKey(kind, scope){ return "pult_draft_"+kind+"_"+(scope||todayKey()); }
+function getDraft(kind, scope){ try{ return localStorage.getItem(draftKey(kind, scope))||""; }catch(e){ return ""; } }
+function setDraft(kind, v, scope){ try{ v ? localStorage.setItem(draftKey(kind, scope), v) : localStorage.removeItem(draftKey(kind, scope)); }catch(e){} }
+
+/* при старте: вчерашний несохранённый ответ дописываем в его день, мусор чистим */
+function sweepDrafts(){
+  const tk = todayKey();
+  let keys = [];
+  try{ for(let i=0;i<localStorage.length;i++){ const k = localStorage.key(i); if(k && k.indexOf("pult_draft_")===0) keys.push(k); } }catch(e){ return; }
+  for(const k of keys){
+    const parts = k.split("_"); /* pult, draft, kind, scope */
+    const kind = parts[2], scope = parts.slice(3).join("_");
+    if(kind==="weekly" && scope.indexOf("W")!==-1) continue; /* новый формат — по неделе, живёт до закрытия */
+    if(scope === tk) continue;
+    let val = "";
+    try{ val = localStorage.getItem(k)||""; }catch(e){}
+    if(kind==="answer" && val && /^\d{4}-\d{2}-\d{2}$/.test(scope) && S.days[scope] && !S.days[scope].answer){
+      /* ответ, набранный до полуночи и не сохранённый — дописываем в его день */
+      S.days[scope].answer = val.trim();
+      awardOnce(S.days[scope], "answer", XP.answer);
+      save();
+    }
+    if(kind==="weekly" && val && /^\d{4}-\d{2}-\d{2}$/.test(scope)){
+      /* старый формат черновика недели — переносим под ключ недели, если она не закрыта */
+      const wk = weekKeyOf(scope);
+      if(!S.weeks[wk] && !getDraft("weekly", wk)) setDraft("weekly", val, wk);
+    }
+    try{ localStorage.removeItem(k); }catch(e){}
+  }
+}
+
 /* ================= RENDER ================= */
 
 let TAB = "today";
-let EXPANDED = new Set();   /* раскрытые свёрнутые карточки, живёт до перезагрузки */
-let EDITING = {};           /* {answer:true, weekly:true} — режим дописывания */
+let RENDERED_KEY = null;  /* день, для которого отрисован экран */
+let EXPANDED = new Set();
+let EDITING = {};
+let HIDE_BROWSER_HINT = false;
 const TABS = [
  {id:"today", ico:"🎚️", name:"Сегодня"},
  {id:"path", ico:"📈", name:"Путь"},
@@ -581,11 +650,8 @@ const TABS = [
  {id:"me", ico:"🧬", name:"Я"},
 ];
 
-function draftKey(kind){ return "pult_draft_"+kind+"_"+todayKey(); }
-function getDraft(kind){ try{ return localStorage.getItem(draftKey(kind))||""; }catch(e){ return ""; } }
-function setDraft(kind, v){ try{ v ? localStorage.setItem(draftKey(kind), v) : localStorage.removeItem(draftKey(kind)); }catch(e){} }
-
 function render(){
+  RENDERED_KEY = todayKey();
   renderTabs();
   const app = $("#app");
   if(TAB==="today") app.innerHTML = viewToday();
@@ -597,6 +663,16 @@ function render(){
 function rerenderKeepScroll(){
   const y = window.scrollY; render(); window.scrollTo(0, y);
 }
+/* защита от «перехода через полночь»: экран отрисован для вчера, а тап — уже сегодня */
+function guardDay(){
+  if(RENDERED_KEY !== todayKey()){
+    EXPANDED.clear(); EDITING = {};
+    render(); window.scrollTo(0,0);
+    toast("Новый день — экран обновлён");
+    return false;
+  }
+  return true;
+}
 function renderTabs(){
   $("#tabs").innerHTML = TABS.map(t=>
     `<button class="tab ${TAB===t.id?"active":""}" data-tab="${t.id}"><span class="ico">${t.ico}</span>${t.name}</button>`).join("");
@@ -606,6 +682,11 @@ function headerHtml(){
   const tk = todayKey();
   const d = new Date();
   return `<header><div class="logo">ПУЛЬ<span>Т</span></div><div class="datefmt">${fmtDate(tk)} · ${WDAYS[d.getDay()]}</div></header>`;
+}
+
+function bannerHtml(rec){
+  if(!dayComplete(rec)) return "";
+  return `<div class="banner" id="day-banner"><b>Минимум дня закрыт.</b><p>Всё дальше — по желанию, а не по долгу.</p></div>`;
 }
 
 function rhythmHtml(){
@@ -671,17 +752,16 @@ function strengthCardHtml(rec, quiet){
   return html + `<div class="blind">Слепая зона: ${st.blind}</div></div>`;
 }
 
-function peopleHint(m){
-  if(m.cat!=="people" || !(S.people||[]).length) return "";
+function peopleCandidate(){
+  if(!(S.people||[]).length) return null;
   const dn = dayNum(todayKey());
-  let cand = null, maxGap = -1;
-  for(const p of S.people){
+  let cand = null, candIdx = -1, maxGap = -1;
+  for(let i=0;i<S.people.length;i++){
+    const p = S.people[i];
     const gap = p.last ? dn - dayNum(p.last) : 9999;
-    if(gap > maxGap){ maxGap = gap; cand = p; }
+    if(gap > maxGap){ maxGap = gap; cand = p; candIdx = i; }
   }
-  if(!cand) return "";
-  const gapTxt = maxGap>=9999 ? "давно" : (maxGap===0 ? "сегодня уже был контакт" : maxGap+" дн. тишины");
-  return `<div class="hint">Кандидат: ${esc(cand.name)} — ${gapTxt}</div>`;
+  return cand ? {p:cand, idx:candIdx, gap:maxGap} : null;
 }
 
 function setlistCardHtml(rec, quiet){
@@ -689,13 +769,22 @@ function setlistCardHtml(rec, quiet){
   const prefix = quiet ? "r" : "m";
   const items = list.map((m,i)=>({m, i, done: !!rec.missions[prefix+i]}));
   items.sort((a,b)=> (a.done?1:0) - (b.done?1:0));
+  const cand = peopleCandidate();
   let html = `<div class="card" id="card-setlist"><div class="eyebrow"><span class="led" id="setlist-led"></span>${quiet ? "Сетлист тихого дня" : "Сетлист дня"} · выбери хотя бы одно</div>`;
   for(const {m,i,done} of items){
     const cat = CATS[m.cat];
-    html += `<div class="mission ${done?"done":""}" data-mission="${prefix+i}" role="button" tabindex="0">
+    let hint = "";
+    if(m.cat==="people" && cand && !done){
+      const gapTxt = cand.gap>=9999 ? "давно" : (cand.gap===0 ? "контакт был сегодня" : cand.gap+" дн. тишины");
+      hint = `<div class="hint">Кандидат: ${esc(cand.p.name)} — ${gapTxt}</div>`;
+    }
+    html += `<div class="mission ${done?"done":""}" data-mission="${prefix+i}" data-cat="${m.cat}" role="button" tabindex="0">
       <span class="tick">${done?"✔":""}</span>
       <div><div class="txt">${esc(m.text)}</div>
-      <div class="meta"><span class="chip" style="color:${cat.color}; border-color:${cat.color}">${cat.name}</span>${m.min?`<span>~${m.min} мин</span>`:""}<span>+${XP.mission} XP</span></div>${done?"":peopleHint(m)}</div></div>`;
+      <div class="meta"><span class="chip" style="color:${cat.color}; border-color:${cat.color}">${cat.name}</span>${m.min?`<span>~${m.min} мин</span>`:""}<span>+${XP.mission} XP</span></div>${hint}</div></div>`;
+    if(m.cat==="people" && cand && done && cand.gap>0){
+      html += `<button class="btn ghost small" data-ptouch="${cand.idx}" style="margin-top:6px">Это был контакт с «${esc(cand.p.name)}» — отметить</button>`;
+    }
   }
   return html + `<p class="mut" style="margin-top:10px">Три варианта — твой выбор. Одно сделанное лучше трёх запланированных.</p></div>`;
 }
@@ -727,8 +816,8 @@ function weeklyCardHtml(){
   if(S.weeks[wk]) return "";
   let html = `<div class="card" id="card-weekly"><div class="eyebrow"><span class="led"></span>Прогон недели · +${XP.weekly} XP</div>
     <p class="body">${WEEKLY_QS}</p>`;
-  const val = getDraft("weekly");
-  html += `<textarea id="weeklyta" data-draft="weekly" placeholder="Разбор недели — как разбор шоу: без самобичевания, по фактам...">${esc(val)}</textarea>
+  const val = getDraft("weekly", wk);
+  html += `<textarea id="weeklyta" data-draft="weekly" data-scope="${wk}" placeholder="Разбор недели — как разбор шоу: без самобичевания, по фактам...">${esc(val)}</textarea>
     <div class="savestate" id="draft-weekly"></div>
     <button class="btn small" data-act="saveweekly" data-wk="${wk}">Закрыть неделю</button></div>`;
   return html;
@@ -749,9 +838,19 @@ function echoCardHtml(){
     <p class="mut" style="margin-top:10px">Что изменилось с тех пор? Можно ответить в сегодняшнем вопросе — а можно просто заметить.</p></div>`;
 }
 
+function morningPlanCardHtml(){
+  const h = new Date().getHours();
+  if(h>=12 || h<5) return "";
+  const y = S.days[keyOfNum(dayNum(todayKey())-1)];
+  if(!y || !y.sleepPlan) return "";
+  return `<div class="card"><div class="eyebrow"><span class="led"></span>С вечера ты оставил себе</div>
+    <p class="j-a">${esc(y.sleepPlan)}</p>
+    <p class="mut" style="margin-top:8px">Это не обязательства — это то, что вчерашний ты считал важным. Решай сегодняшним собой.</p></div>`;
+}
+
 function sleepCardHtml(rec){
   const h = new Date().getHours();
-  if(!(h>=23 || h<5)) return "";
+  if(!(h>=21 || h<5)) return "";
   if(rec.lightsOut){
     return `<div class="card"><div class="eyebrow"><span class="led"></span>Последний трек</div>
       <div class="done-note">✔ Свет погашен в ${rec.lightsOut}. Хорошей тишины.</div></div>`;
@@ -760,9 +859,18 @@ function sleepCardHtml(rec){
   return `<div class="card" id="card-sleep"><div class="eyebrow"><span class="led"></span>Последний трек · +${XP.sleep} XP</div>
     <p class="body">Шоу отыграно, идёт демонтаж. Две минуты дыхания — вдох на 4, выдох на 6:</p>
     <div class="breath"></div><p class="breath-cap">дыши вместе с кругом</p>
-    <p class="mut" style="margin-top:12px">Выгрузи голову — три строки на завтра, чтобы она не крутила их до четырёх утра:</p>
+    <p class="mut" style="margin-top:12px">Выгрузи голову — три строки на завтра, чтобы она не крутила их до четырёх утра. Утром они будут ждать тебя:</p>
     <textarea id="sleepta" data-draft="sleep" placeholder="1. …&#10;2. …&#10;3. …" style="min-height:72px">${esc(val)}</textarea>
     <button class="btn small" data-act="lightsout">Свет погашен</button></div>`;
+}
+
+function browserHintHtml(){
+  /* установленная PWA и Safari — РАЗНЫЕ хранилища; в браузере предупреждаем */
+  const isiOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+  const inStandalone = window.navigator.standalone === true || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
+  if(!isiOS || inStandalone || HIDE_BROWSER_HINT) return "";
+  return `<div class="quiet-note"><b>Ты в браузере.</b> У установленного «Пульта» (иконка на экране «Домой») — своя, отдельная память: записи отсюда туда не попадут. Если приложение уже установлено — открой его. Если нет: «Поделиться» → «На экран “Домой”».
+    <div class="btnrow"><button class="btn ghost small" data-act="hidehint">Понял</button></div></div>`;
 }
 
 function viewToday(){
@@ -772,13 +880,13 @@ function viewToday(){
   const h = new Date().getHours();
   const phase = (h>=17 || h<5) ? "evening" : (h<12 ? "morning" : "day");
   const scDone = rec.energy !== null;
-  const quiet = (scDone && rec.energy <= 2) || !!rec.quietOn;
+  const quiet = ((scDone && rec.energy <= 2) || !!rec.quietOn) && !rec.quietOff;
 
-  /* возвращение и «вчера» — без укора, без бэклога */
+  /* возвращение и «вчера» — считаем по последнему АКТИВНОМУ дню, без укора */
   let backLine = "";
   if(!isActive(rec) && !scDone){
-    const prevVisit = S.lastVisit;
-    const gap = prevVisit ? dn - dayNum(prevVisit) : 0;
+    const lastAct = lastActiveDayBefore(dn);
+    const gap = lastAct===null ? (S.lastVisit ? dn - dayNum(S.lastVisit) : 0) : dn - lastAct;
     if(gap >= 3){
       backLine = "Начинаем с сегодня. Что было — было.";
     } else {
@@ -786,7 +894,7 @@ function viewToday(){
       if(y && isActive(y)){
         const n = Object.values(y.missions||{}).filter(Boolean).length;
         backLine = `Вчера: ${y.energy?("энергия «"+ELBL[y.energy]+"», "):""}задач ${n}${y.answer?", запись есть":""}.`;
-      } else if(prevVisit){
+      } else if(S.lastVisit){
         backLine = "Вчера был тихий эфир — ничего не сгорело.";
       }
     }
@@ -810,20 +918,18 @@ function viewToday(){
   let html = headerHtml();
   html += `<p class="greet">${greeting()}, <b>Батыр</b>. ${quiet ? "Сегодня — тихий день. Без подвигов." : "Пульт включён — день твой."}</p>`;
   html += backLine ? `<p class="yline">${backLine}</p>` : `<div style="height:12px"></div>`;
-
-  if(dayComplete(rec)){
-    html += `<div class="banner" id="day-banner"><b>На сегодня всё. Пульт выключен.</b><p>Минимум дня закрыт. Всё сверх этого — по желанию, а не по долгу.</p></div>`;
-  }
-
+  html += `<div id="banner-slot">${bannerHtml(rec)}</div>`;
+  html += browserHintHtml();
   html += quietSuggest;
 
   if(quiet && scDone){
-    html += `<div class="quiet-note"><b>Режим восстановления.</b> Энергии мало — и это нормально: у тебя бывают циклы. Апатия сегодня не значит, что амбиций нет. Пульт убрал всё лишнее. Отдых — это тоже работа над собой.</div>`;
+    html += `<div class="quiet-note"><b>Режим восстановления.</b> Энергии мало — и это нормально: у тебя бывают циклы. Апатия сегодня не значит, что амбиций нет. Пульт убрал всё лишнее. Отдых — это тоже работа над собой.
+      <div class="btnrow"><button class="btn ghost small" data-act="quietoff">Вернуть обычный день</button></div></div>`;
   }
 
-  /* порядок карточек = функция (фаза × состояние) */
   const cards = [];
-  cards.push(scCardHtml(rec, scDone));                    /* не пройден — во всю ширину, пройден — строка */
+  cards.push(scCardHtml(rec, scDone));
+  const mp = morningPlanCardHtml(); if(mp) cards.push(mp);
   if(phase==="evening" && !rec.answer) cards.push(questionCardHtml(rec, phase));
   cards.push(setlistCardHtml(rec, quiet));
   cards.push(strengthCardHtml(rec, quiet));
@@ -834,7 +940,7 @@ function viewToday(){
   cards.push(rhythmHtml());
 
   html += cards.join("");
-  html += `<p class="footer-note">Все данные хранятся только на этом устройстве. Ни у кого больше доступа нет.</p>`;
+  html += `<p class="footer-note">Все данные хранятся только на этом устройстве. Резервная копия — во вкладке «Я».</p>`;
   return html;
 }
 
@@ -851,7 +957,6 @@ function viewPath(){
 
   let html = headerHtml();
 
-  /* артефакты — биография, не валюта */
   html += `<div class="card"><div class="eyebrow"><span class="led"></span>Артефакты</div>
     <div class="stats">
       <div class="stat"><div class="n">${answers}</div><div class="l">записей</div></div>
@@ -870,7 +975,6 @@ function viewPath(){
     <p class="body" style="font-family:'JetBrains Mono',monospace; font-size:26px; color:var(--amber)">+${pct}%</p>
     <p class="mut" style="margin-top:6px">Это не измерение — это символ: напоминание, что дни складываются, а не исчезают. Настоящие цифры — выше, в артефактах.</p></div>`;
 
-  /* линия энергии */
   const tk = todayKey(); const dn = dayNum(tk);
   const pts = [];
   const DAYS_BACK = 41;
@@ -890,7 +994,6 @@ function viewPath(){
       <p class="mut" style="margin-top:6px">Подъёмы и спады — это цикл, а не характер. Когда линия накопится, ты впервые увидишь его целиком: фаза станет известной величиной, которую можно планировать.</p></div>`;
   }
 
-  /* карта 10 недель */
   const todayDow = (new Date().getDay()+6)%7;
   let cells = "";
   const start = dn - todayDow - 63;
@@ -904,15 +1007,15 @@ function viewPath(){
   html += `<div class="card"><div class="eyebrow"><span class="led"></span>Карта · 10 недель</div><div class="heat">${cells}</div>
     <p class="mut" style="margin-top:8px">Не гонись за сплошной заливкой. Дыры — это жизнь, а не провал.</p></div>`;
 
-  /* каналы */
   const counts = {};
+  let uncat = 0;
   for(const k in S.days){
     const r = S.days[k]; if(!Object.values(r.missions||{}).some(Boolean)) continue;
     for(const id in r.missions){ if(!r.missions[id]) continue;
       const idx = Number(id.slice(1));
       const list = id[0]==="r" ? (r.restlist||[]) : (r.setlist||[]);
       const m = list[idx];
-      if(m) counts[m.cat] = (counts[m.cat]||0)+1;
+      if(m) counts[m.cat] = (counts[m.cat]||0)+1; else uncat++;
     }
   }
   const maxc = Math.max(1, ...Object.values(counts), 1);
@@ -921,7 +1024,7 @@ function viewPath(){
     const n = counts[c]||0;
     html += `<div class="meter"><span class="ml">${CATS[c].name}</span><span class="track"><span class="fill" style="width:${Math.round(n/maxc*100)}%; background:${CATS[c].color}"></span></span><span class="mn">${n}</span></div>`;
   }
-  html += `</div><p class="mut" style="margin-top:10px">Куда идёт твоя энергия. Перекос — не ошибка, а информация.</p></div>`;
+  html += `</div><p class="mut" style="margin-top:10px">Куда идёт твоя энергия. Перекос — не ошибка, а информация.${uncat?` (${uncat} ранних задач без категории — до версии 2 они не сохранялись.)`:""}</p></div>`;
   if(lights>0) html += `<p class="footer-note">«Свет погашен» отмечен ${lights} раз — время отбоя копится в дневнике.</p>`;
   return html;
 }
@@ -930,7 +1033,7 @@ function viewPath(){
 
 function viewJournal(){
   let html = headerHtml();
-  const keys = Object.keys(S.days).filter(k=>{const r=S.days[k]; return r.answer||r.weekly||r.energy!==null||r.lightsOut;}).sort().reverse();
+  const keys = Object.keys(S.days).filter(k=>{const r=S.days[k]; return r.answer||r.weekly||r.energy!==null||r.lightsOut||r.sleepPlan;}).sort().reverse();
   if(!keys.length){
     html += `<div class="card"><div class="eyebrow"><span class="led"></span>Дневник</div>
       <p class="body">Пока пусто. Первый ответ на вопрос вечера появится здесь.</p>
@@ -941,9 +1044,10 @@ function viewJournal(){
   for(const k of keys){
     const r = S.days[k];
     html += `<div class="j-entry"><div class="j-date">${fmtDate(k)}${r.energy?`<span class="energy-pill">энергия: ${ELBL[r.energy]}</span>`:""}${r.lightsOut?`<span class="energy-pill">отбой: ${r.lightsOut}</span>`:""}</div>`;
-    if(r.answer) html += `<div class="j-q">${esc(r.q||"")}</div><div class="j-a">${esc(r.answer)}</div>`;
+    if(r.answer) html += `<div class="j-q">${esc(r.q||"Запись дня")}</div><div class="j-a">${esc(r.answer)}</div>`;
     if(r.weekly) html += `<div class="j-q" style="margin-top:8px">Прогон недели</div><div class="j-a">${esc(r.weekly)}</div>`;
-    if(!r.answer && !r.weekly) html += `<div class="j-a" style="color:var(--dim)">Без записи — но день был отмечен.</div>`;
+    if(r.sleepPlan) html += `<div class="j-q" style="margin-top:8px">План перед сном</div><div class="j-a">${esc(r.sleepPlan)}</div>`;
+    if(!r.answer && !r.weekly && !r.sleepPlan) html += `<div class="j-a" style="color:var(--dim)">Без записи — но день был отмечен.</div>`;
     html += `</div>`;
   }
   html += `</div>`;
@@ -980,8 +1084,13 @@ function viewMe(){
         <button class="p-btn" data-touch="${i}">Был контакт</button><button class="p-del" data-pdel="${i}" aria-label="Убрать">✕</button></div>`;
     }
   }
-  html += `<input type="text" id="pname" placeholder="Имя близкого человека" maxlength="30">
-    <button class="btn ghost small" data-act="addperson">Добавить</button></div>`;
+  if((S.people||[]).length < 7){
+    html += `<input type="text" id="pname" placeholder="Имя близкого человека" maxlength="30">
+      <button class="btn ghost small" data-act="addperson">Добавить</button>`;
+  } else {
+    html += `<p class="mut" style="margin-top:10px">Семь — достаточно. Это круг, а не список.</p>`;
+  }
+  html += `</div>`;
 
   /* топ-10 */
   html += `<div class="card"><div class="eyebrow"><span class="led"></span>Топ-10 сил · CliftonStrengths 34</div>`;
@@ -1001,14 +1110,35 @@ function viewMe(){
     <button class="btn ghost small" data-act="addmission">В сетлист</button>
     <div style="height:10px"></div>
     <input type="text" id="cq-text" placeholder="Свой вопрос для вечера" maxlength="160">
-    <button class="btn ghost small" data-act="addquestion">В банк вопросов</button>
-    ${(S.customMissions.length||S.customQuestions.length)?`<p class="mut" style="margin-top:10px">Добавлено: задач — ${S.customMissions.length}, вопросов — ${S.customQuestions.length}.</p>`:""}</div>`;
+    <button class="btn ghost small" data-act="addquestion">В банк вопросов</button>`;
+  if(S.customMissions.length){
+    html += `<p class="mut" style="margin-top:12px; margin-bottom:2px">Твои задачи:</p>`;
+    S.customMissions.forEach((m,i)=>{
+      html += `<div class="p-row"><span class="p-name thin">${esc(m.text)}</span><span class="p-days">${CATS[m.cat]?CATS[m.cat].name:""}</span><button class="p-del" data-cmdel="${i}" aria-label="Удалить">✕</button></div>`;
+    });
+  }
+  if(S.customQuestions.length){
+    html += `<p class="mut" style="margin-top:12px; margin-bottom:2px">Твои вопросы:</p>`;
+    S.customQuestions.forEach((q,i)=>{
+      html += `<div class="p-row"><span class="p-name thin">${esc(q)}</span><button class="p-del" data-cqdel="${i}" aria-label="Удалить">✕</button></div>`;
+    });
+  }
+  html += `</div>`;
+
+  /* резервная копия */
+  html += `<div class="card"><div class="eyebrow"><span class="led"></span>Резервная копия</div>
+    <p class="mut">Дневник и прогресс живут только в этом устройстве. Раз в пару недель сохраняй копию — вставь её потом сюда же, и всё вернётся.</p>
+    <div class="btnrow"><button class="btn small" data-act="backup">Скопировать данные</button><button class="btn ghost small" data-act="showbackup">Показать</button></div>
+    <div id="backup-area" style="display:none"><textarea class="backup-box" id="backupta" readonly></textarea></div>
+    <p class="mut" style="margin-top:14px; margin-bottom:2px">Восстановление из копии:</p>
+    <textarea class="backup-box" id="importta" placeholder="Вставь сюда сохранённую копию..."></textarea>
+    <button class="btn ghost small" data-act="restore">Восстановить</button></div>`;
 
   html += `<div class="card"><div class="eyebrow"><span class="led"></span>Почему этот пульт устроен именно так</div>
     <p class="body" style="margin-bottom:10px">Это не обычный трекер привычек. Он собран под твой профиль:</p>
     <p class="mut" style="margin-bottom:8px"><b style="color:var(--text)">Нет жёстких стриков.</b> Дисциплина у тебя на 27 месте из 34 — жёсткие цепочки «не пропусти ни дня» тебя не мотивируют, а добивают. Здесь считается ритм за неделю, и пропуск ничего не сжигает.</p>
     <p class="mut" style="margin-bottom:8px"><b style="color:var(--text)">Каждый день — выбор из трёх.</b> Стратегичность (№2) любит варианты, а Адаптивность (№13) — свободу решать по ситуации. Никто не говорит тебе, что делать. Ты выбираешь сам.</p>
-    <p class="mut" style="margin-bottom:8px"><b style="color:var(--text)">Саундчек энергии.</b> У тебя циклы: мощная собранность, потом откат. Это не дефект. В дни отката пульт сам убирает нагрузку и переходит в режим восстановления.</p>
+    <p class="mut" style="margin-bottom:8px"><b style="color:var(--text)">Саундчек энергии.</b> У тебя циклы: мощная собранность, потом откат. Это не дефект. В дни отката пульт предлагает тихий режим — а включать его или нет, решаешь ты.</p>
     <p class="mut" style="margin-bottom:8px"><b style="color:var(--text)">Вопрос вечера.</b> Мышление (№9) и Осмотрительность (№5): тебе нужно время наедине с головой. Письмо — твой родной инструмент, «кто я?» — твой главный вопрос. Дневник копит ответы, а «эхо» возвращает их тебе через месяц.</p>
     <p class="mut"><b style="color:var(--text)">Ставка на сильное.</b> Максимализм (№8): растить сильные стороны эффективнее, чем чинить слабые. Поэтому здесь качаются твои топ-10, а не «универсальный список успешного человека».</p></div>`;
 
@@ -1021,50 +1151,49 @@ function viewMe(){
 /* ================= EVENTS ================= */
 
 function updateDayDynamic(){
-  /* точечное обновление: ритм + баннер, без полного ре-рендера */
   const rec = day(todayKey());
   const r = $("#card-rhythm");
   if(r){ const tmp = document.createElement("div"); tmp.innerHTML = rhythmHtml(); r.replaceWith(tmp.firstElementChild); }
-  if(dayComplete(rec) && !$("#day-banner")){
-    const tmp = document.createElement("div");
-    tmp.innerHTML = `<div class="banner" id="day-banner"><b>На сегодня всё. Пульт выключен.</b><p>Минимум дня закрыт. Всё сверх этого — по желанию, а не по долгу.</p></div>`;
-    const anchor = $(".yline") || $(".greet");
-    anchor && anchor.after(tmp.firstElementChild);
-  }
+  const slot = $("#banner-slot");
+  if(slot) slot.innerHTML = bannerHtml(rec);
 }
 
 function bind(){
   document.querySelectorAll("[data-tab]").forEach(el=>el.onclick=()=>{ TAB = el.dataset.tab; EXPANDED.clear(); render(); window.scrollTo(0,0); });
 
   document.querySelectorAll("[data-expand]").forEach(el=>{
-    const fire = ()=>{ EXPANDED.add(el.dataset.expand); rerenderKeepScroll(); };
+    const fire = ()=>{ if(!guardDay()) return; EXPANDED.add(el.dataset.expand); rerenderKeepScroll(); };
     el.onclick = fire;
     el.onkeydown = e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); fire(); } };
   });
 
   document.querySelectorAll("[data-energy]").forEach(el=>el.onclick=()=>{
+    if(!guardDay()) return;
     const rec = day(todayKey());
     const first = rec.energy === null;
     rec.energy = Number(el.dataset.energy);
-    if(first && !rec.scXp){ rec.scXp = true; toast("Саундчек принят · +"+XP.soundcheck+" XP"); buzz(20); }
+    if(first && !rec.scXp){ rec.scXp = true; award(XP.soundcheck); toast("Саундчек принят · +"+XP.soundcheck+" XP"); buzz(20); }
     EXPANDED.delete("sc");
     save(); rerenderKeepScroll();
   });
 
   document.querySelectorAll("[data-mission]").forEach(el=>{
     const fire = ()=>{
+      if(!guardDay()) return;
       const rec = day(todayKey());
       const id = el.dataset.mission;
       const wasComplete = dayComplete(rec);
       rec.missions[id] = !rec.missions[id];
-      save();
       const done = !!rec.missions[id];
+      if(done) awardOnce(rec, "m_"+id, XP.mission); /* второй раз за ту же задачу XP не даётся, но и не отнимается */
+      save();
       el.classList.toggle("done", done);
       el.querySelector(".tick").textContent = done ? "✔" : "";
       if(done){
         buzz(30);
         const led = $("#setlist-led"); if(led){ led.classList.remove("flash"); void led.offsetWidth; led.classList.add("flash"); }
-        toast(!wasComplete && dayComplete(rec) ? "Прогон дня отыгран" : "Сделано · +"+XP.mission+" XP");
+        toast(!wasComplete && dayComplete(rec) ? "Прогон дня отыгран" : "Сделано");
+        if(el.dataset.cat==="people"){ rerenderKeepScroll(); return; } /* показать кнопку «отметить контакт» */
       }
       updateDayDynamic();
     };
@@ -1072,21 +1201,21 @@ function bind(){
     el.onkeydown = e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); fire(); } };
   });
 
-  /* автосохранение черновиков */
   document.querySelectorAll("textarea[data-draft]").forEach(ta=>{
     ta.oninput = ()=>{
-      setDraft(ta.dataset.draft, ta.value);
+      setDraft(ta.dataset.draft, ta.value, ta.dataset.scope);
       const ind = $("#draft-"+ta.dataset.draft);
       if(ind){ ind.textContent = "черновик сохранён"; clearTimeout(ind._t); ind._t = setTimeout(()=>ind.textContent="", 1500); }
     };
   });
 
   document.querySelectorAll("[data-act]").forEach(el=>el.onclick=()=>{
-    const rec = day(todayKey());
     const act = el.dataset.act;
+    if(act!=="backup" && act!=="showbackup" && act!=="restore" && !guardDay()) return;
+    const rec = day(todayKey());
     if(act==="strength"){
-      const wasComplete = dayComplete(rec);
-      rec.strengthDone = true; save(); buzz(30); rerenderKeepScroll();
+      if(!rec.strengthDone){ rec.strengthDone = true; awardOnce(rec, "strength", XP.strength); }
+      save(); buzz(30); rerenderKeepScroll();
       toast("Сила прокачана · +"+XP.strength+" XP");
     }
     if(act==="saveanswer"){
@@ -1096,6 +1225,7 @@ function bind(){
       const had = !!rec.answer;
       const wasComplete = dayComplete(rec);
       rec.answer = v; EDITING.answer = false; setDraft("answer","");
+      if(!had) awardOnce(rec, "answer", XP.answer);
       save(); buzz(30); render(); window.scrollTo(0,0);
       toast(had ? "Сохранено" : (!wasComplete && dayComplete(rec) ? "Прогон дня отыгран" : "В дневник · +"+XP.answer+" XP"));
     }
@@ -1107,24 +1237,33 @@ function bind(){
       const ta = $("#weeklyta");
       const v = ta ? ta.value.trim() : "";
       if(!v){ toast("Пара честных строк — и неделя закрыта"); return; }
-      S.weeks[el.dataset.wk] = v; setDraft("weekly","");
+      const wk = el.dataset.wk;
+      const had = !!S.weeks[wk];
+      S.weeks[wk] = v; setDraft("weekly","",wk);
+      if(!had) award(XP.weekly);
       save(); buzz(30); render(); window.scrollTo(0,0);
       toast("Неделя закрыта · +"+XP.weekly+" XP");
     }
     if(act==="lightsout"){
       const ta = $("#sleepta");
       rec.sleepPlan = ta ? ta.value.trim() : "";
-      const d = new Date();
-      rec.lightsOut = String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+      if(!rec.lightsOut){
+        const d = new Date();
+        rec.lightsOut = String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
+        awardOnce(rec, "sleep", XP.sleep);
+      }
       setDraft("sleep","");
       save(); buzz(40); rerenderKeepScroll();
       toast("Свет погашен. Тишина в зале.");
     }
-    if(act==="quieton"){ rec.quietOn = true; rec.quietAsked = true; save(); rerenderKeepScroll(); }
+    if(act==="quieton"){ rec.quietOn = true; rec.quietOff = false; rec.quietAsked = true; save(); rerenderKeepScroll(); }
     if(act==="quietno"){ rec.quietAsked = true; save(); rerenderKeepScroll(); }
+    if(act==="quietoff"){ rec.quietOff = true; rec.quietOn = false; save(); rerenderKeepScroll(); toast("Обычный день. Решаешь ты."); }
+    if(act==="hidehint"){ HIDE_BROWSER_HINT = true; rerenderKeepScroll(); }
     if(act==="addperson"){
       const inp = $("#pname"); const v = inp ? inp.value.trim() : "";
       if(!v) return;
+      if((S.people||[]).length>=7){ toast("Семь — достаточно"); return; }
       S.people.push({name:v, last:null}); save(); rerenderKeepScroll();
     }
     if(act==="addmission"){
@@ -1141,14 +1280,48 @@ function bind(){
       S.customQuestions.push(v); save(); rerenderKeepScroll();
       toast("Вопрос добавлен в банк");
     }
+    if(act==="backup" || act==="showbackup"){
+      const json = JSON.stringify(S);
+      const area = $("#backup-area"), ta = $("#backupta");
+      if(act==="backup" && navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(json).then(()=>toast("Скопировано. Сохрани в заметки."), ()=>{
+          if(area && ta){ area.style.display="block"; ta.value=json; ta.select(); toast("Выдели и скопируй вручную"); }
+        });
+      } else if(area && ta){
+        area.style.display = area.style.display==="none" ? "block" : "none";
+        ta.value = json;
+      }
+    }
+    if(act==="restore"){
+      const ta = $("#importta");
+      const v = ta ? ta.value.trim() : "";
+      if(!v){ toast("Вставь копию в поле выше"); return; }
+      try{
+        const o = JSON.parse(v);
+        if(!o || typeof o!=="object" || !o.days) throw new Error("bad");
+        if(!window.confirm("Заменить текущие данные восстановленной копией?")) return;
+        o.days = o.days||{}; o.people = o.people||[]; o.weeks = o.weeks||{};
+        o.customMissions = o.customMissions||[]; o.customQuestions = o.customQuestions||[];
+        S = o; save(); render(); window.scrollTo(0,0);
+        toast("Данные восстановлены");
+      }catch(e){ toast("Это не похоже на копию Пульта"); }
+    }
   });
 
-  document.querySelectorAll("[data-touch]").forEach(el=>el.onclick=()=>{
-    const p = S.people[Number(el.dataset.touch)];
+  document.querySelectorAll("[data-touch],[data-ptouch]").forEach(el=>el.onclick=()=>{
+    if(!guardDay()) return;
+    const idx = Number(el.dataset.touch !== undefined ? el.dataset.touch : el.dataset.ptouch);
+    const p = S.people[idx];
     if(p){ p.last = todayKey(); save(); rerenderKeepScroll(); toast("Отмечено"); }
   });
   document.querySelectorAll("[data-pdel]").forEach(el=>el.onclick=()=>{
     S.people.splice(Number(el.dataset.pdel),1); save(); rerenderKeepScroll();
+  });
+  document.querySelectorAll("[data-cmdel]").forEach(el=>el.onclick=()=>{
+    S.customMissions.splice(Number(el.dataset.cmdel),1); save(); rerenderKeepScroll();
+  });
+  document.querySelectorAll("[data-cqdel]").forEach(el=>el.onclick=()=>{
+    S.customQuestions.splice(Number(el.dataset.cqdel),1); save(); rerenderKeepScroll();
   });
 
   document.querySelectorAll(".s-head").forEach(el=>{
@@ -1158,15 +1331,30 @@ function bind(){
   });
 }
 
-render();
+/* ================= BOOT ================= */
 
-/* диплинки из уведомлений: #soundcheck / #question / #sleep */
-(function(){
+sweepDrafts();
+
+/* диплинки: #soundcheck / #question / #sleep — до первого рендера, без двойной отрисовки */
+function applyHash(){
   const h = (location.hash||"").replace("#","");
-  if(!h) return;
-  if(h==="question"){ EXPANDED.add("q"); render(); }
+  if(h==="question") EXPANDED.add("q");
+  render();
   const map = {soundcheck:"#card-sc", question:"#card-q", sleep:"#card-sleep"};
   const el = map[h] && document.querySelector(map[h]);
   el && el.scrollIntoView({block:"start"});
-})();
+}
+applyHash();
+window.addEventListener("hashchange", applyHash);
+
+/* смена дня, пока приложение живёт в памяти (iOS держит PWA сутками) */
+function checkDayRollover(){
+  if(RENDERED_KEY && RENDERED_KEY !== todayKey()){
+    EXPANDED.clear(); EDITING = {};
+    render(); window.scrollTo(0,0);
+  }
+}
+document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible") checkDayRollover(); });
+window.addEventListener("focus", checkDayRollover);
+window.addEventListener("pageshow", checkDayRollover);
 </script>

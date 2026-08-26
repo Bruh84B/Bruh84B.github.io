@@ -8,7 +8,7 @@ BEGIN:VTIMEZONE
 TZID:Asia/Almaty
 BEGIN:STANDARD
 DTSTART:20240301T000000
-TZOFFSETFROM:+0500
+TZOFFSETFROM:+0600
 TZOFFSETTO:+0500
 TZNAME:+05
 END:STANDARD
@@ -21,8 +21,7 @@ DURATION:PT15M
 RRULE:FREQ=DAILY
 SUMMARY:Последний трек. Дальше — тишина в з
  але.
-DESCRIPTION:Открыть Пульт: https://bruh84b.github.io/#sleep
-URL:https://bruh84b.github.io/#sleep
+DESCRIPTION:Открой «Пульт» с экрана «Домой».
 TRANSP:TRANSPARENT
 BEGIN:VALARM
 ACTION:DISPLAY
