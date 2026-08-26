@@ -1,7 +1,7 @@
 /* Пульт — service worker.
    Навигация: network-first (обновления видны сразу), офлайн — из кеша.
    Статика и шрифты: cache-first. */
-const CACHE_VERSION = 'pult-v4';
+const CACHE_VERSION = 'pult-v5';
 
 const CORE_ASSETS = [
   './',
