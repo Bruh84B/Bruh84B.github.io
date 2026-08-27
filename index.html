@@ -167,6 +167,10 @@
   mark{background:var(--amber-soft); color:var(--amber)}
   .filters{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap}
   .filters .chipbtn{flex:none; padding:9px 13px; font-size:13px; min-height:40px}
+  .wchips{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap}
+  .wchips .chipbtn{flex:none; padding:9px 13px; font-size:13.5px; min-height:40px}
+  .aid-steps{margin:10px 0 0 18px; display:flex; flex-direction:column; gap:8px}
+  .aid-steps li{font-size:14.5px; color:var(--text)}
   /* ---------- Я ---------- */
   .s-item{border:1px solid var(--line); border-radius:12px; margin-bottom:10px; overflow:hidden; background:var(--panel2)}
   .s-head{display:flex; align-items:center; gap:11px; padding:12px 13px; cursor:pointer; min-height:50px; width:100%; font-family:inherit; color:var(--text); background:none; border:none; text-align:left}
@@ -526,6 +530,76 @@ const QUESTIONS = [
 
 const WEEKLY_QS = "Неделя позади. Четыре вопроса: что сработало? Что съело больше всего сил? Кто из твоих был рядом — и кого не хватало? Что одно ты сделаешь на следующей неделе иначе?";
 
+/* ---- Словарь чувств: тап по слову вставляет его в запись. Написан психологом. ---- */
+const FEELINGS = [
+ {g:"Злость",       w:["цепляет","раздражён","недоволен","злюсь","бесит","на взводе","закипаю","трясёт","взбешён","хочется орать"]},
+ {g:"Тревога",      w:["неспокойно","напряжён","дёргаюсь по мелочам","тревожно","накручиваю себя","сжимает внутри","не могу выдохнуть","страшно","накрывает паника"]},
+ {g:"Усталость",    w:["подустал","тяжело","вымотан","нет сил","выжат","пустой","на автопилоте","всё равно","выключился","ничего не осталось"]},
+ {g:"Грусть",       w:["грустно","приуныл","скучаю","тоскливо","одиноко","паршиво","накрыло","тянет вниз","безнадёга"]},
+ {g:"Стыд",         w:["неловко","косячнул","виноват","стыдно","подвёл","грызу себя","противно от себя","хочется провалиться"]},
+ {g:"Радость",      w:["норм","нравится","интересно","зацепило","кайф","драйв","горжусь","прёт","летаю"]},
+ {g:"Спокойствие",  w:["ровно","спокойно","выдохнул","отпустило","расслаблен","тихо внутри","всё на месте","в своей тарелке"]},
+ {g:"Непонятно",    w:["мутно","смешано","фоном что-то давит","странно","ни то ни сё","не пойму что","как в тумане","качает туда-сюда","что-то не так"]},
+];
+
+const STARTERS = [
+ "Если честно, то…",
+ "Больше всего сегодня меня зацепило…",
+ "Не знаю, что это было, но…",
+ "Я задолбался не от работы, а от…",
+ "Сейчас это сидит где-то в теле —…",
+ "Если бы никто от меня ничего не ждал, я бы…",
+ "Кажется, я опять тащу на себе чужое:…",
+ "Меньше всего хочется признавать, что…",
+ "Сегодня я был собой в момент, когда…",
+ "Если так пойдёт дальше, то…",
+ "Всё началось с того, что…",
+ "На самом деле мне сейчас нужно…",
+];
+
+/* ---- Аптечка: карточки самопомощи. Предлагаются только по СОСТОЯНИЮ, текст дневника не читается никогда. ---- */
+const AID = [
+ {id:"empty", t:"Когда внутри пусто", when:"выжат, на автопилоте, «всё равно»",
+  steps:["Не заставляй себя чувствовать. Пустота — не поломка, а перерасход: система отключила лишнее, чтобы дотянуть до конца смены.",
+   "Одно физическое действие на две минуты — душ, еда, балкон. Тело запускается проще, чем голова.",
+   "Одна строка в дневник: «я выжат, потому что…». Названное состояние жрёт меньше энергии, чем безымянное."]},
+ {id:"shake", t:"Когда после смены трясёт", when:"смена закончилась, а обороты и злость — нет",
+  steps:["Адреналин не выключается словом «успокойся» — его надо сжечь. Двадцать приседаний или быстрый круг вокруг дома: тело завершает цикл, и трясти перестаёт.",
+   "Потом вдох на четыре счёта, выдох на восемь, шесть раз. Длинный выдох — тормоз, вшитый в нервную систему: сердце замедляется вслед за ним."]},
+ {id:"money", t:"Когда деньги давят фоном", when:"долги крутятся в голове и не дают ничего делать",
+  steps:["Раздели: тревога — сигнал, а не план. Выть она умеет, считать — нет.",
+   "Пять минут выгружай на бумагу всё, что крутится, без порядка. Записанное перестаёт крутиться: мозгу больше не надо это удерживать.",
+   "Назначь тревоге слот: «про деньги — завтра в 12, десять минут». Мозг отпускает то, у чего есть время."]},
+ {id:"spin", t:"Когда мысли не выключаются", when:"лежишь, а голова гоняет по кругу",
+  steps:["Встань и выгрузи мысли списком на бумагу. Мозг крутит, чтобы не забыть; записанное он отпускает.",
+   "В кровати: выдох вдвое длиннее вдоха, десять циклов — пульс падает вслед за выдохом, это рефлекс.",
+   "Не уснул за 20 минут — встань, посиди в тусклом свете. Кровать должна означать сон, а не борьбу."]},
+ {id:"foreign", t:"Когда притащил чужое домой", when:"после площадки тяжело, но непонятно от чего",
+  steps:["Спроси себя: что случилось со мной, а что — при мне? Паника заказчика и злость подрядчика случились при тебе.",
+   "Чужое назови с именем хозяина: «это стресс Ерлана, не мой». Мозг перестаёт решать чужую задачу — и оно отлипает.",
+   "Своё — одной строкой в дневник."]},
+ {id:"nothing", t:"Когда ничего не хочется", when:"дела стоят, желания ноль, и от этого только хуже",
+  steps:["Не жди желания — оно приходит после начала, а не до. Так устроена мотивация, это не лень.",
+   "Выбери смешно маленькое действие на пять минут: мусор, окно, одна тарелка. Маленькому шагу сопротивление не успевает включиться.",
+   "Дальше — стоп или продолжай. Оба варианта — победа."]},
+ {id:"who", t:"Когда накрывает «кто я и куда иду»", when:"тревога о будущем, ощущение, что жизнь проходит мимо",
+  steps:["Отдели вопрос от состояния: в четыре утра после смены «кто я» — это не философия, это усталость. Вопрос настоящий, время — нет.",
+   "Запиши вопрос как есть, не отвечая. Записанный — перестаёт давить: мозг видит, что он не потерян.",
+   "Вернись к нему днём, отдохнувшим, десять минут с таймером."]},
+ {id:"talk", t:"Перед разговором, где нельзя прогнуться", when:"предстоит отстоять своё — деньги, условия, границы",
+  steps:["Запиши одну фразу — что тебе нужно из этого разговора. Одну, не три: в стрессе доступно только сформулированное заранее.",
+   "Перед входом два длинных выдоха: спокойный голос убедительнее громкого, а выдох его возвращает.",
+   "Давят — держи паузу три секунды. Со стороны она читается как уверенность, а тебе даёт время думать."]},
+ {id:"fight", t:"Когда прокручиваешь ссору", when:"конфликт прошёл, а в голове идёт повтор",
+  steps:["Прокрутка — попытка переиграть прошлое. Выход — наружу: запиши, что случилось, что задело, что хочу сделать по факту.",
+   "К каждому «надо было сказать…» добавь: «это мысль, а не факт». Мысль о провале и провал — разные вещи.",
+   "Реши одно: нужен ли второй разговор. Да — когда. Нет — закрыто."]},
+ {id:"unclear", t:"Когда непонятно, что с тобой", when:"что-то давит, а слов нет",
+  steps:["Не ищи слово — ищи место. Где в теле: сжатие, тяжесть, гул? Тело замечает раньше головы.",
+   "Определи направление: «против кого-то» — злость, «вперёд-назад» — тревога, «вниз» — усталость или грусть. Грубого направления достаточно.",
+   "Запиши как есть: «что-то мутное в груди, похоже на…». Примерно названное уже управляемее безымянного."]},
+];
+
 /* ================= ХРАНИЛИЩЕ ================= */
 
 const DEV = /[?&]dev=1/.test(location.search);
@@ -541,7 +615,7 @@ function defaults(){
       но выключаются здесь же, тумблером на сферу.) */
   return {days:{}, weeks:{}, people:[], customMissions:[], customQuestions:[],
     banned:{missions:[], questions:[]},
-    off:{archive:false, rider:false, weekly:false, strength:false, demontazh:false, rhythm:false,
+    off:{archive:false, rider:false, weekly:false, strength:false, demontazh:false, rhythm:false, aid:false,
          sphere_craft:false, sphere_world:false, sphere_make:false, sphere_limits:false},
     mode:null, paused:null, rider:{helps:"", updatedAt:""},
     quietOfferedAt:null, riderOfferedAt:null, echoShown:{}, idsV:0,
@@ -894,6 +968,7 @@ let PICK_I = 0;                /* «дай другую» */
 let ARCH_I = 0;                /* «ещё» в архиве */
 let J_SEARCH = "", J_FILTER = "all", J_LIMIT = 30;
 let HIDE_HINT = false, HIDE_UPD = false, RIDER_HIDE = false;
+let WORDS_OPEN = false, WORDS_G = -1, STARTS_OPEN = false;
 let RENDERED_SIG = null, PENDING_RERENDER = false;
 let BREATH = null;
 
@@ -1132,6 +1207,70 @@ function cardStrength(ctx, rec, quiet, expanded){
   return h+'<div class="blind">Слепая зона: '+st.blind+'</div></div>';
 }
 
+/* Подсказки слов: он тапает — слово вставляется в запись. Текст никогда не читается. */
+function wordsPanelHtml(quiet){
+  let h = '<div class="minirow"><button class="mini" data-act="words">'+(WORDS_OPEN?"скрыть слова":"не находятся слова?")+'</button>';
+  if(!quiet) h += '<button class="mini" data-act="starters">'+(STARTS_OPEN?"скрыть":"с чего начать")+'</button>';
+  h += '</div>';
+  if(WORDS_OPEN){
+    h += '<div class="wchips">';
+    FEELINGS.forEach((f,i)=>{ h += '<button class="chipbtn" data-act="wgroup" data-i="'+i+'" aria-pressed="'+(WORDS_G===i)+'">'+f.g+'</button>'; });
+    h += '</div>';
+    if(WORDS_G >= 0 && FEELINGS[WORDS_G]){
+      h += '<div class="wchips">';
+      FEELINGS[WORDS_G].w.forEach(w=>{ h += '<button class="chipbtn" data-act="ins-word" data-w="'+esc(w)+'">'+esc(w)+'</button>'; });
+      h += '</div>';
+    }
+    h += '<div class="minirow"><button class="mini" data-act="expand" data-id="aid_unclear_q">непонятно, что со мной →</button></div>';
+    if(EXPANDED.has("aid_unclear_q")) h += aidBodyHtml("unclear");
+  }
+  if(STARTS_OPEN && !quiet){
+    h += '<div class="wchips">';
+    STARTERS.forEach((s,i)=>{ h += '<button class="chipbtn" data-act="ins-start" data-i="'+i+'">'+esc(s)+'</button>'; });
+    h += '</div>';
+  }
+  return h;
+}
+
+/* Аптечка: карточка целиком (тело) и свёрнутая строка. */
+function aidBodyHtml(id){
+  const a = AID.find(x=> x.id === id);
+  if(!a) return "";
+  let h = '<div class="card" style="margin-top:12px">'+eyebrow("Помощь","quiet")+
+    '<h2 style="font-size:17px">'+a.t+'</h2><p class="mut">'+a.when+'</p><ol class="aid-steps">';
+  a.steps.forEach(s=>{ h += '<li>'+s+'</li>'; });
+  return h + '</ol><p class="tiny-note">Вся аптечка — во вкладке «Я». Это предложение, а не назначение.</p></div>';
+}
+function aidSuggest(ctx, rec, quiet){
+  const out = [];
+  const low = (typeof rec.energy === "number" && rec.energy <= 2) || quiet;
+  if(low){
+    out.push("empty");
+    if(rec.kind === "show" || rec.kind === "work") out.push("foreign");
+    out.push("nothing");
+  }
+  if(ctx.h >= 23 || ctx.h < 5){
+    if(rec.kind === "show") out.push("shake");
+    out.push("spin");
+  }
+  if(rec.returned) out.push("nothing");
+  const seen = {}, uniq = [];
+  for(const id of out){ if(!seen[id]){ seen[id] = 1; uniq.push(id); } }
+  return uniq.slice(0,2);
+}
+function aidLinesHtml(ctx, rec, quiet){
+  if(S.off.aid) return "";
+  const ids = aidSuggest(ctx, rec, quiet);
+  let h = "";
+  for(const id of ids){
+    const a = AID.find(x=> x.id === id);
+    if(!a) continue;
+    if(EXPANDED.has("aid_"+id)) h += aidBodyHtml(id);
+    else h += line("aid_"+id, "Помощь", a.t, false);
+  }
+  return h;
+}
+
 function cardQuestion(ctx, rec, quiet, expanded){
   const gap = gapDays(ctx.dn);
   const shortGap = gap >= 3 && gap <= 6;
@@ -1153,6 +1292,7 @@ function cardQuestion(ctx, rec, quiet, expanded){
     } else {
       h += '<textarea id="answerta" data-draft="answer" placeholder="Одно слово тоже считается. Можно надиктовать — микрофон на клавиатуре. Никто, кроме тебя, это не прочитает.">'+esc(val)+'</textarea>';
     }
+    h += wordsPanelHtml(quiet);
     h += '<div class="savestate" id="draft-answer"></div>'+
       '<div class="btnrow"><button class="btn small sticky" data-act="save-answer">Сохранить в дневник</button>'+
       (shortGap ? '<button class="btn quiet small" data-act="skip-write">не хочу писать</button>' : '')+'</div>';
@@ -1400,6 +1540,7 @@ function viewToday(){
   h += render1(primary);
   for(const id of order){ if(id !== primary && has[id]) h += render1(id); }
 
+  h += aidLinesHtml(ctx, rec, quiet);
   h += '<p class="footer-note">Всё хранится только на этом устройстве. Копия — во вкладке «Я».</p>';
   return h;
 }
@@ -1571,7 +1712,7 @@ function viewJournal(){
 
 /* ================= ВКЛАДКА «Я» ================= */
 
-const OFF_LABELS = {archive:"Из твоего архива", rider:"Записка на плохой день", weekly:"Итоги недели", strength:"Сила дня", demontazh:"Демонтаж после шоу", rhythm:"Ритм · 7 дней"};
+const OFF_LABELS = {archive:"Из твоего архива", rider:"Записка на плохой день", weekly:"Итоги недели", strength:"Сила дня", demontazh:"Демонтаж после шоу", rhythm:"Ритм · 7 дней", aid:"Аптечка"};
 const SPHERE_LABELS = {sphere_craft:"Ремесло", sphere_world:"Дорога", sphere_make:"Создание", sphere_limits:"Границы"};
 
 function viewMe(){
@@ -1622,6 +1763,19 @@ function viewMe(){
       h += '<textarea id="riderta" placeholder="Например: горячий душ. Один разговор с тем, кто не лечит. Выйти на улицу без цели.">'+esc(S.rider.helps)+'</textarea>'+
         '<button class="btn ghost small" data-act="save-rider">Сохранить</button>';
     }
+    h += '</div>';
+  }
+
+  /* Аптечка */
+  if(!S.off.aid){
+    h += '<div class="card">'+eyebrow("Аптечка")+
+      '<p class="mut">Десять карточек на разные состояния, написаны психологом. Приложение может предложить одну по состоянию — по фейдеру энергии или времени, никогда по тексту твоих записей. Открыть можно всегда.</p>';
+    AID.forEach(a=>{
+      const open = EXPANDED.has("aidme_"+a.id);
+      h += '<div class="s-item'+(open?" open":"")+'">'+
+        '<button class="s-head" data-act="expand" data-id="aidme_'+a.id+'"><span class="nm">'+a.t+'</span><span class="ar" aria-hidden="true">›</span></button>'+
+        '<div class="s-body"><p class="mut">'+a.when+'</p><ol class="aid-steps">'+a.steps.map(s=>'<li>'+s+'</li>').join("")+'</ol></div></div>';
+    });
     h += '</div>';
   }
 
@@ -1824,13 +1978,34 @@ function commit(msg){ const ok = save(); if(ok && msg) toast(msg); return ok; }
 function markToast(msg){ toast(msg); }
 
 const ACTIONS = {
-  tab(d){ TAB = d.id; EXPANDED.clear(); SHOW_ALL = false; render(); window.scrollTo(0,0); },
+  tab(d){ TAB = d.id; EXPANDED.clear(); SHOW_ALL = false; WORDS_OPEN = false; STARTS_OPEN = false; WORDS_G = -1; render(); window.scrollTo(0,0); },
   expand(d){ EXPANDED.has(d.id) ? EXPANDED.delete(d.id) : EXPANDED.add(d.id); rerender(); },
   reload(){ location.reload(); },
   "pick-cancel"(){ QUIET_PICK = false; PAUSE_PICK = false; rerender(); },
   "seen-v4"(){ S.seenV4 = true; HIDE_UPD = true; save(); rerender(); },
   "hide-hint"(){ HIDE_HINT = true; rerender(); },
   "rider-later"(){ RIDER_HIDE = true; rerender(); },
+  words(){ WORDS_OPEN = !WORDS_OPEN; STARTS_OPEN = false; rerender(); },
+  starters(){ STARTS_OPEN = !STARTS_OPEN; WORDS_OPEN = false; rerender(); },
+  wgroup(d){ const i = Number(d.i); WORDS_G = (WORDS_G === i) ? -1 : i; rerender(); },
+  "ins-word"(d){
+    /* вставка без перерисовки: фокус и каретка остаются на месте */
+    const ta = $("#answerta"); if(!ta) return;
+    let v = ta.value;
+    if(v && !/[\s]$/.test(v)) v += /[.,!?…]$/.test(v.trim()) ? " " : ", ";
+    ta.value = v + d.w;
+    setDraft("answer", ta.value);
+    const ind = $("#draft-answer"); if(ind) ind.textContent = "черновик сохранён";
+    ta.focus();
+  },
+  "ins-start"(d){
+    const ta = $("#answerta"); if(!ta) return;
+    const s = STARTERS[Number(d.i)]; if(!s) return;
+    ta.value = ta.value.trim() ? ta.value + "\n" + s : s;
+    setDraft("answer", ta.value);
+    const ind = $("#draft-answer"); if(ind) ind.textContent = "черновик сохранён";
+    ta.focus();
+  },
   "nag-later"(){ S.backupNagAt = CTX.dn; save(); rerender(); },
   "show-all"(){ SHOW_ALL = true; rerender(); },
 
@@ -2220,6 +2395,7 @@ function checkContext(){
   if(ae && (ae.tagName === "TEXTAREA" || ae.tagName === "INPUT") && String(ae.value||"").trim()){ PENDING_RERENDER = true; return; }
   EXPANDED.clear(); EDITING = {}; SHOW_ALL = false;
   SHOW_ALL_TASKS = false; PICK_I = 0; ARCH_I = 0;   /* сессионные выборы вчерашнего дня не переживают его */
+  WORDS_OPEN = false; STARTS_OPEN = false; WORDS_G = -1;
   render(); window.scrollTo(0,0);
 }
 document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState === "visible"){ checkContext(); if(BREATH && BREATH.on) askWake(); } });
