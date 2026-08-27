@@ -1,7 +1,7 @@
 /* Пульт — service worker.
    Навигация: сеть с таймаутом 2 с, иначе мгновенно кеш (полусеть на площадке — типовой случай).
    Статика: cache-first. Шрифты живут в отдельном кеше, который не сбрасывается релизами. */
-const CORE_CACHE = 'pult-core-v12';
+const CORE_CACHE = 'pult-core-v13';
 const RUNTIME_CACHE = 'pult-runtime';
 const NAV_TIMEOUT = 2000;
 

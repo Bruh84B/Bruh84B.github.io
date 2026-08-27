@@ -1033,9 +1033,9 @@ function archiveHtml(ctx, rec, quiet){
 function cardSoundcheck(ctx, rec, expanded){
   if(!expanded){
     const e = (typeof rec.energy === "number") ? ELBL[rec.energy] : "не отмечена";
-    return line("sc","Саундчек","Энергия: "+e+(rec.kind?" · "+KINDS[rec.kind]:""), false);
+    return line("sc","Энергия", e+(rec.kind?" · "+KINDS[rec.kind]:""), false);
   }
-  let h = '<div class="card" id="card-sc">'+eyebrow("Саундчек", rec.energy===null ? "live" : "ok")+
+  let h = '<div class="card" id="card-sc">'+eyebrow("Энергия", rec.energy===null ? "live" : "ok")+
     '<p class="body">'+(rec.energy===null ? "Сколько в тебе сегодня энергии?" : "Уровень принят. Можно поменять, если день изменился.")+'</p><div class="faders">';
   for(let v=1;v<=5;v++){
     let bars = "";
@@ -1059,17 +1059,17 @@ function cardSetlist(ctx, rec, quiet, expanded){
   const doneCount = info.list.filter(m=> rec.missions[m.id]).length;
   if(!expanded){
     const first = info.list.find(m=> !rec.missions[m.id]) || info.list[0];
-    if(rec.optOut) return line("setlist","Сетлист","Закрыт на сегодня", true);
-    return line("setlist","Сетлист", first ? esc(first.text) : "—", doneCount>0);
+    if(rec.optOut) return line("setlist","Задачи","Закрыты на сегодня", true);
+    return line("setlist","Задачи", first ? esc(first.text) : "—", doneCount>0);
   }
   if(rec.optOut){
-    return '<div class="card" id="card-setlist">'+eyebrow("Сетлист")+
-      '<p class="body">Сетлист закрыт. День всё равно записан — ты здесь был.</p>'+
+    return '<div class="card" id="card-setlist">'+eyebrow("Задачи на день")+
+      '<p class="body">Задачи закрыты. День всё равно записан — ты здесь был.</p>'+
       '<div class="minirow"><button class="mini" data-act="optout-off">вернуть</button></div></div>';
   }
-  let h = '<div class="card" id="card-setlist">'+eyebrow(quiet ? "Сетлист тихого дня" : "Сетлист дня", doneCount ? "ok" : "live")+'';
+  let h = '<div class="card" id="card-setlist">'+eyebrow(quiet ? "Тихий день · одна задача" : "Задачи на день", doneCount ? "ok" : "live")+'';
   if(!info.list.length){
-    return h + '<p class="body">Сетлист пуст — всё убрано из ротации.</p>'+
+    return h + '<p class="body">Список пуст — всё убрано из ротации.</p>'+
       '<p class="mut" style="margin-top:8px">Верни задачи в «Я» — или добавь свои.</p></div>';
   }
   for(const m of info.list){
@@ -1103,7 +1103,7 @@ function cardSetlist(ctx, rec, quiet, expanded){
   if(!quiet){
     h += '<button class="mini" data-act="reroll">пересобрать</button>';
     h += '<button class="mini" data-act="optout">сегодня — ничего из этого</button>';
-    h += '<button class="mini" data-act="own-open">свой трек</button>';
+    h += '<button class="mini" data-act="own-open">своя задача</button>';
   }
   h += '</div>';
   if(EXPANDED.has("own")){
@@ -1163,9 +1163,9 @@ function cardQuestion(ctx, rec, quiet, expanded){
 
 function cardWeekly(ctx, expanded){
   const wk = weekKeyOf(ctx.dow === 1 ? keyOfNum(ctx.dn-1) : ctx.key);
-  if(!expanded) return line("weekly","Прогон недели","Разбор недели — четыре вопроса", false);
+  if(!expanded) return line("weekly","Итоги недели","Четыре вопроса — раз в неделю", false);
   const val = getDraft("weekly", wk);
-  return '<div class="card" id="card-weekly">'+eyebrow("Прогон недели","live")+
+  return '<div class="card" id="card-weekly">'+eyebrow("Итоги недели","live")+
     '<p class="body">'+WEEKLY_QS+'</p>'+
     '<textarea id="weeklyta" data-draft="weekly" data-scope="'+wk+'" placeholder="Разбор недели — как разбор шоу: без самобичевания, по фактам...">'+esc(val)+'</textarea>'+
     '<div class="savestate" id="draft-weekly"></div>'+
@@ -1190,8 +1190,8 @@ function breathHtml(){
 }
 
 function cardNight(ctx, rec, expanded){
-  const show = rec.kind === "show" && !S.off.demontazh;   /* выключенный «Демонтаж» = обычный «Последний трек» */
-  const cap = show ? "Демонтаж" : "Последний трек";
+  const show = rec.kind === "show" && !S.off.demontazh;   /* выключенный «Демонтаж» = обычный ритуал перед сном */
+  const cap = show ? "Демонтаж" : "Перед сном";
   if(rec.closedAt || rec.lightsOut){
     if(!expanded) return line("night", cap, "✔ Свет погашен в "+(rec.closedAt||rec.lightsOut), true);
     return '<div class="card" id="card-night">'+eyebrow(cap,"ok")+
@@ -1219,8 +1219,8 @@ function cardNight(ctx, rec, expanded){
     else h += '<button class="btn small" data-act="lightsout">Свет погашен</button>';
     return h + '<p class="tiny-note">Не ложись сразу. Лечь в 01:30 и провертеться до 03:30 хуже, чем лечь в 03:00 и вырубиться за пятнадцать минут. Кровать должна означать сон, а не ожидание сна.</p></div>';
   }
-  return '<div class="card" id="card-night">'+eyebrow("Последний трек","live")+
-    '<p class="body">Шоу отыграно, идёт демонтаж.</p>'+breathHtml()+
+  return '<div class="card" id="card-night">'+eyebrow("Перед сном","live")+
+    '<p class="body">День отыгран — пора сворачиваться.</p>'+breathHtml()+
     '<p class="mut" style="margin-top:14px">Выгрузи голову — три строки на завтра. Утром они будут ждать тебя:</p>'+
     '<textarea id="sleepta" data-draft="sleep" placeholder="1. …&#10;2. …&#10;3. …" style="min-height:80px">'+esc(val)+'</textarea>'+
     '<div class="savestate" id="draft-sleep"></div>'+
@@ -1230,7 +1230,7 @@ function cardNight(ctx, rec, expanded){
 
 function cardRider(expanded){
   if(!S.rider.helps) return "";
-  if(!expanded) return line("rider","Райдер", esc(S.rider.helps.slice(0,44)), false);
+  if(!expanded) return line("rider","Записка себе", esc(S.rider.helps.slice(0,44)), false);
   return '<div class="card" id="card-rider">'+eyebrow("Ты сам себе написал","quiet")+
     '<p class="tiny-note" style="margin-top:0">Это заметки, а не договор. Ты писал их себе, когда силы были.</p>'+
     '<p class="j-a" style="margin-top:10px">'+esc(S.rider.helps)+'</p></div>';
@@ -1310,7 +1310,7 @@ function takeoverGap(ctx, rec, gap){
   if(gap >= 30){
     h += '<div class="card">'+eyebrow("Пересобрать пульт")+
       '<p class="mut">Если то, что ты настроил раньше, больше не про тебя.</p>'+
-      '<button class="toggle" data-act="rb-keep" data-k="missions" aria-pressed="'+(RB.missions)+'"><span>оставить мой сетлист</span><span class="sw"><i></i></span></button>'+
+      '<button class="toggle" data-act="rb-keep" data-k="missions" aria-pressed="'+(RB.missions)+'"><span>оставить мои задачи</span><span class="sw"><i></i></span></button>'+
       '<button class="toggle" data-act="rb-keep" data-k="questions" aria-pressed="'+(RB.questions)+'"><span>оставить мои вопросы</span><span class="sw"><i></i></span></button>'+
       '<button class="toggle" data-act="rb-keep" data-k="people" aria-pressed="'+(RB.people)+'"><span>оставить своих людей</span><span class="sw"><i></i></span></button>'+
       '<button class="btn ghost small" data-act="rebuild">собрать заново</button>'+
@@ -1474,7 +1474,7 @@ function viewPath(){
   }
   const vals = Object.keys(counts).map(k=>counts[k]);
   const maxc = Math.max(1, vals.length ? Math.max.apply(null, vals) : 1);
-  h += '<div class="card">'+eyebrow("Каналы")+'<div class="meters">';
+  h += '<div class="card">'+eyebrow("Сферы")+'<div class="meters">';
   for(const c in CATS){
     if(c === "rest" && !counts[c]) continue;
     const n = counts[c]||0;
@@ -1553,7 +1553,7 @@ function viewJournal(){
       h += '<div class="j-q">'+hl(r.q||"Запись дня", J_SEARCH)+'</div><div class="j-a">'+hl(r.answer, J_SEARCH)+'</div>'+
         '<div class="minirow"><button class="mini" data-act="del-entry" data-k="'+k+'">убрать</button></div>';
     }
-    if(r.weekly) h += '<div class="j-q" style="margin-top:8px">Прогон недели</div><div class="j-a">'+hl(r.weekly, J_SEARCH)+'</div>';
+    if(r.weekly) h += '<div class="j-q" style="margin-top:8px">Итоги недели</div><div class="j-a">'+hl(r.weekly, J_SEARCH)+'</div>';
     if(r.sleepPlan) h += '<div class="j-q" style="margin-top:8px">План перед сном</div><div class="j-a">'+esc(r.sleepPlan)+'</div>';
     h += '</div>';
   }
@@ -1562,7 +1562,7 @@ function viewJournal(){
 
   const wkeys = Object.keys(S.weeks||{}).sort().reverse();
   if(wkeys.length && !J_SEARCH && J_FILTER === "all"){
-    h += '<div class="card">'+eyebrow("Прогоны недель")+'';
+    h += '<div class="card">'+eyebrow("Итоги недель")+'';
     for(const wk of wkeys) h += '<div class="j-entry"><div class="j-date">'+wk+'</div><div class="j-a">'+esc(S.weeks[wk])+'</div></div>';
     h += '</div>';
   }
@@ -1571,7 +1571,7 @@ function viewJournal(){
 
 /* ================= ВКЛАДКА «Я» ================= */
 
-const OFF_LABELS = {archive:"Из твоего архива", rider:"Райдер", weekly:"Прогон недели", strength:"Сила дня", demontazh:"Демонтаж", rhythm:"Ритм"};
+const OFF_LABELS = {archive:"Из твоего архива", rider:"Записка на плохой день", weekly:"Итоги недели", strength:"Сила дня", demontazh:"Демонтаж после шоу", rhythm:"Ритм · 7 дней"};
 const SPHERE_LABELS = {sphere_craft:"Ремесло", sphere_world:"Дорога", sphere_make:"Создание", sphere_limits:"Границы"};
 
 function viewMe(){
@@ -1590,7 +1590,7 @@ function viewMe(){
   for(const k in OFF_LABELS){
     h += '<button class="toggle" data-act="toggle-off" data-k="'+k+'" aria-pressed="'+(!S.off[k])+'"><span>'+OFF_LABELS[k]+'</span><span class="sw"><i></i></span></button>';
   }
-  h += '<p class="mut" style="margin:14px 0 2px">Сферы сетлиста:</p>';
+  h += '<p class="mut" style="margin:14px 0 2px">Сферы задач:</p>';
   for(const k in SPHERE_LABELS){
     h += '<button class="toggle" data-act="toggle-off" data-k="'+k+'" aria-pressed="'+(!S.off[k])+'"><span>'+SPHERE_LABELS[k]+'</span><span class="sw"><i></i></span></button>';
   }
@@ -1613,8 +1613,8 @@ function viewMe(){
 
   /* Райдер */
   if(!S.off.rider){
-    h += '<div class="card" id="card-rider-edit">'+eyebrow("Райдер")+
-      '<p class="mut">Что мне реально помогало, когда было пусто. В прошедшем времени — это наблюдение, а не обещание.</p>';
+    h += '<div class="card" id="card-rider-edit">'+eyebrow("Записка на плохой день")+
+      '<p class="mut">Что мне реально помогало, когда было пусто. В прошедшем времени — это наблюдение, а не обещание. В тихом режиме она встанет первой карточкой.</p>';
     if(quiet){
       h += '<p class="j-a" style="margin-top:10px">'+(S.rider.helps ? esc(S.rider.helps) : "—")+'</p>'+
         '<p class="tiny-note">Сейчас не редактируем. Вернёшься — перепишешь.</p>';
@@ -1637,11 +1637,11 @@ function viewMe(){
   h += '</div>';
 
   /* Свой контент */
-  h += '<div class="card">'+eyebrow("Свои треки и вопросы")+
+  h += '<div class="card">'+eyebrow("Свои задачи и вопросы")+
     '<p class="mut">Генератор идей — твоя четвёртая сила. Система, которую ты достраиваешь сам, — твоя, а не чужая программа.</p>'+
     '<select id="cm-cat">'+Object.keys(CATS).filter(c=>c!=="rest").map(c=>'<option value="'+c+'">'+CATS[c].name+'</option>').join("")+'</select>'+
     '<input type="text" id="cm-text" placeholder="Своя задача" maxlength="140">'+
-    '<button class="btn ghost small" data-act="add-mission">В сетлист</button>'+
+    '<button class="btn ghost small" data-act="add-mission">В задачи</button>'+
     '<div style="height:10px"></div>'+
     '<input type="text" id="cq-text" placeholder="Свой вопрос для вечера" maxlength="180">'+
     '<button class="btn ghost small" data-act="add-question">В банк вопросов</button>';
