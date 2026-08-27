@@ -1,7 +1,9 @@
 /* Пульт — service worker.
-   Навигация: network-first (обновления видны сразу), офлайн — из кеша.
-   Статика и шрифты: cache-first. */
-const CACHE_VERSION = 'pult-v5';
+   Навигация: сеть с таймаутом 2 с, иначе мгновенно кеш (полусеть на площадке — типовой случай).
+   Статика: cache-first. Шрифты живут в отдельном кеше, который не сбрасывается релизами. */
+const CORE_CACHE = 'pult-core-v11';
+const RUNTIME_CACHE = 'pult-runtime';
+const NAV_TIMEOUT = 2000;
 
 const CORE_ASSETS = [
   './',
@@ -14,16 +16,12 @@ const CORE_ASSETS = [
   './icon-512-maskable.png'
 ];
 
-/* Хосты, чьи ответы кешируем в runtime (Google Fonts: CSS + файлы шрифтов). */
-const RUNTIME_HOSTS = [
-  'fonts.googleapis.com',
-  'fonts.gstatic.com'
-];
+const RUNTIME_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 
 self.addEventListener('install', (event) => {
   /* не атомарно: временный сбой одной иконки не должен оставить приложение без офлайна */
   event.waitUntil(
-    caches.open(CACHE_VERSION)
+    caches.open(CORE_CACHE)
       .then((cache) => Promise.allSettled(CORE_ASSETS.map((a) => cache.add(a))))
       .then(() => self.skipWaiting())
   );
@@ -33,28 +31,28 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
       .then((keys) => Promise.all(
-        keys.filter((k) => k !== CACHE_VERSION).map((k) => caches.delete(k))
+        keys.filter((k) => k.indexOf('pult-core-') === 0 && k !== CORE_CACHE)
+            .map((k) => caches.delete(k))
       ))
       .then(() => self.clients.claim())
   );
 });
 
+function cacheFor(url) {
+  return RUNTIME_HOSTS.indexOf(url.hostname) !== -1 ? RUNTIME_CACHE : CORE_CACHE;
+}
 function cacheable(request, response) {
-  if (!response) return false;
-  if (request.method !== 'GET') return false;
+  if (!response || request.method !== 'GET') return false;
   const url = new URL(request.url);
   const sameOrigin = url.origin === self.location.origin;
-  const runtimeHost = RUNTIME_HOSTS.indexOf(url.hostname) !== -1;
-  if (!sameOrigin && !runtimeHost) return false;
-  /* opaque — на случай no-cors запросов к шрифтам */
+  if (!sameOrigin && RUNTIME_HOSTS.indexOf(url.hostname) === -1) return false;
   return response.ok || response.type === 'opaque';
 }
-
 function fetchAndCache(request) {
   return fetch(request).then((response) => {
     if (cacheable(request, response)) {
       const copy = response.clone();
-      caches.open(CACHE_VERSION).then((cache) => cache.put(request, copy));
+      caches.open(cacheFor(new URL(request.url))).then((c) => c.put(request, copy));
     }
     return response;
   });
@@ -66,27 +64,32 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
   const sameOrigin = url.origin === self.location.origin;
-  const runtimeHost = RUNTIME_HOSTS.indexOf(url.hostname) !== -1;
-  if (!sameOrigin && !runtimeHost) return;
+  if (!sameOrigin && RUNTIME_HOSTS.indexOf(url.hostname) === -1) return;
 
   const isNavigation = request.mode === 'navigate' ||
     (sameOrigin && (url.pathname === '/' || url.pathname.endsWith('/index.html')));
 
   if (isNavigation) {
-    /* network-first: свежая версия сразу, офлайн — из кеша */
     event.respondWith(
-      fetchAndCache(request).catch(() =>
-        caches.match(request).then((c) => c || caches.match('./index.html'))
-      )
+      new Promise((resolve) => {
+        let settled = false;
+        const done = (r) => { if (!settled && r) { settled = true; resolve(r); } };
+        const timer = setTimeout(() => {
+          caches.match('./index.html').then((c) => { if (c) done(c); });
+        }, NAV_TIMEOUT);
+        fetchAndCache(request).then((r) => { clearTimeout(timer); done(r); })
+          .catch(() => {
+            clearTimeout(timer);
+            caches.match(request)
+              .then((c) => c || caches.match('./index.html'))
+              .then((c) => done(c || Response.error()));
+          });
+      })
     );
     return;
   }
 
-  /* статика: cache-first */
   event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) return cached;
-      return fetchAndCache(request).catch(() => Response.error());
-    })
+    caches.match(request).then((cached) => cached || fetchAndCache(request).catch(() => Response.error()))
   );
 });

@@ -1,4 +1,5 @@
 <!doctype html>
+<html lang="ru">
 <!-- PWA:BEGIN -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -26,10 +27,12 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
   :root{
-    --bg:#0C0E13; --panel:#141826; --panel2:#1B2033; --line:#262D45;
-    --text:#EAE8E1; --muted:#8B90A5; --dim:#5A6078;
+    color-scheme:dark; accent-color:#F2A93B;
+    --bg:#0C0E13; --panel:#141826; --panel2:#1B2033; --line:#262D45; --line-strong:#3C466B;
+    --text:#EAE8E1; --muted:#8B90A5; --dim-text:#7E85A0; --dim:#5A6078; --focus:#FFD27A;
     --amber:#F2A93B; --amber-soft:rgba(242,169,59,.14); --amber-line:rgba(242,169,59,.35);
-    --green:#5BC98F; --blue:#6FA8F5; --pink:#E38FB4; --gold:#E8C558; --violet:#A28BF0; --coral:#F08D6E; --teal:#63C7BE;
+    --green:#5BC98F; --blue:#6FA8F5; --pink:#E38FB4; --gold:#E8C558; --violet:#A28BF0;
+    --coral:#F08D6E; --teal:#63C7BE; --sky:#7FD1F5; --lime:#C6D96A; --bronze:#D9A066; --calm:#9AA3C7;
     --r:14px;
   }
   *{box-sizing:border-box; margin:0; padding:0}
@@ -37,103 +40,107 @@
   body{
     background:var(--bg); color:var(--text);
     font-family:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif;
-    font-size:16px; line-height:1.55; min-height:100vh;
+    font-size:16px; line-height:1.55; min-height:100dvh;
+    -webkit-tap-highlight-color:transparent; touch-action:manipulation;
   }
-  .wrap{max-width:520px; margin:0 auto; padding:calc(20px + env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom))}
-  /* ---------- header ---------- */
-  header{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:6px}
+  :is(.fader,.mission,.cardline,.s-head,.tab,.btn,.p-btn,.chipbtn,.toggle){-webkit-user-select:none; user-select:none; -webkit-touch-callout:none}
+  .wrap{max-width:520px; margin:0 auto; padding:calc(18px + env(safe-area-inset-top)) 16px calc(104px + env(safe-area-inset-bottom))}
+  :is(.fader,.mission,.cardline,.s-head,.btn,.p-btn,.tab,.chipbtn,.toggle):focus-visible,
+  textarea:focus-visible, input:focus-visible, select:focus-visible{outline:2px solid var(--focus); outline-offset:2px}
+  /* ---------- шапка ---------- */
+  header{display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:6px}
   .logo{font-family:"Unbounded",sans-serif; font-weight:700; font-size:20px; letter-spacing:.06em; color:var(--text)}
   .logo span{color:var(--amber)}
-  .datefmt{font-family:"JetBrains Mono",monospace; font-size:12px; color:var(--muted)}
-  .greet{color:var(--muted); font-size:14.5px; margin-bottom:6px}
+  .devtag{font-family:"JetBrains Mono",monospace; font-size:10px; color:var(--amber); border:1px solid var(--amber-line); border-radius:6px; padding:1px 5px; margin-left:8px}
+  .datefmt{font-family:"JetBrains Mono",monospace; font-size:12px; color:var(--dim-text); white-space:nowrap}
+  .greet{color:var(--muted); font-size:14.5px; margin-bottom:14px}
   .greet b{color:var(--text); font-weight:600}
-  .yline{color:var(--dim); font-size:13px; margin-bottom:16px}
-  /* ---------- cards ---------- */
+  /* ---------- карточки ---------- */
   .card{background:var(--panel); border:1px solid var(--line); border-radius:var(--r); padding:18px 16px; margin-bottom:14px}
-  .eyebrow{font-family:"JetBrains Mono",monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin-bottom:10px; display:flex; align-items:center; gap:8px; flex-wrap:wrap}
-  .eyebrow .led{width:7px; height:7px; border-radius:50%; background:var(--amber); box-shadow:0 0 8px var(--amber); flex:none}
-  .eyebrow .led.flash{animation:ledflash .7s ease 2}
+  .eyebrow{font-family:"JetBrains Mono",monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim-text); margin-bottom:10px; display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+  .led{width:7px; height:7px; border-radius:50%; background:var(--dim); flex:none}
+  .led.live{background:var(--amber); box-shadow:0 0 8px var(--amber)}
+  .led.ok{background:var(--green); box-shadow:0 0 8px rgba(91,201,143,.6)}
+  .led.quiet{background:var(--calm); box-shadow:0 0 8px rgba(154,163,199,.5)}
+  .led.flash{animation:ledflash .7s ease 2}
   @keyframes ledflash{0%,100%{box-shadow:0 0 8px var(--amber)}50%{box-shadow:0 0 22px var(--amber)}}
   h2{font-family:"Unbounded",sans-serif; font-weight:600; font-size:19px; line-height:1.3; text-wrap:balance; margin-bottom:8px}
   .chip{display:inline-block; font-family:"JetBrains Mono",monospace; font-size:10.5px; letter-spacing:.08em; padding:3px 9px; border-radius:99px; border:1px solid; text-transform:uppercase}
   p.body{color:var(--text); font-size:15.5px}
   p.mut{color:var(--muted); font-size:14px}
-  /* ---------- collapsed line-cards ---------- */
-  .cardline{display:flex; align-items:center; gap:10px; background:var(--panel); border:1px solid var(--line); border-radius:var(--r); padding:12px 16px; margin-bottom:14px; cursor:pointer; min-height:48px}
-  .cardline .cl-cap{font-family:"JetBrains Mono",monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); flex:none}
+  .tiny-note{color:var(--dim-text); font-size:12.5px; margin-top:8px}
+  a.mini,.mini{color:var(--dim-text); font-size:12.5px; text-decoration:none; border-bottom:1px dotted var(--dim); cursor:pointer; background:none; border-left:none; border-right:none; border-top:none; font-family:inherit; padding:6px 0; display:inline-block}
+  .mini:active{color:var(--amber)}
+  .minirow{display:flex; gap:16px; flex-wrap:wrap; margin-top:10px; align-items:center}
+  /* ---------- свёрнутые строки ---------- */
+  .cardline{display:flex; align-items:center; gap:10px; background:var(--panel); border:1px solid var(--line); border-radius:var(--r); padding:12px 16px; margin-bottom:10px; cursor:pointer; min-height:50px; width:100%; text-align:left; font-family:inherit; color:var(--text)}
+  .cardline .cl-cap{font-family:"JetBrains Mono",monospace; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--dim-text); flex:none}
   .cardline .cl-txt{font-size:14px; color:var(--text); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
   .cardline .cl-txt.dim{color:var(--muted)}
   .cardline .ar{color:var(--dim); flex:none}
-  /* ---------- banner ---------- */
+  /* ---------- мета-блоки ---------- */
   .banner{background:var(--amber-soft); border:1px solid var(--amber-line); border-radius:var(--r); padding:13px 16px; margin-bottom:14px}
   .banner b{color:var(--amber); font-family:"Unbounded",sans-serif; font-size:14px; font-weight:600}
   .banner p{font-size:13.5px; color:var(--muted); margin-top:3px}
-  /* ---------- soundcheck faders ---------- */
-  .faders{display:flex; gap:10px; justify-content:space-between; margin-top:14px}
-  .fader{flex:1; background:var(--panel2); border:1px solid var(--line); border-radius:10px; padding:10px 4px 8px; cursor:pointer; text-align:center; transition:border-color .15s, background .15s; min-height:44px}
+  .note{background:var(--panel2); border:1px solid var(--line-strong); border-radius:var(--r); padding:14px 15px; margin-bottom:14px; font-size:14.5px}
+  .note b{color:var(--text)}
+  .note.cool{background:linear-gradient(135deg,rgba(111,168,245,.10),rgba(154,163,199,.10)); border-color:rgba(111,168,245,.3)}
+  .note.cool b{color:var(--blue)}
+  .note.alarm{background:rgba(240,141,110,.12); border-color:var(--coral)}
+  .note.alarm b{color:var(--coral)}
+  .yline{color:var(--dim-text); font-size:13px; margin:-4px 0 14px}
+  /* ---------- саундчек ---------- */
+  .faders{display:flex; gap:9px; justify-content:space-between; margin-top:14px}
+  .fader{flex:1; background:var(--panel2); border:1px solid var(--line-strong); border-radius:10px; padding:10px 3px 8px; cursor:pointer; text-align:center; min-height:44px; font-family:inherit}
   .fader .bars{display:flex; flex-direction:column-reverse; gap:3px; align-items:center; height:52px; justify-content:flex-start; margin-bottom:7px}
   .fader .bar{width:20px; height:8px; border-radius:2px; background:var(--line)}
-  .fader .lbl{font-family:"JetBrains Mono",monospace; font-size:10px; color:var(--muted); line-height:1.2}
-  .fader.on{border-color:var(--amber-line); background:var(--amber-soft)}
-  .fader.on .bar.lit{background:var(--amber); box-shadow:0 0 6px rgba(242,169,59,.5)}
-  .fader:active{border-color:var(--amber-line)}
-  @media (hover:hover){ .fader:hover{border-color:var(--amber-line)} }
-  /* ---------- mission ---------- */
-  .mission{display:flex; gap:12px; align-items:flex-start; background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:13px 13px; margin-top:10px; cursor:pointer; transition:border-color .15s}
-  .mission:active{border-color:var(--amber-line)}
-  @media (hover:hover){ .mission:hover{border-color:var(--amber-line)} }
-  .mission .tick{flex:none; width:26px; height:26px; border-radius:8px; border:2px solid var(--dim); margin-top:2px; display:flex; align-items:center; justify-content:center; font-size:14px; color:var(--bg); transition:all .15s}
-  .mission.done .tick{background:var(--amber); border-color:var(--amber)}
-  .mission.done .txt{color:var(--muted); text-decoration:line-through; text-decoration-color:var(--dim)}
+  .fader .bar.on{background:var(--dim)}
+  .fader .lbl{font-family:"JetBrains Mono",monospace; font-size:10px; color:var(--dim-text); line-height:1.2}
+  .fader[aria-pressed="true"]{border-color:var(--amber-line); background:var(--amber-soft)}
+  .fader[aria-pressed="true"] .bar.on{background:var(--amber); box-shadow:0 0 6px rgba(242,169,59,.5)}
+  .fader[aria-pressed="true"] .lbl{color:var(--amber)}
+  .kinds{display:flex; gap:8px; margin-top:12px}
+  .chipbtn{flex:1; background:var(--panel2); border:1px solid var(--line-strong); border-radius:10px; padding:11px 6px; font-size:13.5px; color:var(--muted); cursor:pointer; font-family:inherit; min-height:44px}
+  .chipbtn[aria-pressed="true"]{border-color:var(--amber-line); background:var(--amber-soft); color:var(--amber)}
+  /* ---------- задачи ---------- */
+  .mission{display:flex; gap:12px; align-items:flex-start; background:var(--panel2); border:1px solid var(--line); border-left:3px solid var(--line); border-radius:12px; padding:13px; margin-top:10px; cursor:pointer; transition:border-color .15s}
+  .mission[aria-checked="true"]{border-left-color:var(--amber)}
+  .mission:active{border-color:var(--line-strong)}
+  .mission .tick{flex:none; width:26px; height:26px; border-radius:8px; border:2px solid var(--dim); margin-top:2px; display:flex; align-items:center; justify-content:center; font-size:14px; color:var(--bg)}
+  .mission[aria-checked="true"] .tick{background:var(--amber); border-color:var(--amber)}
+  .mission[aria-checked="true"] .txt{color:var(--muted); text-decoration:line-through; text-decoration-color:var(--dim)}
   .mission .txt{font-size:15px}
-  .mission .meta{font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--dim); margin-top:4px; display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-  .mission .hint{font-size:12.5px; color:var(--teal); margin-top:3px}
-  /* ---------- strength ---------- */
+  .mission .meta{font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--dim-text); margin-top:5px; display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+  /* ---------- сила дня ---------- */
   .str-name{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px}
   .rankbox{font-family:"JetBrains Mono",monospace; font-size:12px; color:var(--amber); border:1px solid var(--amber-line); border-radius:8px; padding:2px 8px}
   .action-box{background:var(--amber-soft); border:1px solid var(--amber-line); border-radius:12px; padding:13px 14px; margin-top:12px}
   .action-box .cap{font-family:"JetBrains Mono",monospace; font-size:10.5px; letter-spacing:.12em; color:var(--amber); text-transform:uppercase; margin-bottom:6px}
-  .blind{border-left:3px solid var(--line); padding-left:12px; margin-top:12px; color:var(--muted); font-size:13.5px}
-  /* ---------- buttons ---------- */
-  .btn{display:inline-block; font-family:"Golos Text",sans-serif; font-weight:600; font-size:14.5px; background:var(--amber); color:#1A1206; border:none; border-radius:10px; padding:12px 20px; min-height:44px; cursor:pointer; margin-top:12px}
+  .blind{border-left:3px solid var(--line-strong); padding-left:12px; margin-top:12px; color:var(--muted); font-size:13.5px}
+  /* ---------- кнопки ---------- */
+  .btn{display:inline-block; font-family:inherit; font-weight:600; font-size:14.5px; background:var(--amber); color:#1A1206; border:none; border-radius:10px; padding:12px 20px; min-height:44px; cursor:pointer; margin-top:12px}
   .btn:active{filter:brightness(1.12)}
-  @media (hover:hover){ .btn:hover{filter:brightness(1.08)} }
   .btn.ghost{background:transparent; color:var(--amber); border:1px solid var(--amber-line)}
+  .btn.quiet{background:transparent; color:var(--muted); border:1px solid var(--line-strong)}
   .btn.small{padding:10px 16px; font-size:14px; margin-top:8px}
-  .btn:disabled{opacity:.45; cursor:default}
-  .btnrow{display:flex; gap:10px; flex-wrap:wrap}
+  .btn.wide{width:100%; text-align:center}
+  .btnrow{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  .btn.sticky{position:sticky; bottom:calc(12px + var(--kb,0px)); z-index:5}
   .done-note{display:flex; align-items:center; gap:8px; color:var(--green); font-size:14px; font-weight:500; margin-top:12px}
-  /* ---------- textarea / inputs ---------- */
-  textarea{width:100%; min-height:96px; background:var(--panel2); border:1px solid var(--line); border-radius:12px; color:var(--text); font-family:"Golos Text",sans-serif; font-size:16px; line-height:1.5; padding:12px; resize:vertical; margin-top:10px}
-  textarea:focus{outline:none; border-color:var(--amber-line)}
-  input[type=text]{width:100%; background:var(--panel2); border:1px solid var(--line); border-radius:10px; color:var(--text); font-family:"Golos Text",sans-serif; font-size:16px; padding:11px 12px; margin-top:10px}
-  input[type=text]:focus{outline:none; border-color:var(--amber-line)}
-  select{background:var(--panel2); border:1px solid var(--line); border-radius:10px; color:var(--text); font-family:"Golos Text",sans-serif; font-size:16px; padding:10px 12px; margin-top:10px}
+  /* ---------- «Я тут» ---------- */
+  .here{display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; background:var(--panel2); border:1px solid var(--line-strong); border-radius:var(--r); padding:15px 16px; margin-bottom:14px; cursor:pointer; font-family:inherit; color:var(--text); min-height:54px}
+  .here b{font-family:"Unbounded",sans-serif; font-weight:600; font-size:15px}
+  .here span{color:var(--dim-text); font-size:12px; text-align:right}
+  .here:active{border-color:var(--amber-line)}
+  /* ---------- поля ---------- */
+  textarea{width:100%; min-height:96px; background:var(--panel2); border:1px solid var(--line-strong); border-radius:12px; color:var(--text); font-family:inherit; font-size:16px; line-height:1.5; padding:12px; resize:vertical; margin-top:10px}
+  input[type=text],input[type=search]{width:100%; background:var(--panel2); border:1px solid var(--line-strong); border-radius:10px; color:var(--text); font-family:inherit; font-size:16px; padding:12px; margin-top:10px; -webkit-appearance:none}
+  select{background:var(--panel2); border:1px solid var(--line-strong); border-radius:10px; color:var(--text); font-family:inherit; font-size:16px; padding:11px 12px; margin-top:10px}
   .savestate{font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--dim); margin-top:6px; min-height:14px}
-  /* ---------- rhythm ---------- */
-  .rhythm{display:flex; align-items:center; gap:14px}
-  .leds{display:flex; gap:7px}
-  .rled{width:14px; height:14px; border-radius:4px; background:var(--panel2); border:1px solid var(--line)}
-  .rled.on{background:var(--amber); border-color:var(--amber); box-shadow:0 0 8px rgba(242,169,59,.55)}
-  .rled.today{outline:2px solid var(--amber-line); outline-offset:2px}
-  .compound{font-family:"JetBrains Mono",monospace; font-size:13px; color:var(--amber); white-space:nowrap}
-  /* ---------- tabs ---------- */
-  nav{position:fixed; bottom:0; left:0; right:0; background:rgba(12,14,19,.92); backdrop-filter:blur(10px); border-top:1px solid var(--line); z-index:10; padding-bottom:env(safe-area-inset-bottom)}
-  .tabs{max-width:520px; margin:0 auto; display:flex}
-  .tab{flex:1; text-align:center; padding:11px 0 13px; cursor:pointer; color:var(--dim); font-size:12px; font-weight:500; border:none; background:none; font-family:"Golos Text",sans-serif}
-  .tab .ico{font-size:19px; display:block; margin-bottom:2px; filter:grayscale(1) opacity(.55)}
-  .tab.active{color:var(--amber)}
-  .tab.active .ico{filter:none}
-  .tab:focus-visible{outline:2px solid var(--amber-line); outline-offset:-2px; border-radius:8px}
-  /* ---------- path ---------- */
-  .level-line{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px}
-  .level-name{font-family:"Unbounded",sans-serif; font-weight:600; font-size:18px}
-  .xp-num{font-family:"JetBrains Mono",monospace; font-size:12px; color:var(--muted)}
-  .xpbar{height:10px; background:var(--panel2); border:1px solid var(--line); border-radius:99px; overflow:hidden}
-  .xpbar i{display:block; height:100%; background:linear-gradient(90deg,#C77E1F,var(--amber)); border-radius:99px}
+  /* ---------- Путь ---------- */
   .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:4px}
-  .stat{background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:10px 8px; text-align:center}
-  .stat .n{font-family:"JetBrains Mono",monospace; font-size:20px; font-weight:600; color:var(--text)}
+  .stat{background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:12px 8px; text-align:center}
+  .stat .n{font-family:"JetBrains Mono",monospace; font-size:22px; font-weight:600; color:var(--text)}
   .stat .l{font-size:11.5px; color:var(--muted); margin-top:2px}
   .heat{display:grid; grid-template-rows:repeat(7,1fr); grid-auto-flow:column; gap:4px; margin-top:12px; overflow-x:auto; padding-bottom:4px}
   .hcell{width:13px; height:13px; border-radius:3px; background:var(--panel2); border:1px solid var(--line)}
@@ -141,21 +148,28 @@
   .hcell.future{opacity:.25}
   .meters{display:flex; flex-direction:column; gap:9px; margin-top:12px}
   .meter{display:flex; align-items:center; gap:10px}
-  .meter .ml{width:118px; flex:none; font-size:13px; color:var(--muted)}
+  .meter .ml{width:112px; flex:none; font-size:13px; color:var(--muted)}
   .meter .track{flex:1; height:9px; background:var(--panel2); border:1px solid var(--line); border-radius:99px; overflow:hidden}
   .meter .fill{display:block; height:100%; border-radius:99px}
-  .meter .mn{font-family:"JetBrains Mono",monospace; font-size:12px; color:var(--muted); width:28px; text-align:right}
+  .meter .mn{font-family:"JetBrains Mono",monospace; font-size:12px; color:var(--dim-text); width:28px; text-align:right}
   .spark{width:100%; height:auto; display:block; margin-top:10px}
-  /* ---------- journal ---------- */
-  .j-entry{border-bottom:1px solid var(--line); padding:14px 0}
+  .leds{display:flex; gap:7px}
+  .rled{width:14px; height:14px; border-radius:4px; background:var(--panel2); border:1px solid var(--line)}
+  .rled.on{background:var(--amber); border-color:var(--amber); box-shadow:0 0 8px rgba(242,169,59,.55)}
+  .rled.today{outline:2px solid var(--amber-line); outline-offset:2px}
+  /* ---------- дневник ---------- */
+  .j-entry{border-bottom:1px solid var(--line); padding:14px 0; content-visibility:auto; contain-intrinsic-size:0 160px}
   .j-entry:last-child{border-bottom:none}
   .j-date{font-family:"JetBrains Mono",monospace; font-size:12px; color:var(--amber); margin-bottom:5px; display:flex; gap:10px; align-items:center; flex-wrap:wrap}
   .j-q{color:var(--muted); font-size:13.5px; margin-bottom:4px}
   .j-a{font-size:15px; white-space:pre-wrap}
-  .energy-pill{font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--muted); border:1px solid var(--line); border-radius:99px; padding:1px 8px}
-  /* ---------- profile ---------- */
+  .pill{font-family:"JetBrains Mono",monospace; font-size:11px; color:var(--dim-text); border:1px solid var(--line); border-radius:99px; padding:1px 8px}
+  mark{background:var(--amber-soft); color:var(--amber)}
+  .filters{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap}
+  .filters .chipbtn{flex:none; padding:9px 13px; font-size:13px; min-height:40px}
+  /* ---------- Я ---------- */
   .s-item{border:1px solid var(--line); border-radius:12px; margin-bottom:10px; overflow:hidden; background:var(--panel2)}
-  .s-head{display:flex; align-items:center; gap:11px; padding:12px 13px; cursor:pointer; min-height:48px}
+  .s-head{display:flex; align-items:center; gap:11px; padding:12px 13px; cursor:pointer; min-height:50px; width:100%; font-family:inherit; color:var(--text); background:none; border:none; text-align:left}
   .s-head .rk{font-family:"JetBrains Mono",monospace; font-size:13px; color:var(--amber); width:24px; flex:none; text-align:right}
   .s-head .nm{font-weight:600; font-size:15.5px; flex:1}
   .s-head .ar{color:var(--dim); transition:transform .2s}
@@ -163,36 +177,57 @@
   .s-body{display:none; padding:0 13px 14px; border-top:1px solid var(--line)}
   .s-item.open .s-body{display:block}
   .s-body p{margin-top:10px; font-size:14.5px}
-  /* ---------- people / custom lists ---------- */
   .p-row{display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--line); padding:8px 0}
   .p-row:last-child{border-bottom:none}
   .p-name{font-weight:600; font-size:15px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis}
-  .p-name.thin{font-weight:400; font-size:14px; color:var(--muted)}
-  .p-days{font-family:"JetBrains Mono",monospace; font-size:12px; color:var(--muted); flex:none}
-  .p-btn{flex:none; background:var(--panel2); color:var(--amber); border:1px solid var(--amber-line); border-radius:10px; padding:10px 12px; font-size:13px; font-weight:600; font-family:"Golos Text",sans-serif; cursor:pointer; min-height:44px}
+  .p-name.thin{font-weight:400; font-size:14px; color:var(--muted); white-space:normal}
+  .p-btn{flex:none; background:var(--panel2); color:var(--amber); border:1px solid var(--amber-line); border-radius:10px; padding:10px 12px; font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; min-height:44px}
   .p-del{flex:none; background:none; border:none; color:var(--dim); font-size:18px; cursor:pointer; padding:10px; min-width:44px; min-height:44px}
+  .toggle{display:flex; align-items:center; justify-content:space-between; gap:12px; width:100%; background:none; border:none; border-bottom:1px solid var(--line); padding:13px 0; cursor:pointer; font-family:inherit; color:var(--text); font-size:15px; text-align:left; min-height:48px}
+  .toggle:last-of-type{border-bottom:none}
+  .sw{flex:none; width:46px; height:28px; border-radius:99px; background:var(--line); border:1px solid var(--line-strong); position:relative}
+  .sw i{position:absolute; top:2px; left:2px; width:22px; height:22px; border-radius:50%; background:var(--dim); transition:left .18s, background .18s}
+  .toggle[aria-pressed="true"] .sw{background:var(--amber-soft); border-color:var(--amber-line)}
+  .toggle[aria-pressed="true"] .sw i{left:20px; background:var(--amber)}
   .backup-box{width:100%; min-height:80px; font-family:"JetBrains Mono",monospace; font-size:12px}
-  /* ---------- misc ---------- */
-  .quiet-note{background:linear-gradient(135deg,rgba(111,168,245,.10),rgba(162,139,240,.10)); border:1px solid rgba(111,168,245,.3); border-radius:var(--r); padding:14px 15px; margin-bottom:14px; font-size:14.5px}
-  .quiet-note b{color:var(--blue)}
+  /* ---------- прочее ---------- */
   .echo{border-left:3px solid var(--teal); padding-left:12px; margin-top:8px}
-  .echo .e-old{color:var(--muted); font-size:14px; font-style:italic; white-space:pre-wrap}
-  .toast{position:fixed; left:50%; transform:translateX(-50%); bottom:calc(76px + env(safe-area-inset-bottom)); background:var(--panel2); border:1px solid var(--amber-line); color:var(--text); border-radius:12px; padding:10px 18px; font-size:14px; z-index:20; opacity:0; transition:opacity .25s; pointer-events:none; white-space:nowrap}
+  .echo .e-old{color:var(--text); font-size:15px; white-space:pre-wrap}
+  .toast{position:fixed; left:50%; transform:translateX(-50%); bottom:calc(80px + env(safe-area-inset-bottom)); background:var(--panel2); border:1px solid var(--amber-line); color:var(--text); border-radius:12px; padding:10px 18px; font-size:14px; z-index:30; opacity:0; transition:opacity .25s; pointer-events:none; white-space:nowrap; max-width:92vw; overflow:hidden; text-overflow:ellipsis}
   .toast.show{opacity:1}
   .footer-note{color:var(--dim); font-size:12px; text-align:center; margin-top:20px; line-height:1.5}
-  .breath{width:64px; height:64px; border-radius:50%; border:2px solid var(--teal); margin:14px auto 6px; animation:breathe 10s ease-in-out infinite}
-  @keyframes breathe{0%{transform:scale(.6); opacity:.6} 40%{transform:scale(1); opacity:1} 100%{transform:scale(.6); opacity:.6}}
-  .breath-cap{text-align:center; color:var(--muted); font-size:13px}
-  @media (prefers-reduced-motion:reduce){ *{transition:none!important; animation:none!important} }
+  .breath{width:70px; height:70px; border-radius:50%; border:2px solid var(--teal); margin:16px auto 8px; opacity:.35}
+  .breath.run{animation:breathe 10s ease-in-out infinite}
+  @keyframes breathe{0%,100%{opacity:.25} 40%{opacity:1}}
+  .breath-cap{text-align:center; color:var(--muted); font-size:13px; font-family:"JetBrains Mono",monospace}
+  .step{border-left:2px solid var(--line-strong); padding-left:14px; margin-top:14px}
+  .step.on{border-left-color:var(--amber)}
+  .step h3{font-family:"Unbounded",sans-serif; font-size:14px; font-weight:600; margin-bottom:4px}
+  .step p{font-size:14.5px; color:var(--muted)}
+  /* ---------- вкладки ---------- */
+  nav{position:fixed; bottom:0; left:0; right:0; background:rgba(12,14,19,.94); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); border-top:1px solid var(--line); z-index:10; padding-bottom:env(safe-area-inset-bottom); transition:transform .2s}
+  nav.hidden{transform:translateY(100%)}
+  .tabs{max-width:520px; margin:0 auto; display:flex}
+  .tab{flex:1; text-align:center; padding:11px 0 13px; cursor:pointer; color:var(--dim); font-size:12px; font-weight:500; border:none; background:none; font-family:inherit; min-height:52px}
+  .tab .ico{font-size:19px; display:block; margin-bottom:2px; filter:grayscale(1) opacity(.55)}
+  .tab[aria-selected="true"]{color:var(--amber)}
+  .tab[aria-selected="true"] .ico{filter:none}
+  @media (prefers-reduced-motion:reduce){ *:not(.breath){transition:none!important; animation:none!important} }
 </style>
 
 <div class="wrap" id="app"></div>
-<nav><div class="tabs" id="tabs"></div></nav>
-<div class="toast" id="toast"></div>
+<nav id="nav"><div class="tabs" id="tabs" role="tablist"></div></nav>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 "use strict";
-/* ================= DATA ================= */
+
+/* ================= КОНСТАНТЫ ================= */
+
+const CUT_H = 5;              /* логический день кончается в 05:00 */
+/* Проверено на официальном источнике gov4c.kz: контакт-центр 111 — круглосуточно,
+   бесплатно с любого оператора, есть психологи. Пусто = строка не рендерится. */
+const CRISIS = "111";
 
 const DOMAINS = {
   RB:{name:"Отношения", color:"var(--pink)"},
@@ -202,70 +237,70 @@ const DOMAINS = {
 };
 
 const STRENGTHS = [
- {rank:1, key:"individualization", name:"Индивидуализация", dom:"RB",
+ {rank:1, name:"Индивидуализация", dom:"RB",
   insight:"Ты видишь людей насквозь: кто чем живёт, кого что заводит и почему. На площадке это твой суперрадар — ты знаешь, кому из операторов что можно доверить, а кого куда не ставить. Люди чувствуют, что ты видишь их настоящими.",
   actions:[
    "Заметь сегодня у одного человека сильную сторону, которую он сам в себе не видит, — и скажи ему об этом. Одной фразой.",
    "Подумай, кому в команде дать задачу, которая идеально ляжет именно на его характер. И сделай так.",
    "Ты хорошо читаешь других. Сегодня наоборот: расскажи кому-то из близких одну вещь о себе, которую он не знает."],
   blind:"Ты знаешь о людях больше, чем они о тебе. Не жди, что догадаются, что тебе нужно, — говори прямо."},
- {rank:2, key:"strategic", name:"Стратегичность", dom:"ST",
+ {rank:2, name:"Стратегичность", dom:"ST",
   insight:"Там, где другие видят один путь, ты видишь три. Ты быстро просчитываешь варианты и редко попадаешь в тупик — поэтому на шоу тебя не застать врасплох. Это твой главный инструмент и в работе, и в деньгах.",
   actions:[
    "Возьми одну задачу, которая давно висит, и выпиши три разных способа её решить. Выбери один — и сделай первый шаг сегодня.",
    "10 минут наедине с собой: куда ты хочешь прийти через год? Запиши три сценария — плохой, нормальный, отличный.",
    "Перед следующим решением по деньгам просчитай план Б. Ты силён именно в этом — пользуйся."],
   blind:"Ты считаешь варианты так быстро, что со стороны это похоже на «с потолка». Иногда объясняй ход мысли — тебя начнут слышать лучше."},
- {rank:3, key:"relator", name:"Близость", dom:"RB",
+ {rank:3, name:"Близость", dom:"RB",
   insight:"Тебе не нужна толпа — тебе нужны свои. Несколько человек, которые знают тебя настоящего и на которых можно опереться. Рядом с ними ты работаешь лучше и живёшь спокойнее. Это не слабость, это твоя опора.",
   actions:[
    "Напиши одному из своих — не по делу, просто так. Два сообщения, без повода.",
    "Позови близкого человека на что-то простое: кофе, прогулка, велосипед. Один на один.",
    "Вспомни, кому из «своих» ты давно не отвечал. Ответь сегодня."],
   blind:"Новым людям ты кажешься закрытым. Это нормально — но иногда круг стоит чуть приоткрывать."},
- {rank:4, key:"ideation", name:"Генератор идей", dom:"ST",
+ {rank:4, name:"Генератор идей", dom:"ST",
   insight:"Рутина тебя глушит, идеи — заряжают. Ты соединяешь несвязанное и придумываешь то, до чего другие не додумаются. Скука для тебя — сигнал, что пора что-то поменять, а не норма жизни.",
   actions:[
    "Запиши пять идей, как заработать с помощью AI на том, что ты уже умеешь. Без цензуры, любые.",
    "Поменяй сегодня одну мелочь в рутине: маршрут, место, порядок дел. Посмотри, что заметишь.",
    "Возьми одну свою старую идею и раскрути на шаг дальше: что нужно, чтобы проверить её за неделю?"],
   blind:"Идей у тебя больше, чем доведённых до конца. Не разбрасывайся — выбери одну и дожми."},
- {rank:5, key:"deliberative", name:"Осмотрительность", dom:"EX",
+ {rank:5, name:"Осмотрительность", dom:"EX",
   insight:"Ты не бросаешься в омут — ты сначала думаешь. Видишь риски, которые другие не замечают, и потому редко жалеешь о решениях. Это не медлительность. Это зрелость.",
   actions:[
    "20 минут тишины: разбери одно висящее решение. Риски, цена, что будет, если не делать вообще.",
    "Сегодня скажи «мне нужно подумать» там, где тебя торопят. Это твоё право, а не слабость.",
    "Проверь одну финансовую мелочь, которую откладывал: подписка, платёж, ставка. Меньше тумана — меньше риска."],
   blind:"Твою осторожность путают со страхом. Отвечай: «я не боюсь — я считаю»."},
- {rank:6, key:"empathy", name:"Эмпатия", dom:"RB",
+ {rank:6, name:"Эмпатия", dom:"RB",
   insight:"Ты чувствуешь состояние людей раньше, чем они скажут хоть слово. На площадке это спасает шоу: ты видишь, кто на взводе, до того, как случится факап. В жизни — это то, за что тебя любят.",
   actions:[
    "Три раза за день назови своё чувство точным словом. Не «нормально», а конкретно.",
    "Заметь, кому рядом тяжело, — и просто побудь рядом или спроси. Без советов.",
    "Вечером — 10 минут разгрузки без экрана. Чужие эмоции ты носишь на себе, их надо снимать, как рюкзак."],
   blind:"Ты впитываешь чужое. Если к вечеру пусто — это не лень, это перегруз. Разгружайся осознанно."},
- {rank:7, key:"connectedness", name:"Взаимосвязанность", dom:"RB",
+ {rank:7, name:"Взаимосвязанность", dom:"RB",
   insight:"Ты веришь, что случайностей мало и всё связано. Это даёт тебе спокойствие в хаосе — а хаоса на концертах ты видел достаточно. Люди рядом с тобой чувствуют себя устойчивее.",
   actions:[
    "Вспомни один «провал» из прошлого, который в итоге привёл к чему-то важному. Запиши цепочку.",
    "Сегодня помоги кому-то без выгоды для себя. Просто потому что можешь.",
    "Найди 15 минут на то, что для тебя больше, чем работа: музыка, небо, книга, дорога."],
   blind:"Когда людям плохо, им нужно сочувствие, а не философия. Сначала выслушай — связывать смыслы будешь потом."},
- {rank:8, key:"maximizer", name:"Максимализм", dom:"IN",
+ {rank:8, name:"Максимализм", dom:"IN",
   insight:"Тебе неинтересно чинить плохое до среднего — тебе интересно делать хорошее отличным. Поэтому «стать на 1% лучше каждый день» — это буквально про тебя. Ставка на сильные стороны — твоя стратегия по жизни.",
   actions:[
    "Выбери один навык, который у тебя уже хорош, и прокачай его на шаг: 20 минут практики или разбора.",
    "Найди в сегодняшнем дне одну вещь, которую можешь сделать не «норм», а отлично. Сделай.",
    "Перестань тащить одну свою слабость в лоб. Подумай, как её обойти: делегировать, автоматизировать, отпустить."],
   blind:"«Достаточно хорошо» — иногда правильный ответ. Не дожимай до идеала то, что уже работает."},
- {rank:9, key:"intellection", name:"Мышление", dom:"ST",
+ {rank:9, name:"Мышление", dom:"ST",
   insight:"Тебе нужно время наедине с головой — это не изоляция, это твой рабочий процесс. Лучшие ответы приходят к тебе в тишине. Вопрос «кто я?» — не тревога, а твой способ расти.",
   actions:[
    "15 минут письма: выгрузи из головы всё, что крутится. Не редактируй, просто пиши.",
    "Выбери вопрос, который тебя цепляет, и подумай о нём на прогулке. Без телефона.",
    "Перечитай свои старые записи в дневнике. Там уже есть ответы, которые ты ищешь."],
   blind:"Твоя тишина выглядит как отстранённость. Своим иногда говори: «я не ушёл, я думаю»."},
- {rank:10, key:"positivity", name:"Позитивность", dom:"RB",
+ {rank:10, name:"Позитивность", dom:"RB",
   insight:"Твоя энергия заражает. Когда ты в ресурсе, вокруг тебя людям легче и работа идёт быстрее. Это редкий дар, и его ценят — даже когда молчат об этом.",
   actions:[
    "Отметь сегодня чью-то маленькую победу вслух. Своих надо праздновать.",
@@ -281,32 +316,38 @@ const CATS = {
   money:{name:"Деньги", color:"var(--gold)"},
   order:{name:"Порядок", color:"var(--violet)"},
   soul:{name:"Душа", color:"var(--coral)"},
-  rest:{name:"Восстановление", color:"var(--teal)"},
+  craft:{name:"Ремесло", color:"var(--teal)"},
+  world:{name:"Дорога", color:"var(--sky)"},
+  make:{name:"Создание", color:"var(--lime)"},
+  limits:{name:"Границы", color:"var(--bronze)"},
+  rest:{name:"Восстановление", color:"var(--calm)"},
 };
 
 const MISSIONS = [
- {cat:"body", min:10, text:"10 минут разминки или растяжки. Прямо сейчас, до следующего дела."},
- {cat:"body", min:20, text:"Прогулка 20 минут без наушников. Просто идти и смотреть."},
- {cat:"body", min:30, text:"Велосипед или быстрая ходьба — 30 минут."},
- {cat:"body", min:5,  text:"Сегодня без еды за два часа до сна. Вечером — чай вместо холодильника."},
- {cat:"body", min:5,  text:"Лечь до часа ночи. Поставь будильник «начать ложиться» за 40 минут."},
- {cat:"body", min:2,  text:"Стакан воды сейчас — и ещё два до вечера."},
- {cat:"body", min:5,  text:"5 минут дыхания: вдох на 4 счёта, выдох на 6. В моменте стресса или перед сном."},
- {cat:"body", min:10, text:"Спина и шея: 10 минут медленной растяжки. Работа у тебя физическая — базу надо держать."},
- {cat:"body", min:5,  text:"Сегодня по лестнице вместо лифта. Везде."},
- {cat:"body", min:3,  text:"Холодная вода в конце душа. 30 секунд смелости."},
- {cat:"body", min:15, text:"Собери нормальный завтрак или обед вместо перекуса на бегу."},
+ /* ---- Тело: у каждой есть крошечная версия ---- */
+ {cat:"body", min:10, text:"10 минут разминки или растяжки. Прямо сейчас, до следующего дела.", tiny:"Встань и потянись один раз. Всё."},
+ {cat:"body", min:20, text:"Прогулка 20 минут без наушников. Просто идти и смотреть.", tiny:"Обуться и выйти за дверь. Дальше — как пойдёт."},
+ {cat:"body", min:30, text:"Велосипед или быстрая ходьба — 30 минут.", tiny:"Выкатить велосипед или просто выйти на улицу."},
+ {cat:"body", min:5,  text:"Сегодня без еды за два часа до сна. Вечером — чай вместо холодильника.", tiny:"Налей себе чай прямо сейчас."},
+ {cat:"body", min:5,  text:"Лечь до часа ночи. Поставь будильник «начать ложиться» за 40 минут.", tiny:"Поставь один будильник «начать ложиться». Тридцать секунд."},
+ {cat:"body", min:2,  text:"Стакан воды сейчас — и ещё два до вечера.", tiny:"Один стакан воды. Сейчас."},
+ {cat:"body", min:5,  text:"5 минут дыхания: вдох на 4 счёта, выдох на 6. В моменте стресса или перед сном.", tiny:"Три вдоха на четыре счёта, выдох на шесть. Прямо здесь."},
+ {cat:"body", min:10, text:"Спина и шея: 10 минут медленной растяжки. Работа у тебя физическая — базу надо держать.", tiny:"Покрути шеей и плечами тридцать секунд."},
+ {cat:"body", min:5,  text:"Сегодня по лестнице вместо лифта. Везде.", tiny:"Один пролёт по лестнице сегодня. Один."},
+ {cat:"body", min:3,  text:"Холодная вода в конце душа. 30 секунд смелости.", tiny:"Десять секунд холодной в конце. Не тридцать."},
+ {cat:"body", min:15, text:"Собери нормальный завтрак или обед вместо перекуса на бегу.", tiny:"Достань из холодильника то, из чего можно собрать еду."},
+ /* ---- Ум ---- */
  {cat:"mind", min:15, text:"15 минут книги. Любой, которая сейчас цепляет."},
  {cat:"mind", min:20, text:"Изучи одну AI-фишку, которую можно применить в работе. Одну, но до конца."},
- {cat:"mind", min:15, text:"15 минут по своей теме: звук, видео, свет. Разбор, ролик, статья."},
  {cat:"mind", min:10, text:"Запиши три мысли, которые сегодня показались важными."},
  {cat:"mind", min:30, text:"30 минут без телефона: одна задача, полное погружение."},
  {cat:"mind", min:20, text:"Разбери один вопрос, в котором «плаваешь»: найди нормальный разбор и пойми до конца."},
  {cat:"mind", min:20, text:"Открой свои сохранённые «посмотрю потом» и посмотри одно. Списки должны худеть."},
  {cat:"mind", min:15, text:"Выпиши всё, что держишь в голове по работе. Голова — не склад."},
- {cat:"mind", min:25, text:"Один разбор по инструменту, которым пользуешься каждый день. Найди фишку, которой не знал."},
  {cat:"mind", min:15, text:"Глава нон-фикшна — и одна мысль из неё своими словами."},
  {cat:"mind", min:10, text:"Задай AI один рабочий вопрос, который давно откладывал разобрать."},
+ {cat:"mind", min:25, text:"Разберись, как устроено то, чем пользуешься каждый день и не понимаешь. Одна вещь."},
+ /* ---- Люди ---- */
  {cat:"people", min:5,  text:"Напиши человеку, с которым давно не общался. Первым."},
  {cat:"people", min:3,  text:"Скажи кому-то спасибо за конкретную вещь. Не дежурное."},
  {cat:"people", min:10, text:"Позвони родным. 10 минут."},
@@ -318,9 +359,9 @@ const MISSIONS = [
  {cat:"people", min:5,  text:"Похвали чью-то работу конкретно: что именно было сделано хорошо."},
  {cat:"people", min:10, text:"Спроси у старшего родственника историю из его молодости. Одну."},
  {cat:"people", min:3,  text:"Скинь родным фото или новость о себе. Им важно."},
+ /* ---- Деньги ---- */
  {cat:"money", min:20, text:"Выпиши все платежи этого месяца: кому, сколько, когда. Одна таблица."},
  {cat:"money", min:10, text:"Найди одну трату, которую можно убрать, — и убери сегодня."},
- {cat:"money", min:15, text:"Посчитай точную сумму долга на сегодня. Цифра страшна, только пока она в тумане."},
  {cat:"money", min:60, text:"Час на идею дохода: выбери одну и сделай первый конкретный шаг."},
  {cat:"money", min:2,  text:"Сегодня ноль импульсивных трат. Всё, что хочется купить, — в список «через 48 часов»."},
  {cat:"money", min:20, text:"Узнай про рефинансирование одного из кредитов. 20 минут поиска или один звонок."},
@@ -329,6 +370,7 @@ const MISSIONS = [
  {cat:"money", min:15, text:"Запиши все траты за вчера и сегодня. Просто факты, без оценок."},
  {cat:"money", min:30, text:"Что из твоих навыков можно продать разово — сетап, консультация, монтаж? Опиши услугу в трёх строках."},
  {cat:"money", min:5,  text:"Отложи любую сумму. Хоть тысячу тенге. Дело не в сумме — в канале."},
+ /* ---- Порядок ---- */
  {cat:"order", min:15, text:"Разбери один угол хаоса: стол, папку загрузок, сумку. 15 минут по таймеру."},
  {cat:"order", min:10, text:"Составь план на завтра с вечера: три главных дела, не больше."},
  {cat:"order", min:15, text:"15 минут на сообщения, на которые давно надо ответить."},
@@ -339,16 +381,62 @@ const MISSIONS = [
  {cat:"order", min:10, text:"Календарь на неделю вперёд: что там на самом деле важно, а что можно снять?"},
  {cat:"order", min:15, text:"Собери вещи на завтра с вечера."},
  {cat:"order", min:10, text:"Удали двадцать старых скриншотов из галереи."},
+ /* ---- Душа ---- */
  {cat:"soul", min:60, text:"Час на то, что любишь, без чувства вины: музыка, сериал, игра. Это не потерянное время."},
  {cat:"soul", min:45, text:"Послушай новый альбом целиком, как раньше."},
- {cat:"soul", min:15, text:"Запиши, о каком путешествии думаешь: куда, когда, сколько стоит. Мечта с цифрами — это уже план."},
  {cat:"soul", min:40, text:"Сделай что-то руками: приготовь нормальный ужин."},
  {cat:"soul", min:15, text:"15 минут в парке или на балконе. Без задач."},
- {cat:"soul", min:30, text:"Пересмотри концертник любимого артиста и заметь, как сделаны свет и звук. Работа плюс кайф."},
  {cat:"soul", min:20, text:"Прогулка с музыкой в ушах по новому маршруту."},
  {cat:"soul", min:15, text:"Запиши три вещи, которые хочешь попробовать в жизни. Не цели — просто хотелки."},
  {cat:"soul", min:30, text:"Позалипай в игру. Таймер на 30 минут — и это легально."},
  {cat:"soul", min:10, text:"Выйди посмотреть на закат или ночной город. Серьёзно."},
+ {cat:"soul", min:20, text:"Включи то, что слушал в семнадцать. Целый альбом."},
+ /* ---- Ремесло: его профессия ---- */
+ {cat:"craft", min:15, text:"Разбери один момент с последнего шоу: что можно было сделать чище. Как инженер, а не как прокурор."},
+ {cat:"craft", min:20, text:"Посмотри, как сделан свет или звук у артиста, которого уважаешь. Двадцать минут профессиональным взглядом."},
+ {cat:"craft", min:30, text:"Сделай один пресет, шаблон или чек-лист, который сэкономит тебе час на следующем шоу."},
+ {cat:"craft", min:25, text:"Изучи одну функцию в пульте или софте, которой не пользуешься. Одну, но до конца."},
+ {cat:"craft", min:20, text:"Наведи порядок в рабочих файлах: проекты, пресеты, схемы."},
+ {cat:"craft", min:15, text:"Спроси у коллеги, как он решает задачу, которую ты решаешь по-своему. Сравни."},
+ {cat:"craft", min:30, text:"Опиши свой райдер или техспеку так, чтобы понял человек, который тебя не знает."},
+ {cat:"craft", min:25, text:"Посмотри разбор от инженера крупного тура: что у них устроено иначе."},
+ {cat:"craft", min:15, text:"Один кабель, один кейс, один разъём — почини или замени то, что давно бесит."},
+ {cat:"craft", min:5,  text:"Сфотографируй свой сетап на площадке. Через год это будет архив твоего роста."},
+ {cat:"craft", min:20, text:"Научи кого-то из младших одной вещи, которую делаешь на автомате."},
+ /* ---- Дорога: мир, путешествия, языки ---- */
+ {cat:"world", min:15, text:"Открой карту и найди три места в Казахстане, где не был. Сколько стоит доехать?"},
+ {cat:"world", min:25, text:"Посчитай, сколько реально стоит поездка, о которой думаешь: билеты, жильё, дни. Мечта с цифрами — это уже план."},
+ {cat:"world", min:15, text:"15 минут языка. Любого. Приложение, ролик, сериал с субтитрами."},
+ {cat:"world", min:20, text:"Пройди новым маршрутом там, где ходишь каждый день."},
+ {cat:"world", min:40, text:"Найди в Алматы место, где ни разу не был, и сходи. Хоть кофейню."},
+ {cat:"world", min:40, text:"Посмотри документалку про страну, которая тебя цепляет."},
+ {cat:"world", min:10, text:"Проверь загранпаспорт: срок, визы, что нужно обновить."},
+ {cat:"world", min:10, text:"Заведи отдельный конверт или счёт «дорога». Положи туда любую сумму."},
+ {cat:"world", min:10, text:"Спроси у того, кто там был: как оно на самом деле. Один человек, один вопрос."},
+ {cat:"world", min:15, text:"Составь список из пяти мест, куда хочешь. Просто список, без обязательств."},
+ {cat:"world", min:30, text:"Посмотри, куда есть прямые рейсы из Алматы и сколько стоят. Просто посмотри."},
+ /* ---- Создание: делать своё ---- */
+ {cat:"make", min:60, text:"Час на свою идею: не думать о ней, а сделать первый кусок. Любой."},
+ {cat:"make", min:60, text:"Собери что-нибудь с AI за один вечер: бота, скрипт, страницу. Не идеально — рабочее."},
+ {cat:"make", min:10, text:"Запиши голосом три идеи, пока они свежие. Расшифруешь потом."},
+ {cat:"make", min:20, text:"Возьми свою старую идею и убей её честно — или назначь ей следующий шаг."},
+ {cat:"make", min:15, text:"Покажи кому-то то, что делаешь. Раньше, чем оно готово."},
+ {cat:"make", min:20, text:"Опиши свою идею в трёх предложениях так, чтобы понял незнакомый человек."},
+ {cat:"make", min:20, text:"Открой то, что забросил, и посмотри честно: вернуться или отпустить?"},
+ {cat:"make", min:30, text:"Сними или запиши что-то своё: короткое видео, трек, кадр. Без цели опубликовать."},
+ {cat:"make", min:30, text:"Найди, как автоматизировать одну рутину, которую делаешь руками каждую неделю."},
+ {cat:"make", min:45, text:"Собери что-то физическое: полка, крепление, кейс. Руки заняты — голова отдыхает."},
+ /* ---- Границы: свобода в действии ---- */
+ {cat:"limits", min:5,  text:"Скажи «нет» одной просьбе, которая тебе сегодня не по силам. Без объяснений на три абзаца."},
+ {cat:"limits", min:15, text:"Найди одно обязательство, которое ты тащишь по инерции. Сними его."},
+ {cat:"limits", min:60, text:"Сегодня один час без рабочих чатов и звонков. Один."},
+ {cat:"limits", min:3,  text:"Скажи «мне нужно подумать» там, где тебя торопят. Это твоё право, а не слабость."},
+ {cat:"limits", min:10, text:"Проверь, где ты работаешь бесплатно, хотя не должен. Просто заметь."},
+ {cat:"limits", min:5,  text:"Уйди с работы вовремя один раз. Мир не рухнет — проверь эмпирически."},
+ {cat:"limits", min:5,  text:"Отключи уведомления одного чата, который дёргает тебя без повода."},
+ {cat:"limits", min:20, text:"Договорись о своём условии там, где раньше молча соглашался. Об одном."},
+ {cat:"limits", min:10, text:"Заметь, где сегодня согласился, а хотел отказать. Не исправляй — просто увидь."},
+ {cat:"limits", min:15, text:"Один вечер полностью твой: никаких «надо». Поставь его в календарь на эту неделю."},
 ];
 
 const REST_MISSIONS = [
@@ -422,71 +510,135 @@ const QUESTIONS = [
  "Где ты сегодня торопился, хотя мог не спешить?",
  "Что держит тебя в Алматы — и что зовёт дальше?",
  "Про что ты недавно понял: «это уже не моё»?",
+ "Что ты делаешь лучше, чем большинство людей вокруг? Без скромности.",
+ "Какое место ты хочешь увидеть своими глазами — и что мешает прямо сейчас?",
+ "Если бы завтра пришлось объяснить незнакомому, чем ты занимаешься и почему это важно, — что бы ты сказал?",
+ "Что бы ты сделал своими руками, если бы точно знал, что никто не оценит?",
+ "Какую свою идею ты не начал только потому, что она казалась глупой?",
+ "Где ты сегодня сказал «да», а внутри было «нет»?",
+ "Что в твоём ремесле ты умеешь такого, чему стоило бы кого-то научить?",
+ "Какой день за последний месяц ты бы прожил ещё раз — и почему именно его?",
+ "Что ты откладываешь до момента, когда «станет полегче»? Станет ли?",
+ "Какая часть твоей работы даёт тебе больше всего — и можно ли её увеличить?",
+ "Если бы у тебя был свободный год без денежного вопроса — на что бы он ушёл?",
+ "Что тебе нужно перестать доказывать?",
+ "Какой навык ты хочешь довести до состояния, когда за него платят иначе?",
+ "Что бы изменилось в твоём дне, если бы ты перестал спешить?",
 ];
 
 const WEEKLY_QS = "Неделя позади. Четыре вопроса: что сработало? Что съело больше всего сил? Кто из твоих был рядом — и кого не хватало? Что одно ты сделаешь на следующей неделе иначе?";
 
-const LEVELS = [
- {xp:0,    name:"Роуди"},
- {xp:100,  name:"Техник сцены"},
- {xp:250,  name:"Инженер"},
- {xp:450,  name:"Саундчек-мастер"},
- {xp:700,  name:"Режиссёр шоу"},
- {xp:1000, name:"Продюсер"},
- {xp:1400, name:"Хедлайнер"},
- {xp:2000, name:"Легенда сцены"},
-];
+/* ================= ХРАНИЛИЩЕ ================= */
 
-const XP = {soundcheck:5, mission:10, strength:15, answer:10, weekly:15, sleep:5};
+const DEV = /[?&]dev=1/.test(location.search);
+const KEY = DEV ? "pult_dev" : "pult_v1";
+const SNAP_KEY = "pult_snap_replace";
 
-/* ================= STATE ================= */
+let SAVE_FAILS = 0, SAVE_COUNT = 0, SAVE_ALARM = false;
 
-const KEY = "pult_v1";
-let S = load();
-function load(){
-  try{
-    const raw = localStorage.getItem(KEY);
-    if(raw){
-      try{
-        const o = JSON.parse(raw);
-        if(o && typeof o === "object"){
-          o.days = o.days||{}; o.people = o.people||[]; o.weeks = o.weeks||{};
-          o.customMissions = o.customMissions||[]; o.customQuestions = o.customQuestions||[];
-          return o;
-        }
-      }catch(parseErr){
-        /* битый JSON не выбрасываем: прячем сырую строку, чтобы данные можно было спасти вручную */
-        try{ localStorage.setItem(KEY+"_broken_"+Date.now(), raw); }catch(e2){}
-      }
-    }
-  }catch(e){}
-  return {days:{}, people:[], weeks:{}, customMissions:[], customQuestions:[], lastVisit:null};
+function defaults(){
+  return {days:{}, weeks:{}, people:[], customMissions:[], customQuestions:[],
+    banned:{missions:[], questions:[]},
+    off:{archive:false, rider:false, weekly:false, strength:false, demontazh:false, rhythm:false},
+    mode:null, paused:null, rider:{helps:"", updatedAt:""},
+    quietOfferedAt:null, riderOfferedAt:null, echoShown:{}, idsV:0,
+    seenV4:false, seenTiny:false, persisted:false, lastBackup:null, backupNagAt:null, lastVisit:null};
 }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function fill(o){
+  const d = defaults();
+  for(const k in d) if(o[k] === undefined || o[k] === null && d[k] !== null) o[k] = d[k];
+  if(!o.banned || typeof o.banned !== "object") o.banned = {missions:[], questions:[]};
+  if(!Array.isArray(o.banned.missions)) o.banned.missions = [];
+  if(!Array.isArray(o.banned.questions)) o.banned.questions = [];
+  if(!o.off || typeof o.off !== "object") o.off = d.off;
+  for(const k in d.off) if(typeof o.off[k] !== "boolean") o.off[k] = false;
+  if(!o.rider || typeof o.rider !== "object") o.rider = {helps:"", updatedAt:""};
+  if(typeof o.rider.helps !== "string") o.rider.helps = "";
+  if(!o.echoShown || typeof o.echoShown !== "object") o.echoShown = {};
+  if(!o.days || typeof o.days !== "object") o.days = {};
+  if(!o.weeks || typeof o.weeks !== "object") o.weeks = {};
+  if(!Array.isArray(o.people)) o.people = [];
+  if(!Array.isArray(o.customMissions)) o.customMissions = [];
+  if(!Array.isArray(o.customQuestions)) o.customQuestions = [];
+  return o;
+}
+function load(){
+  let raw = null;
+  try{ raw = localStorage.getItem(KEY); }catch(e){ return defaults(); }
+  if(!raw) return defaults();
+  try{
+    const o = JSON.parse(raw);
+    if(o && typeof o === "object") return fill(o);
+  }catch(e){
+    /* битый JSON никогда не выбрасываем: прячем сырую строку, но не больше двух копий */
+    try{
+      const olds = [];
+      for(let i=0;i<localStorage.length;i++){ const k = localStorage.key(i); if(k && k.indexOf(KEY+"_broken_")===0) olds.push(k); }
+      olds.sort();
+      while(olds.length >= 2){ localStorage.removeItem(olds.shift()); }
+      localStorage.setItem(KEY+"_broken_"+Date.now(), raw);
+    }catch(e2){}
+  }
+  return defaults();
+}
+let S = load();
 
-function todayKey(){
-  const d = new Date();
+/* Ровно один setItem: он атомарен по ключу, а вторая копия удваивает пиковый расход квоты. */
+function save(){
+  let j;
+  try{ j = JSON.stringify(S); }catch(e){ SAVE_FAILS++; return false; }
+  try{ localStorage.setItem(KEY, j); }
+  catch(e){ SAVE_FAILS++; if(SAVE_FAILS>=2) showSaveAlarm(); return false; }
+  SAVE_COUNT++;
+  if(SAVE_COUNT === 1 || SAVE_COUNT % 20 === 0){
+    try{
+      if(localStorage.getItem(KEY) !== j){ SAVE_FAILS++; if(SAVE_FAILS>=2) showSaveAlarm(); return false; }
+    }catch(e){ SAVE_FAILS++; if(SAVE_FAILS>=2) showSaveAlarm(); return false; }
+  }
+  SAVE_FAILS = 0;
+  return true;
+}
+function showSaveAlarm(){ if(SAVE_ALARM) return; SAVE_ALARM = true; try{ render(); }catch(e){} }
+
+/* Чиним записи лениво при чтении. Никаких миграционных машин: один баг в них переписал бы всё разом. */
+function normalizeDay(r){
+  if(!r || typeof r !== "object") r = {};
+  if(typeof r.energy !== "number" || r.energy < 1 || r.energy > 5) r.energy = null;
+  if(!r.missions || typeof r.missions !== "object" || Array.isArray(r.missions)) r.missions = {};
+  ["answer","weekly","sleepPlan","q","sAction"].forEach(k=>{ if(typeof r[k] !== "string") r[k] = (r[k]==null ? "" : String(r[k])); });
+  ["setlist","restlist","pool"].forEach(k=>{
+    if(!Array.isArray(r[k])){ if(r[k] !== undefined) delete r[k]; return; }
+    r[k] = r[k].filter(m=> m && typeof m === "object" && typeof m.text === "string" && CATS[m.cat]);
+    if(!r[k].length) delete r[k];
+  });
+  if(r.lightsOut && !/^\d{2}:\d{2}$/.test(String(r.lightsOut))) delete r.lightsOut;
+  if(r.closedAt && !/^\d{2}:\d{2}$/.test(String(r.closedAt))) delete r.closedAt;
+  if(r.kind && ["show","work","free"].indexOf(r.kind) < 0) delete r.kind;
+  if(r.tiny && typeof r.tiny !== "object") delete r.tiny;
+  return r;
+}
+function day(key){
+  S.days[key] = normalizeDay(S.days[key]);
+  return S.days[key];
+}
+
+/* ================= ВРЕМЯ =================
+   Логический день (ctx.key, ctx.dn, ctx.dow) — АДРЕСАЦИЯ записей.
+   Реальный час (ctx.h) — ПОКАЗ карточек. Обе величины берутся только из ctx.
+   new Date() вне makeCtx() допустим единственно для таймстампа самого действия. */
+
+function todayKey(now){
+  const d = new Date((now || Date.now()) - CUT_H*3600000);
   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
 function dayNum(key){
-  const [y,m,d] = key.split("-").map(Number);
-  return Math.floor(Date.UTC(y, m-1, d)/86400000);
+  const p = String(key).split("-").map(Number);
+  return Math.floor(Date.UTC(p[0], p[1]-1, p[2])/86400000);
 }
 function keyOfNum(n){ return new Date(n*86400000).toISOString().slice(0,10); }
-function day(key){
-  if(!S.days[key]) S.days[key] = {energy:null, missions:{}, strengthDone:false, answer:"", weekly:"", scXp:false};
-  return S.days[key];
-}
-function isActive(rec){
-  if(!rec) return false;
-  return rec.strengthDone || !!rec.answer || !!rec.weekly || !!rec.lightsOut || Object.values(rec.missions||{}).some(Boolean);
-}
-function dayComplete(rec){
-  return rec && rec.energy!==null && (!!rec.answer || Object.values(rec.missions||{}).some(Boolean));
-}
 function weekKeyOf(dateKey){
-  const [y,m,d] = dateKey.split("-").map(Number);
-  const dt = new Date(Date.UTC(y, m-1, d));
+  const p = dateKey.split("-").map(Number);
+  const dt = new Date(Date.UTC(p[0], p[1]-1, p[2]));
   const dow = (dt.getUTCDay()+6)%7;
   dt.setUTCDate(dt.getUTCDate() - dow + 3);
   const firstThu = new Date(Date.UTC(dt.getUTCFullYear(),0,4));
@@ -495,154 +647,247 @@ function weekKeyOf(dateKey){
   const wk = 1 + Math.round((dt - firstThu)/(7*86400000));
   return dt.getUTCFullYear()+"-W"+String(wk).padStart(2,"0");
 }
-
-/* deterministic prng */
-function mulberry32(a){ return function(){ a|=0; a=(a+0x6D2B79F5)|0; let t=Math.imul(a^(a>>>15),1|a); t=(t+Math.imul(t^(t>>>7),61|t))^t; return ((t^(t>>>14))>>>0)/4294967296; }; }
-
-function missionPool(){ return MISSIONS.concat(S.customMissions||[]); }
-function questionPool(){ return QUESTIONS.concat(S.customQuestions||[]); }
-
-function dailyPick(key){
+function makeCtx(){
+  const now = new Date();
+  const key = todayKey(now.getTime());
   const dn = dayNum(key);
-  const rnd = mulberry32(dn*7919);
-  const strength = STRENGTHS[dn % STRENGTHS.length];
-  const action = strength.actions[Math.floor(rnd()*strength.actions.length)];
-  const catKeys = Object.keys(CATS).filter(c=>c!=="rest");
-  const shuffled = catKeys.slice();
-  for(let i=shuffled.length-1;i>0;i--){ const j=Math.floor(rnd()*(i+1)); [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]]; }
-  const pool = missionPool();
-  const missions = shuffled.slice(0,3).map(c=>{
-    const p = pool.filter(m=>m.cat===c);
-    return p[Math.floor(rnd()*p.length)];
-  });
-  const restMissions = (()=>{ const r=mulberry32(dn*104729); const p=REST_MISSIONS.slice();
-    for(let i=p.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [p[i],p[j]]=[p[j],p[i]]; } return p.slice(0,3); })();
-  const qp = questionPool();
-  const question = qp[dn % qp.length];
-  return {strength, action, missions, restMissions, question};
+  const h = now.getHours();
+  return {now, key, dn, h, dow:(dn+4)%7, phase:(h>=5 && h<12) ? "morning" : (h<17 ? "day" : "evening")};
 }
+let CTX = makeCtx();
 
-/* фиксируем контент дня в записи — история не «переезжает» при росте пулов */
-function ensureDayContent(key){
-  const rec = day(key);
-  let dirty = false;
-  const p = (!rec.setlist || !rec.restlist || !rec.q || !rec.sAction) ? dailyPick(key) : null;
-  if(!rec.setlist){ rec.setlist = p.missions.map(m=>({cat:m.cat, min:m.min, text:m.text})); dirty = true; }
-  if(!rec.restlist){ rec.restlist = p.restMissions.map(m=>({cat:m.cat, min:m.min, text:m.text})); dirty = true; }
-  if(!rec.q){ rec.q = p.question; dirty = true; }
-  if(!rec.sAction){ rec.sAction = p.action; dirty = true; }
-  if(dirty) save();
-  return rec;
-}
-
-/* ---- XP: монотонный счёт. Начислили — навсегда; снятие галочки ничего не отнимает. ---- */
-function computeLegacyXp(){
-  let xp = 0;
-  for(const k in S.days){
-    const r = S.days[k];
-    if(r.scXp) xp += XP.soundcheck;
-    if(r.strengthDone) xp += XP.strength;
-    if(r.answer) xp += XP.answer;
-    if(r.weekly) xp += XP.weekly;
-    if(r.lightsOut) xp += XP.sleep;
-    xp += Object.values(r.missions||{}).filter(Boolean).length * XP.mission;
-  }
-  xp += Object.keys(S.weeks||{}).length * XP.weekly;
-  return xp;
-}
-function totalXp(){
-  if(typeof S.xp !== "number"){ S.xp = computeLegacyXp(); save(); }
-  return S.xp;
-}
-function award(points){ totalXp(); S.xp += points; save(); }
-function awardOnce(rec, tag, points){
-  rec.xpAwarded = rec.xpAwarded || {};
-  if(rec.xpAwarded[tag]) return false;
-  rec.xpAwarded[tag] = true;
-  award(points);
-  return true;
-}
-function levelFor(xp){
-  let cur = LEVELS[0], next = null;
-  for(let i=0;i<LEVELS.length;i++){ if(xp >= LEVELS[i].xp) cur = LEVELS[i]; else { next = LEVELS[i]; break; } }
-  return {cur, next};
-}
-function activeDaysCount(){ return Object.keys(S.days).filter(k=>isActive(S.days[k])).length; }
-function lastActiveDayBefore(dn){
-  let best = null;
-  for(const k in S.days){
-    const n = dayNum(k);
-    if(n < dn && isActive(S.days[k]) && (best===null || n > best)) best = n;
-  }
-  return best;
-}
-
-/* ================= UI helpers ================= */
-
-const $ = sel => document.querySelector(sel);
-function esc(s){ return String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
-let toastTimer = null;
-function toast(msg){
-  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
-  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove("show"), 2200);
-}
-function buzz(ms){ try{ navigator.vibrate && navigator.vibrate(ms); }catch(e){} }
 const MONTHS = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
 const WDAYS = ["воскресенье","понедельник","вторник","среда","четверг","пятница","суббота"];
 function fmtDate(key){
-  const [y,m,d] = key.split("-").map(Number);
-  const yearNow = new Date().getFullYear();
-  return d+" "+MONTHS[m-1]+(y!==yearNow ? " "+y : "");
+  const p = String(key).split("-").map(Number);
+  const yearNow = Number(todayKey().slice(0,4));
+  return p[2]+" "+MONTHS[p[1]-1]+(p[0] !== yearNow ? " "+p[0] : "");
 }
-function greeting(){
-  const h = new Date().getHours();
+function nowHM(){ const d = new Date(); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); }
+function greeting(h){
   if(h>=5 && h<12) return "Доброе утро";
   if(h>=12 && h<18) return "Добрый день";
   if(h>=18 && h<23) return "Добрый вечер";
   return "Не спится";
 }
 const ELBL = ["","на нуле","мало","середина","норм","заряжен"];
+const KINDS = {show:"шоу", work:"работа", free:"свободный"};
 
-/* ================= drafts ================= */
+/* ================= ЛОГИКА ДНЯ ================= */
 
-function draftKey(kind, scope){ return "pult_draft_"+kind+"_"+(scope||todayKey()); }
-function getDraft(kind, scope){ try{ return localStorage.getItem(draftKey(kind, scope))||""; }catch(e){ return ""; } }
-function setDraft(kind, v, scope){ try{ v ? localStorage.setItem(draftKey(kind, scope), v) : localStorage.removeItem(draftKey(kind, scope)); }catch(e){} }
-
-/* при старте: вчерашний несохранённый ответ дописываем в его день, мусор чистим */
-function sweepDrafts(){
-  const tk = todayKey();
-  let keys = [];
-  try{ for(let i=0;i<localStorage.length;i++){ const k = localStorage.key(i); if(k && k.indexOf("pult_draft_")===0) keys.push(k); } }catch(e){ return; }
-  for(const k of keys){
-    const parts = k.split("_"); /* pult, draft, kind, scope */
-    const kind = parts[2], scope = parts.slice(3).join("_");
-    if(kind==="weekly" && scope.indexOf("W")!==-1) continue; /* новый формат — по неделе, живёт до закрытия */
-    if(scope === tk) continue;
-    let val = "";
-    try{ val = localStorage.getItem(k)||""; }catch(e){}
-    if(kind==="answer" && val && /^\d{4}-\d{2}-\d{2}$/.test(scope) && S.days[scope] && !S.days[scope].answer){
-      /* ответ, набранный до полуночи и не сохранённый — дописываем в его день */
-      S.days[scope].answer = val.trim();
-      awardOnce(S.days[scope], "answer", XP.answer);
-      save();
+function mid(text){
+  let h = 5381; const s = String(text);
+  for(let i=0;i<s.length;i++) h = ((h<<5)+h+s.charCodeAt(i))>>>0;
+  return h.toString(16).padStart(8,"0");
+}
+/* Один проход, идемпотентный: позиционные ключи m0/m1 переезжают на контентные id. */
+function migrateIds(){
+  if(S.idsV === 2) return;
+  for(const k in S.days){
+    const r = S.days[k]; if(!r || typeof r !== "object") continue;
+    const sl = Array.isArray(r.setlist) ? r.setlist : [];
+    const rl = Array.isArray(r.restlist) ? r.restlist : [];
+    sl.forEach(m=>{ if(m && !m.id) m.id = mid(m.text); });
+    rl.forEach(m=>{ if(m && !m.id) m.id = mid(m.text); });
+    const old = r.missions || {}, nu = {};
+    for(const oid in old){
+      if(!old[oid]) continue;
+      if(/^[mr]\d+$/.test(oid)){
+        const list = oid[0] === "r" ? rl : sl;
+        const m = list[Number(oid.slice(1))];
+        nu[ m && m.id ? m.id : ("lost_"+oid+"_"+k) ] = true;
+      } else nu[oid] = true;
     }
-    if(kind==="weekly" && val && /^\d{4}-\d{2}-\d{2}$/.test(scope)){
-      /* старый формат черновика недели — переносим под ключ недели, если она не закрыта */
-      const wk = weekKeyOf(scope);
-      if(!S.weeks[wk] && !getDraft("weekly", wk)) setDraft("weekly", val, wk);
-    }
-    try{ localStorage.removeItem(k); }catch(e){}
+    r.missions = nu;
   }
+  S.idsV = 2;
+  save();
 }
 
-/* ================= RENDER ================= */
+function isActive(rec){
+  if(!rec) return false;
+  if(rec.energy !== null && rec.energy !== undefined) return true;
+  if(rec.strengthDone || rec.answer || rec.weekly || rec.sleepPlan) return true;
+  if(rec.lightsOut || rec.closedAt || rec.idle || rec.returned || rec.skipped || rec.kind) return true;
+  for(const k in (rec.missions||{})) if(rec.missions[k]) return true;
+  return false;
+}
+function dayMarked(rec){
+  if(!rec) return false;
+  if(rec.energy !== null && rec.energy !== undefined) return true;
+  if(rec.idle || rec.returned || rec.answer || rec.strengthDone) return true;
+  for(const k in (rec.missions||{})) if(rec.missions[k]) return true;
+  return false;
+}
+function lastActiveDayBefore(dn){
+  let best = null;
+  for(const k in S.days){
+    const n = dayNum(k);
+    if(n < dn && isActive(S.days[k]) && (best === null || n > best)) best = n;
+  }
+  return best;
+}
+function gapDays(dn){ const l = lastActiveDayBefore(dn); return l === null ? 0 : dn - l; }
 
+function quietActive(ctx){
+  const m = S.mode;
+  if(!m || m.type !== "quiet") return false;
+  if(!m.until) return true;
+  return dayNum(m.until) >= ctx.dn;
+}
+function quietExpired(ctx){
+  const m = S.mode;
+  return !!(m && m.type === "quiet" && m.until && dayNum(m.until) < ctx.dn);
+}
+function pausedActive(ctx){
+  const p = S.paused;
+  if(!p) return false;
+  if(p.until === null || p.until === undefined) return true;
+  return p.until >= ctx.dn;
+}
+
+function stats(){
+  let records = 0, tasks = 0, marked = 0;
+  for(const k in S.days){
+    const r = S.days[k];
+    if(r.answer) records++;
+    if(r.weekly && !S.weeks[weekKeyOf(k)]) records++;
+    for(const id in (r.missions||{})) if(r.missions[id]) tasks++;
+    if(isActive(r)) marked++;
+  }
+  records += Object.keys(S.weeks||{}).length;
+  return {records, tasks, marked};
+}
+
+/* ================= ПУЛЫ ================= */
+
+function missionPool(){
+  const banned = S.banned.missions;
+  return MISSIONS.concat(S.customMissions||[]).filter(m=> banned.indexOf(mid(m.text)) < 0);
+}
+function questionPool(){
+  const banned = S.banned.questions;
+  const p = QUESTIONS.concat(S.customQuestions||[]).filter(q=> banned.indexOf(q) < 0);
+  return p;
+}
+function mulberry32(a){
+  return function(){ a|=0; a=(a+0x6D2B79F5)|0; let t=Math.imul(a^(a>>>15),1|a); t=(t+Math.imul(t^(t>>>7),61|t))^t; return ((t^(t>>>14))>>>0)/4294967296; };
+}
+/* ПРАВИЛО: энергия может только УБИРАТЬ с экрана, никогда не ДОБАВЛЯТЬ.
+   Убирание невозможно использовать как рычаг — а как только цифра открывает
+   контент, фейдер перестаёт быть измерением и начинает подгоняться. */
+function buildSetlist(dn, seedShift, rec){
+  const rnd = mulberry32(dn*7919 + (seedShift||0)*104729);
+  const pool = missionPool();
+  let catKeys = Object.keys(CATS).filter(c=> c !== "rest");
+  if(rec && rec.energy !== null && rec.energy <= 2) catKeys = catKeys.filter(c=> c !== "money");
+  catKeys = catKeys.filter(c=> pool.some(m=> m.cat === c));
+  const sh = catKeys.slice();
+  for(let i=sh.length-1;i>0;i--){ const j = Math.floor(rnd()*(i+1)); const t = sh[i]; sh[i] = sh[j]; sh[j] = t; }
+  const out = [];
+  const seen = {};
+  for(const c of sh.slice(0,3)){
+    const p = pool.filter(m=> m.cat === c);
+    if(!p.length) continue;
+    const m = p[Math.floor(rnd()*p.length)];
+    let id = mid(m.text);
+    if(seen[id]) id = id+"_"+out.length;
+    seen[id] = true;
+    out.push({id, cat:m.cat, min:m.min, text:m.text, tiny:m.tiny || ""});
+  }
+  return out;
+}
+function buildRestlist(dn){
+  const r = mulberry32(dn*104729);
+  const p = REST_MISSIONS.slice();
+  for(let i=p.length-1;i>0;i--){ const j = Math.floor(r()*(i+1)); const t = p[i]; p[i] = p[j]; p[j] = t; }
+  return p.slice(0,3).map(m=>({id:mid(m.text), cat:m.cat, min:m.min, text:m.text, tiny:""}));
+}
+/* Сила дня: перестановка внутри десятидневного блока, чтобы период не читался за два месяца. */
+function strengthOf(dn){
+  const blk = Math.floor(dn/10);
+  const rnd = mulberry32(blk*2654435761);
+  const perm = [0,1,2,3,4,5,6,7,8,9];
+  for(let i=perm.length-1;i>0;i--){ const j = Math.floor(rnd()*(i+1)); const t = perm[i]; perm[i] = perm[j]; perm[j] = t; }
+  return STRENGTHS[perm[((dn%10)+10)%10]];
+}
+function pickQuestion(dn){
+  const qp = questionPool();
+  if(!qp.length) return "";
+  return qp[((dn%qp.length)+qp.length)%qp.length];
+}
+/* Контент дня фиксируется в записи — история не переезжает при росте пулов. */
+function ensureDayContent(key){
+  const rec = day(key);
+  const dn = dayNum(key);
+  let dirty = false;
+  if(!rec.setlist){ rec.setlist = buildSetlist(dn, rec.reroll||0, rec); dirty = true; }
+  if(!rec.restlist){ rec.restlist = buildRestlist(dn); dirty = true; }
+  if(!rec.q){ rec.q = pickQuestion(dn); dirty = true; }
+  if(!rec.sAction){ const st = strengthOf(dn); rec.sAction = st.actions[dn % st.actions.length]; dirty = true; }
+  if(dirty) save();
+  return rec;
+}
+/* Что реально показать в сетлисте: фильтры показа для уже сгенерированного дня. */
+function setlistItems(ctx, rec, quiet){
+  if(quiet) return {list:(rec.restlist||[]).slice(0,1), limited:true, prefix:"r"};
+  let list = (rec.setlist||[]).slice();
+  if(rec.energy !== null && rec.energy <= 2) list = list.filter(m=> m.cat !== "money");
+  if(rec.kind === "show") list = list.filter(m=> (m.min||0) <= 10);
+  if(!list.length) list = (rec.setlist||[]).slice(0,1);
+  const gap = gapDays(ctx.dn);
+  const narrow = (rec.energy !== null && rec.energy <= 3) || (gap >= 3 && gap <= 6) || rec.kind === "show";
+  if(narrow && !SHOW_ALL_TASKS){
+    const undone = list.filter(m=> !rec.missions[m.id]);
+    const base = undone.length ? undone : list;
+    const pick = base[((PICK_I % base.length) + base.length) % base.length];
+    const done = list.filter(m=> rec.missions[m.id]);
+    return {list:[pick].concat(done.filter(d=> d.id !== pick.id)), limited:true, prefix:"m", total:list.length};
+  }
+  return {list, limited:false, prefix:"m", total:list.length};
+}
+
+/* ================= UI-ХЕЛПЕРЫ ================= */
+
+const $ = sel => document.querySelector(sel);
+function esc(s){ return String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function hl(safe, needle){
+  if(!needle) return safe;
+  const n = esc(needle);
+  const i = safe.toLowerCase().indexOf(n.toLowerCase());
+  if(i < 0) return safe;
+  return safe.slice(0,i)+"<mark>"+safe.slice(i,i+n.length)+"</mark>"+safe.slice(i+n.length);
+}
+let toastTimer = null;
+function toast(msg){
+  const t = $("#toast"); if(!t) return;
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove("show"), 2400);
+}
+function plural(n, one, few, many){
+  const a = Math.abs(n)%100, b = a%10;
+  if(a>10 && a<20) return many;
+  if(b>1 && b<5) return few;
+  if(b===1) return one;
+  return many;
+}
+function nDays(n){ return n+" "+plural(n,"день","дня","дней"); }
+function nRec(n){ return n+" "+plural(n,"запись","записи","записей"); }
+function nTasks(n){ return n+" "+plural(n,"задача","задачи","задач"); }
+
+/* Сессионные, не сохраняются */
 let TAB = "today";
-let RENDERED_KEY = null;  /* день, для которого отрисован экран */
 let EXPANDED = new Set();
 let EDITING = {};
-let HIDE_BROWSER_HINT = false;
+let SHOW_ALL = false;          /* «показать остальное» после «Я тут» */
+let SHOW_ALL_TASKS = false;    /* «показать все три» */
+let PICK_I = 0;                /* «дай другую» */
+let ARCH_I = 0;                /* «ещё» в архиве */
+let J_SEARCH = "", J_FILTER = "all", J_LIMIT = 30;
+let HIDE_HINT = false, HIDE_UPD = false;
+let RENDERED_SIG = null, PENDING_RERENDER = false;
+let BREATH = null;
+
 const TABS = [
  {id:"today", ico:"🎚️", name:"Сегодня"},
  {id:"path", ico:"📈", name:"Путь"},
@@ -650,712 +895,1242 @@ const TABS = [
  {id:"me", ico:"🧬", name:"Я"},
 ];
 
-function render(){
-  RENDERED_KEY = todayKey();
-  renderTabs();
-  const app = $("#app");
-  if(TAB==="today") app.innerHTML = viewToday();
-  else if(TAB==="path") app.innerHTML = viewPath();
-  else if(TAB==="journal") app.innerHTML = viewJournal();
-  else app.innerHTML = viewMe();
-  bind();
+function draftKey(kind, scope){ return "pult_draft_"+kind+"_"+(scope || CTX.key); }
+function getDraft(kind, scope){ try{ return localStorage.getItem(draftKey(kind,scope)) || ""; }catch(e){ return ""; } }
+function setDraft(kind, v, scope){
+  try{ v ? localStorage.setItem(draftKey(kind,scope), v) : localStorage.removeItem(draftKey(kind,scope)); }catch(e){}
 }
-function rerenderKeepScroll(){
-  const y = window.scrollY; render(); window.scrollTo(0, y);
-}
-/* защита от «перехода через полночь»: экран отрисован для вчера, а тап — уже сегодня */
-function guardDay(){
-  if(RENDERED_KEY !== todayKey()){
-    EXPANDED.clear(); EDITING = {};
-    render(); window.scrollTo(0,0);
-    toast("Новый день — экран обновлён");
-    return false;
+/* Черновики вчерашнего дня дописываем в их день, остальное чистим. */
+function sweepDrafts(){
+  const tk = CTX.key;
+  let keys = [];
+  try{ for(let i=0;i<localStorage.length;i++){ const k = localStorage.key(i); if(k && k.indexOf("pult_draft_")===0) keys.push(k); } }catch(e){ return; }
+  for(const k of keys){
+    const parts = k.split("_");
+    const kind = parts[2], scope = parts.slice(3).join("_");
+    if(kind === "weekly" && scope.indexOf("W") !== -1) continue;   /* по неделе — живёт до закрытия */
+    if(scope === tk) continue;
+    let val = "";
+    try{ val = localStorage.getItem(k) || ""; }catch(e){}
+    const isDate = /^\d{4}-\d{2}-\d{2}$/.test(scope);
+    if(kind === "answer" && val && isDate && S.days[scope] && !S.days[scope].answer){
+      S.days[scope].answer = val.trim(); save();
+    }
+    if(kind === "sleep" && val && isDate && S.days[scope] && !S.days[scope].sleepPlan){
+      S.days[scope].sleepPlan = val.trim(); save();
+    }
+    if(kind === "weekly" && val && isDate){
+      const wk = weekKeyOf(scope);
+      if(!S.weeks[wk] && !getDraft("weekly", wk)) setDraft("weekly", val, wk);
+    }
+    try{ localStorage.removeItem(k); }catch(e){}
   }
-  return true;
 }
-function renderTabs(){
-  $("#tabs").innerHTML = TABS.map(t=>
-    `<button class="tab ${TAB===t.id?"active":""}" data-tab="${t.id}"><span class="ico">${t.ico}</span>${t.name}</button>`).join("");
-}
+
+/* ================= ОБЩИЕ БЛОКИ ================= */
 
 function headerHtml(){
-  const tk = todayKey();
-  const d = new Date();
-  return `<header><div class="logo">ПУЛЬ<span>Т</span></div><div class="datefmt">${fmtDate(tk)} · ${WDAYS[d.getDay()]}</div></header>`;
+  return '<header><div class="logo">ПУЛЬ<span>Т</span>'+(DEV?'<span class="devtag">ДЕМО</span>':'')+'</div>'+
+    '<div class="datefmt">'+fmtDate(CTX.key)+" · "+WDAYS[CTX.dow]+'</div></header>';
+}
+function ledCls(state){ return "led"+(state ? " "+state : ""); }
+function eyebrow(text, state){ return '<div class="eyebrow"><span class="'+ledCls(state)+'"></span>'+text+'</div>'; }
+function line(id, cap, txt, dimmed){
+  return '<button class="cardline" data-act="expand" data-id="'+id+'"><span class="cl-cap">'+cap+'</span>'+
+    '<span class="cl-txt'+(dimmed?" dim":"")+'">'+txt+'</span><span class="ar" aria-hidden="true">›</span></button>';
+}
+function crashScreen(e){
+  let raw = "";
+  try{ raw = localStorage.getItem(KEY) || ""; }catch(err){ raw = "(хранилище недоступно)"; }
+  return '<div class="note alarm"><b>Экран не собрался.</b><p class="mut" style="margin-top:6px">Данные на месте — вот они целиком, их можно скопировать и сохранить.</p></div>'+
+    '<div class="card">'+eyebrow("Что случилось")+
+    '<p class="mut" style="font-family:monospace;font-size:12px">'+esc(String(e && e.message ? e.message : e))+'</p>'+
+    '<textarea class="backup-box" readonly>'+esc(raw)+'</textarea>'+
+    '<div class="btnrow"><button class="btn small" data-act="backup">Сохранить копию</button>'+
+    '<button class="btn ghost small" data-act="reload">Перезагрузить</button></div></div>';
+}
+function saveAlarmHtml(){
+  if(!SAVE_ALARM) return "";
+  return '<div class="note alarm" id="save-alarm"><b>Данные не записываются.</b><p class="mut" style="margin-top:4px">Сохрани копию сейчас.</p>'+
+    '<div class="btnrow"><button class="btn small" data-act="backup">Сохранить копию</button></div></div>';
 }
 
-function bannerHtml(rec){
-  if(!dayComplete(rec)) return "";
-  return `<div class="banner" id="day-banner"><b>Минимум дня закрыт.</b><p>Всё дальше — по желанию, а не по долгу.</p></div>`;
-}
+/* ================= АРХИВ И ЭХО ================= */
 
-function rhythmHtml(){
-  const tk = todayKey();
-  const dn = dayNum(tk);
-  let leds = "", act = 0;
-  for(let i=6;i>=0;i--){
-    const key = keyOfNum(dn-i);
-    const on = isActive(S.days[key]);
-    if(on) act++;
-    leds += `<span class="rled ${on?"on":""} ${i===0?"today":""}"></span>`;
+function archiveCandidates(ctx, rec, quiet){
+  const all = [];
+  for(const k in S.days){
+    const r = S.days[k];
+    if(!r.answer) continue;
+    all.push({key:k, dn:dayNum(k), text:r.answer, q:r.q||"", energy:r.energy, judged:!!r.stillTrue});
   }
-  let msg;
-  if(act===0) msg = "тишина в эфире — начни с малого";
-  else if(act<=2) msg = "разогреваешься";
-  else if(act<=4) msg = "хороший ритм";
-  else if(act<=6) msg = "мощный ритм";
-  else msg = "полный прогон недели";
-  return `<div class="card" id="card-rhythm"><div class="eyebrow"><span class="led"></span>Ритм · последние 7 дней</div>
-    <div class="rhythm"><div class="leds">${leds}</div><div class="compound">${act}/7</div></div>
-    <p class="mut" style="margin-top:8px">${msg}. Пропуск ничего не обнуляет: важен ритм, а не идеальность.</p></div>`;
+  all.sort((a,b)=> b.dn - a.dn);
+  const gap = gapDays(ctx.dn);
+  /* После долгого молчания и в яме — последняя запись, а не ротация. */
+  if(gap >= 3) return all.slice(0,1);
+  const aged = all.filter(x=> ctx.dn - x.dn >= 14 && !x.judged);
+  const low = (rec.energy !== null && rec.energy <= 2) || quiet;
+  if(low){
+    /* Прямое эхо из фазы подъёма в день с энергией 1 читается как доказательство деградации. */
+    const same = aged.filter(x=> x.energy !== null && x.energy <= 2);
+    if(same.length) return same;
+    return all.slice(0,1);
+  }
+  if(!aged.length) return all.slice(0,1);
+  const todayQ = rec.q || "";
+  const byQ = aged.filter(x=> x.q && x.q === todayQ);
+  const byE = aged.filter(x=> rec.energy !== null && x.energy === rec.energy);
+  /* Показ помечает запись в echoShown прямо во время рендера. Если сортировать по нему
+     как есть, порядок меняется между перерисовками и «ещё» топчется на месте — поэтому
+     показанное сегодня считается непоказанным и сохраняет своё место в очереди. */
+  const seenRank = x => {
+    const v = S.echoShown[x.key];
+    return (v === undefined || v === ctx.dn) ? -1 : v;
+  };
+  const rest = aged.slice().sort((a,b)=> seenRank(a) - seenRank(b));
+  const seen = {}, out = [];
+  for(const x of byQ.concat(byE, rest)){ if(!seen[x.key]){ seen[x.key] = 1; out.push(x); } }
+  return out;
+}
+function archiveHtml(ctx, rec, quiet){
+  if(S.off.archive) return "";
+  const cands = archiveCandidates(ctx, rec, quiet);
+  if(!cands.length) return "";
+  const it = cands[((ARCH_I % cands.length) + cands.length) % cands.length];
+  if(S.echoShown[it.key] !== ctx.dn){ S.echoShown[it.key] = ctx.dn; save(); }
+  const aged = ctx.dn - it.dn >= 14;
+  const r = S.days[it.key];
+  let judge = "";
+  if(aged && !r.stillTrue){
+    judge = '<div class="btnrow" style="margin-top:10px">'+
+      '<button class="btn ghost small" data-act="still" data-k="'+it.key+'" data-v="yes">Всё ещё так</button>'+
+      '<button class="btn ghost small" data-act="still" data-k="'+it.key+'" data-v="no">Уже не так</button>'+
+      '<button class="btn ghost small" data-act="still" data-k="'+it.key+'" data-v="?">Сложно сказать</button></div>';
+  } else if(r.stillTrue){
+    judge = '<p class="tiny-note">Отмечено.</p>';
+  }
+  return '<div class="card">'+eyebrow("Из твоего архива")+
+    '<p class="mut">Ты писал это '+fmtDate(it.key)+'</p>'+
+    '<div class="echo"><p class="e-old">'+esc(it.text)+'</p></div>'+judge+
+    (cands.length > 1 ? '<div class="minirow"><button class="mini" data-act="arch-next">ещё</button></div>' : "")+
+    '</div>';
 }
 
-/* ---------- карточки «Сегодня» ---------- */
+/* ================= КАРТОЧКИ «СЕГОДНЯ» ================= */
 
-function scCardHtml(rec, collapsed){
-  if(collapsed && !EXPANDED.has("sc")){
-    return `<div class="cardline" data-expand="sc" role="button" tabindex="0" id="card-sc">
-      <span class="cl-cap">Саундчек</span><span class="cl-txt">Энергия: ${ELBL[rec.energy]}</span><span class="ar">изменить</span></div>`;
+function cardSoundcheck(ctx, rec, expanded){
+  if(!expanded){
+    return line("sc","Саундчек","Энергия: "+ELBL[rec.energy]+(rec.kind?" · "+KINDS[rec.kind]:""), false);
   }
-  let html = `<div class="card" id="card-sc"><div class="eyebrow"><span class="led"></span>Саундчек</div>
-    <p class="body">${rec.energy===null ? "Сколько в тебе сегодня энергии?" : "Уровень принят. Можно поменять, если день изменился."}</p>
-    <div class="faders">`;
-  for(let v=1; v<=5; v++){
+  let h = '<div class="card" id="card-sc">'+eyebrow("Саундчек", rec.energy===null ? "live" : "ok")+
+    '<p class="body">'+(rec.energy===null ? "Сколько в тебе сегодня энергии?" : "Уровень принят. Можно поменять, если день изменился.")+'</p><div class="faders">';
+  for(let v=1;v<=5;v++){
     let bars = "";
-    for(let b=1;b<=5;b++) bars += `<span class="bar ${rec.energy===v && b<=v ? "lit":""}"></span>`;
-    html += `<button class="fader ${rec.energy===v?"on":""}" data-energy="${v}" aria-label="Энергия ${v} из 5"><span class="bars">${bars}</span><span class="lbl">${ELBL[v]}</span></button>`;
+    for(let b=1;b<=5;b++) bars += '<span class="bar'+(b<=v?" on":"")+'"></span>';
+    h += '<button class="fader" data-act="energy" data-v="'+v+'" aria-pressed="'+(rec.energy===v)+'" aria-label="Энергия '+v+' из 5">'+
+      '<span class="bars" aria-hidden="true">'+bars+'</span><span class="lbl">'+ELBL[v]+'</span></button>';
   }
-  return html + `</div></div>`;
+  h += '</div><div class="kinds">';
+  for(const k in KINDS){
+    h += '<button class="chipbtn" data-act="kind" data-v="'+k+'" aria-pressed="'+(rec.kind===k)+'">'+KINDS[k]+'</button>';
+  }
+  h += '</div><p class="tiny-note">Какой сегодня день. Можно не отмечать.</p>'+
+    '<div class="minirow"><button class="mini" data-act="quiet-ask">убавить громкость</button>'+
+    (rec.energy !== null ? '<button class="mini" data-act="collapse-sc">свернуть</button>' : '')+
+    '</div></div>';
+  return h;
 }
 
-function strengthCardHtml(rec, quiet){
-  const dn = dayNum(todayKey());
-  const st = STRENGTHS[dn % STRENGTHS.length];
-  const dom = DOMAINS[st.dom];
-  const action = rec.sAction || st.actions[0];
-  if(!EXPANDED.has("str")){
-    const done = rec.strengthDone;
-    return `<div class="cardline" data-expand="str" role="button" tabindex="0" id="card-str">
-      <span class="cl-cap">Сила дня</span>
-      <span class="cl-txt ${done?"dim":""}">${done?"✔ ":""}${st.name} · ${quiet ? "по желанию" : "задание внутри"}</span><span class="ar">›</span></div>`;
+function cardSetlist(ctx, rec, quiet, expanded){
+  const info = setlistItems(ctx, rec, quiet);
+  const doneCount = info.list.filter(m=> rec.missions[m.id]).length;
+  if(!expanded){
+    const first = info.list.find(m=> !rec.missions[m.id]) || info.list[0];
+    if(rec.optOut) return line("setlist","Сетлист","Закрыт на сегодня", true);
+    return line("setlist","Сетлист", first ? esc(first.text) : "—", doneCount>0);
   }
-  let html = `<div class="card" id="card-str"><div class="eyebrow"><span class="led"></span>Сила дня</div>
-    <div class="str-name"><span class="rankbox">№${st.rank} из 34</span><h2 style="margin:0">${st.name}</h2></div>
-    <span class="chip" style="color:${dom.color}; border-color:${dom.color}">${dom.name}</span>
-    <p class="body" style="margin-top:12px">${st.insight}</p>`;
+  if(rec.optOut){
+    return '<div class="card" id="card-setlist">'+eyebrow("Сетлист")+
+      '<p class="body">Сетлист закрыт. День всё равно записан — ты здесь был.</p>'+
+      '<div class="minirow"><button class="mini" data-act="optout-off">вернуть</button></div></div>';
+  }
+  let h = '<div class="card" id="card-setlist">'+eyebrow(quiet ? "Сетлист тихого дня" : "Сетлист дня", doneCount ? "ok" : "live")+'';
+  for(const m of info.list){
+    const done = !!rec.missions[m.id];
+    const cat = CATS[m.cat] || {name:"—", color:"var(--muted)"};
+    const useTiny = rec.tiny && rec.tiny[m.id] && m.tiny;
+    h += '<div class="mission" data-act="mission" data-id="'+m.id+'" data-cat="'+m.cat+'" role="checkbox" aria-checked="'+done+'" tabindex="0">'+
+      '<span class="tick" aria-hidden="true">'+(done?"✔":"")+'</span><div>'+
+      '<div class="txt">'+esc(useTiny ? m.tiny : m.text)+'</div>'+
+      '<div class="meta"><span class="chip" style="color:'+cat.color+'; border-color:'+cat.color+'">'+cat.name+'</span>'+
+      (useTiny ? '<span>~1 мин</span>' : (m.min ? '<span>~'+m.min+' мин</span>' : ''))+'</div></div></div>';
+    if(!done){
+      h += '<div class="minirow">';
+      if(m.tiny && !useTiny) h += '<button class="mini" data-act="tiny" data-id="'+m.id+'">уменьшить</button>';
+      h += '<button class="mini" data-act="ban-mission" data-id="'+m.id+'">убрать из ротации</button></div>';
+    }
+    if(done && m.cat === "people" && (S.people||[]).length){
+      h += '<div class="btnrow" style="margin-top:8px">';
+      S.people.forEach((p,i)=>{ h += '<button class="btn ghost small" data-act="touch" data-i="'+i+'">'+esc(p.name)+'</button>'; });
+      h += '</div><p class="tiny-note">Если это был контакт — отметь, с кем.</p>';
+    }
+  }
+  h += '<p class="mut" style="margin-top:12px">'+(quiet ? "Одна мягкая задача. Ни одна не обязательна." : "Три варианта на сегодня. Ни одно не обязательно.")+'</p>';
+  h += '<div class="minirow">';
+  if(info.limited && info.total > 1){
+    h += '<button class="mini" data-act="another">дай другую</button><button class="mini" data-act="show-all-tasks">показать все три</button>';
+  }
   if(!quiet){
-    html += `<div class="action-box"><div class="cap">Задание на сегодня · +${XP.strength} XP</div><p class="body">${action}</p>
-      ${rec.strengthDone ? `<div class="done-note">✔ Сделано. Сила прокачана.</div>` : `<button class="btn small" data-act="strength">Сделал</button>`}</div>`;
-  } else {
-    html += `<p class="mut" style="margin-top:10px">Сегодня задание по силе — по желанию. Просто перечитать — это уже работа.</p>`;
+    h += '<button class="mini" data-act="reroll">пересобрать</button>';
+    h += '<button class="mini" data-act="optout">сегодня — ничего из этого</button>';
+    h += '<button class="mini" data-act="own-open">свой трек</button>';
   }
-  return html + `<div class="blind">Слепая зона: ${st.blind}</div></div>`;
+  h += '</div>';
+  if(EXPANDED.has("own")){
+    h += '<select id="own-cat">'+Object.keys(CATS).filter(c=>c!=="rest").map(c=>'<option value="'+c+'">'+CATS[c].name+'</option>').join("")+'</select>'+
+      '<input type="text" id="own-text" placeholder="Своя задача на сегодня" maxlength="140">'+
+      '<button class="btn ghost small" data-act="own-add">Добавить</button>';
+  }
+  return h+'</div>';
 }
 
-function peopleCandidate(){
-  if(!(S.people||[]).length) return null;
-  const dn = dayNum(todayKey());
-  let cand = null, candIdx = -1, maxGap = -1;
-  for(let i=0;i<S.people.length;i++){
-    const p = S.people[i];
-    const gap = p.last ? dn - dayNum(p.last) : 9999;
-    if(gap > maxGap){ maxGap = gap; cand = p; candIdx = i; }
+function cardStrength(ctx, rec, quiet, expanded){
+  const st = strengthOf(ctx.dn);
+  const dom = DOMAINS[st.dom];
+  const passive = quiet || rec.kind === "show";
+  if(!expanded){
+    return line("str","Сила дня",(rec.strengthDone?"✔ ":"")+st.name+(passive?"":" · задание внутри"), !!rec.strengthDone);
   }
-  return cand ? {p:cand, idx:candIdx, gap:maxGap} : null;
+  let h = '<div class="card" id="card-str">'+eyebrow("Сила дня", rec.strengthDone ? "ok" : "")+
+    '<div class="str-name"><span class="rankbox">№'+st.rank+' из 34</span><h2 style="margin:0">'+st.name+'</h2></div>'+
+    '<span class="chip" style="color:'+dom.color+'; border-color:'+dom.color+'">'+dom.name+'</span>'+
+    '<p class="body" style="margin-top:12px">'+st.insight+'</p>';
+  if(!passive){
+    h += '<div class="action-box"><div class="cap">Если захочешь попробовать</div><p class="body">'+esc(rec.sAction||st.actions[0])+'</p>'+
+      (rec.strengthDone ? '<div class="done-note">✔ Отмечено</div>' : '<button class="btn small" data-act="strength">Сделал</button>')+'</div>';
+  }
+  return h+'<div class="blind">Слепая зона: '+st.blind+'</div></div>';
 }
 
-function setlistCardHtml(rec, quiet){
-  const list = quiet ? (rec.restlist||[]) : (rec.setlist||[]);
-  const prefix = quiet ? "r" : "m";
-  const items = list.map((m,i)=>({m, i, done: !!rec.missions[prefix+i]}));
-  items.sort((a,b)=> (a.done?1:0) - (b.done?1:0));
-  const cand = peopleCandidate();
-  let html = `<div class="card" id="card-setlist"><div class="eyebrow"><span class="led" id="setlist-led"></span>${quiet ? "Сетлист тихого дня" : "Сетлист дня"} · выбери хотя бы одно</div>`;
-  for(const {m,i,done} of items){
-    const cat = CATS[m.cat];
-    let hint = "";
-    if(m.cat==="people" && cand && !done){
-      const gapTxt = cand.gap>=9999 ? "давно" : (cand.gap===0 ? "контакт был сегодня" : cand.gap+" дн. тишины");
-      hint = `<div class="hint">Кандидат: ${esc(cand.p.name)} — ${gapTxt}</div>`;
-    }
-    html += `<div class="mission ${done?"done":""}" data-mission="${prefix+i}" data-cat="${m.cat}" role="button" tabindex="0">
-      <span class="tick">${done?"✔":""}</span>
-      <div><div class="txt">${esc(m.text)}</div>
-      <div class="meta"><span class="chip" style="color:${cat.color}; border-color:${cat.color}">${cat.name}</span>${m.min?`<span>~${m.min} мин</span>`:""}<span>+${XP.mission} XP</span></div>${hint}</div></div>`;
-    if(m.cat==="people" && cand && done && cand.gap>0){
-      html += `<button class="btn ghost small" data-ptouch="${cand.idx}" style="margin-top:6px">Это был контакт с «${esc(cand.p.name)}» — отметить</button>`;
-    }
+function cardQuestion(ctx, rec, quiet, expanded){
+  const gap = gapDays(ctx.dn);
+  const shortGap = gap >= 3 && gap <= 6;
+  const q = shortGap ? "Что происходило?" : (quiet ? "Одно слово про сегодня" : (rec.q || ""));
+  if(!expanded){
+    if(rec.answer) return line("q","Вопрос вечера","✔ "+esc(rec.answer.slice(0,44)), true);
+    return line("q","Вопрос вечера", esc(q.slice(0,44))+(q.length>44?"…":""), false);
   }
-  return html + `<p class="mut" style="margin-top:10px">Три варианта — твой выбор. Одно сделанное лучше трёх запланированных.</p></div>`;
-}
-
-function questionCardHtml(rec, phase){
-  const q = rec.q || "";
-  if(phase!=="evening" && !rec.answer && !EXPANDED.has("q") && !EDITING.answer){
-    return `<div class="cardline" data-expand="q" role="button" tabindex="0" id="card-q">
-      <span class="cl-cap">Вопрос вечера</span><span class="cl-txt dim">Откроется ближе к вечеру — или тапни сейчас</span><span class="ar">›</span></div>`;
-  }
-  let html = `<div class="card" id="card-q"><div class="eyebrow"><span class="led"></span>Вопрос вечера · +${XP.answer} XP</div>
-    <h2 style="font-size:17px">${esc(q)}</h2>`;
+  let h = '<div class="card" id="card-q">'+eyebrow("Вопрос вечера", rec.answer ? "ok" : "live")+'<h2 style="font-size:17px">'+esc(q)+'</h2>';
   if(rec.answer && !EDITING.answer){
-    html += `<p class="j-a" style="margin-top:8px; color:var(--muted)">${esc(rec.answer)}</p><button class="btn ghost small" data-act="editanswer">Дописать</button>`;
+    h += '<p class="j-a" style="margin-top:8px; color:var(--muted)">'+esc(rec.answer)+'</p>'+
+      '<div class="minirow"><button class="mini" data-act="edit-answer">дописать</button></div>';
   } else {
     const val = getDraft("answer") || (EDITING.answer ? rec.answer : "");
-    html += `<textarea id="answerta" data-draft="answer" placeholder="Пара честных предложений. Никто, кроме тебя, это не прочитает...">${esc(val)}</textarea>
-      <div class="savestate" id="draft-answer"></div>
-      <button class="btn small" data-act="saveanswer">Сохранить в дневник</button>`;
+    if(quiet){
+      h += '<input type="text" id="answerta" data-draft="answer" maxlength="120" placeholder="одно слово" value="'+esc(val)+'">';
+    } else {
+      h += '<textarea id="answerta" data-draft="answer" placeholder="Одно слово тоже считается. Можно надиктовать — микрофон на клавиатуре. Никто, кроме тебя, это не прочитает.">'+esc(val)+'</textarea>';
+    }
+    h += '<div class="savestate" id="draft-answer"></div>'+
+      '<div class="btnrow"><button class="btn small sticky" data-act="save-answer">Сохранить в дневник</button>'+
+      (shortGap ? '<button class="btn quiet small" data-act="skip-write">не хочу писать</button>' : '')+'</div>';
+    if(!shortGap && !quiet && rec.q) h += '<div class="minirow"><button class="mini" data-act="ban-question">убрать этот вопрос из ротации</button></div>';
   }
-  return html + `</div>`;
+  return h+'</div>';
 }
 
-function weeklyCardHtml(){
-  const tk = todayKey();
-  const dow = new Date().getDay();
-  if(dow!==0 && dow!==1) return "";
-  const wk = weekKeyOf(dow===1 ? keyOfNum(dayNum(tk)-1) : tk);
-  if(S.weeks[wk]) return "";
-  let html = `<div class="card" id="card-weekly"><div class="eyebrow"><span class="led"></span>Прогон недели · +${XP.weekly} XP</div>
-    <p class="body">${WEEKLY_QS}</p>`;
+function cardWeekly(ctx, expanded){
+  const wk = weekKeyOf(ctx.dow === 1 ? keyOfNum(ctx.dn-1) : ctx.key);
+  if(!expanded) return line("weekly","Прогон недели","Разбор недели — четыре вопроса", false);
   const val = getDraft("weekly", wk);
-  html += `<textarea id="weeklyta" data-draft="weekly" data-scope="${wk}" placeholder="Разбор недели — как разбор шоу: без самобичевания, по фактам...">${esc(val)}</textarea>
-    <div class="savestate" id="draft-weekly"></div>
-    <button class="btn small" data-act="saveweekly" data-wk="${wk}">Закрыть неделю</button></div>`;
-  return html;
+  return '<div class="card" id="card-weekly">'+eyebrow("Прогон недели","live")+
+    '<p class="body">'+WEEKLY_QS+'</p>'+
+    '<textarea id="weeklyta" data-draft="weekly" data-scope="'+wk+'" placeholder="Разбор недели — как разбор шоу: без самобичевания, по фактам...">'+esc(val)+'</textarea>'+
+    '<div class="savestate" id="draft-weekly"></div>'+
+    '<button class="btn small sticky" data-act="save-weekly" data-wk="'+wk+'">Закрыть неделю</button></div>';
 }
 
-function echoCardHtml(){
-  const dn = dayNum(todayKey());
-  if(dn % 4 !== 0) return "";
-  const old = Object.keys(S.days).filter(k=>{
-    return S.days[k].answer && (dn - dayNum(k)) >= 30;
-  }).sort();
-  if(!old.length) return "";
-  const key = old[dn % old.length];
-  const rec = S.days[key];
-  return `<div class="card"><div class="eyebrow"><span class="led"></span>Эхо дневника</div>
-    <p class="mut">${fmtDate(key)} на вопрос «${esc(rec.q||"")}» ты ответил:</p>
-    <div class="echo"><p class="e-old">${esc(rec.answer)}</p></div>
-    <p class="mut" style="margin-top:10px">Что изменилось с тех пор? Можно ответить в сегодняшнем вопросе — а можно просто заметить.</p></div>`;
-}
-
-function morningPlanCardHtml(){
-  const h = new Date().getHours();
-  if(h>=12 || h<5) return "";
-  const y = S.days[keyOfNum(dayNum(todayKey())-1)];
+function cardPlan(ctx, rec, expanded){
+  const y = S.days[keyOfNum(ctx.dn-1)];
   if(!y || !y.sleepPlan) return "";
-  return `<div class="card"><div class="eyebrow"><span class="led"></span>С вечера ты оставил себе</div>
-    <p class="j-a">${esc(y.sleepPlan)}</p>
-    <p class="mut" style="margin-top:8px">Это не обязательства — это то, что вчерашний ты считал важным. Решай сегодняшним собой.</p></div>`;
+  if(!expanded) return line("plan","С вечера", esc(y.sleepPlan.slice(0,44)), false);
+  return '<div class="card" id="card-plan">'+eyebrow("С вечера ты оставил себе")+
+    '<p class="j-a">'+esc(y.sleepPlan)+'</p>'+
+    '<p class="tiny-note">Это не обязательства — это то, что вчерашний ты считал важным. Решай сегодняшним собой.</p>'+
+    '<button class="btn ghost small" data-act="seen-plan">Прочитал</button></div>';
 }
 
-function sleepCardHtml(rec){
-  const h = new Date().getHours();
-  if(!(h>=21 || h<5)) return "";
-  if(rec.lightsOut){
-    return `<div class="card"><div class="eyebrow"><span class="led"></span>Последний трек</div>
-      <div class="done-note">✔ Свет погашен в ${rec.lightsOut}. Хорошей тишины.</div></div>`;
+function breathHtml(){
+  const running = BREATH && BREATH.on;
+  return '<div class="breath'+(running?" run":"")+'" aria-hidden="true"></div>'+
+    '<p class="breath-cap" id="breath-cap">'+(running ? (BREATH.phase==="in"?"вдох 4":"выдох 6")+" · осталось "+BREATH.left : "вдох 4 · выдох 6")+'</p>'+
+    '<div class="btnrow" style="justify-content:center"><button class="btn ghost small" data-act="breath">'+(running?"Стоп":"Начать дыхание · 2 минуты")+'</button></div>';
+}
+
+function cardNight(ctx, rec, expanded){
+  const show = rec.kind === "show";
+  const cap = show ? "Демонтаж" : "Последний трек";
+  if(rec.closedAt || rec.lightsOut){
+    if(!expanded) return line("night", cap, "✔ Свет погашен в "+(rec.closedAt||rec.lightsOut), true);
+    return '<div class="card" id="card-night">'+eyebrow(cap,"ok")+
+      '<div class="done-note">✔ Свет погашен в '+(rec.closedAt||rec.lightsOut)+'. Хорошей тишины.</div></div>';
   }
+  if(!expanded) return line("night", cap, show ? "Четыре шага после шоу" : "Закрыть день", false);
   const val = getDraft("sleep");
-  return `<div class="card" id="card-sleep"><div class="eyebrow"><span class="led"></span>Последний трек · +${XP.sleep} XP</div>
-    <p class="body">Шоу отыграно, идёт демонтаж. Две минуты дыхания — вдох на 4, выдох на 6:</p>
-    <div class="breath"></div><p class="breath-cap">дыши вместе с кругом</p>
-    <p class="mut" style="margin-top:12px">Выгрузи голову — три строки на завтра, чтобы она не крутила их до четырёх утра. Утром они будут ждать тебя:</p>
-    <textarea id="sleepta" data-draft="sleep" placeholder="1. …&#10;2. …&#10;3. …" style="min-height:72px">${esc(val)}</textarea>
-    <button class="btn small" data-act="lightsout">Свет погашен</button></div>`;
+  if(show){
+    const step = rec.demoStep || 1;
+    const steps = [
+      {h:"Еда", p:"Первые двадцать минут дома. Не «потом»."},
+      {h:"Горячий душ", p:"Тело нагревается, потом остывает — вырубает именно на остывании. Это физика, а не расслабление."},
+      {h:"Разбор шоу, три строки", p:"Что сработало / что чинить / кто это делает. Голова крутит это до четырёх утра, потому что боится забыть. Запиши — и ей нечего будет держать."},
+      {h:"Свет вниз, телефон на стол", p:"Дальше — только дыхание."},
+    ];
+    let h = '<div class="card" id="card-night">'+eyebrow("Демонтаж","live");
+    for(let i=0;i<steps.length;i++){
+      if(i+1 > step) break;
+      h += '<div class="step'+(i+1===step?" on":"")+'"><h3>'+steps[i].h+'</h3><p>'+steps[i].p+'</p>';
+      if(i === 2) h += '<textarea id="sleepta" data-draft="sleep" placeholder="1. …&#10;2. …&#10;3. …" style="min-height:80px">'+esc(val)+'</textarea><div class="savestate" id="draft-sleep"></div>';
+      if(i === 3) h += breathHtml();
+      h += '</div>';
+    }
+    if(step < 4) h += '<button class="btn small" data-act="demo-next">дальше</button>';
+    else h += '<button class="btn small" data-act="lightsout">Свет погашен</button>';
+    return h + '<p class="tiny-note">Не ложись сразу. Лечь в 01:30 и провертеться до 03:30 хуже, чем лечь в 03:00 и вырубиться за пятнадцать минут. Кровать должна означать сон, а не ожидание сна.</p></div>';
+  }
+  return '<div class="card" id="card-night">'+eyebrow("Последний трек","live")+
+    '<p class="body">Шоу отыграно, идёт демонтаж.</p>'+breathHtml()+
+    '<p class="mut" style="margin-top:14px">Выгрузи голову — три строки на завтра. Утром они будут ждать тебя:</p>'+
+    '<textarea id="sleepta" data-draft="sleep" placeholder="1. …&#10;2. …&#10;3. …" style="min-height:80px">'+esc(val)+'</textarea>'+
+    '<div class="savestate" id="draft-sleep"></div>'+
+    '<button class="btn small" data-act="lightsout">Свет погашен</button>'+
+    '<p class="tiny-note">Не ложись сразу. Кровать должна означать сон, а не ожидание сна.</p></div>';
 }
 
-function browserHintHtml(){
-  /* установленная PWA и Safari — РАЗНЫЕ хранилища; в браузере предупреждаем */
+function cardRider(expanded){
+  if(!S.rider.helps) return "";
+  if(!expanded) return line("rider","Райдер", esc(S.rider.helps.slice(0,44)), false);
+  return '<div class="card" id="card-rider">'+eyebrow("Ты сам себе написал","quiet")+
+    '<p class="tiny-note" style="margin-top:0">Это заметки, а не договор. Ты писал их себе, когда силы были.</p>'+
+    '<p class="j-a" style="margin-top:10px">'+esc(S.rider.helps)+'</p></div>';
+}
+
+/* ================= МЕТА-БЛОК (максимум один) ================= */
+
+function metaBlock(ctx, rec, quiet){
+  if(!S.seenV4 && !HIDE_UPD){
+    const s = stats();
+    return '<div class="note"><b>Обновление. Три вещи, коротко.</b>'+
+      '<p class="mut" style="margin-top:8px">1. Очки и уровни убраны — они считали нажатия, а не тебя. Осталось настоящее: '+
+      nRec(s.records)+", "+nTasks(s.tasks)+", "+nDays(s.marked)+'. Ничего не удалено.</p>'+
+      '<p class="mut" style="margin-top:6px">2. Дни, где ты только двинул фейдер, теперь тоже считаются отмеченными — поэтому карта стала плотнее. Ничего не дорисовано, изменился только счёт.</p>'+
+      '<p class="mut" style="margin-top:6px">3. День теперь кончается в 5 утра, а не в полночь. Ночь принадлежит вчерашнему дню.</p>'+
+      '<p class="mut" style="margin-top:6px">И новое: сфер стало десять — добавились Ремесло, Дорога, Создание и Границы. В «Я» появилось «Что включено»: выключить можно что угодно.</p>'+
+      '<button class="btn small" data-act="seen-v4">понял</button></div>';
+  }
   const isiOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
-  const inStandalone = window.navigator.standalone === true || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
-  if(!isiOS || inStandalone || HIDE_BROWSER_HINT) return "";
-  return `<div class="quiet-note"><b>Ты в браузере.</b> У установленного «Пульта» (иконка на экране «Домой») — своя, отдельная память: записи отсюда туда не попадут. Если приложение уже установлено — открой его. Если нет: «Поделиться» → «На экран “Домой”».
-    <div class="btnrow"><button class="btn ghost small" data-act="hidehint">Понял</button></div></div>`;
+  const standalone = window.navigator.standalone === true || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
+  if(isiOS && !standalone && !HIDE_HINT){
+    return '<div class="note cool"><b>Ты в браузере.</b> У установленного «Пульта» (иконка на экране «Домой») своя, отдельная память: записи отсюда туда не попадут. Если он уже установлен — открой его. Если нет: «Поделиться» → «На экран «Домой».'+
+      '<div class="btnrow"><button class="btn ghost small" data-act="hide-hint">понял</button></div></div>';
+  }
+  if(quietExpired(ctx)){
+    return '<div class="note cool"><b>Тихий режим кончился.</b><p class="mut" style="margin-top:4px">Продлить на неделю или вернуть обычный день? Само ничего не включится.</p>'+
+      '<div class="btnrow"><button class="btn small" data-act="quiet-set" data-d="7">Продлить на 7</button>'+
+      '<button class="btn ghost small" data-act="quiet-off">Вернуть обычный день</button>'+
+      '<button class="btn quiet small" data-act="quiet-keep">Оставить как есть</button></div></div>';
+  }
+  const gap = gapDays(ctx.dn);
+  if(gap >= 3 && gap <= 6) return '<p class="yline">Пульт был выключен '+nDays(gap)+'. Ничего не сгорело.</p>';
+  /* Предложение убавить громкость: два подряд отмеченных дня на низком, не чаще раза в 10 дней */
+  if(!quiet && (S.quietOfferedAt === null || ctx.dn - S.quietOfferedAt >= 10)){
+    const marked = [];
+    for(let i=1;i<=7 && marked.length<2;i++){
+      const r = S.days[keyOfNum(ctx.dn-i)];
+      if(r && r.energy !== null) marked.push(r.energy);
+    }
+    if(marked.length === 2 && marked[0] <= 2 && marked[1] <= 2){
+      return '<div class="note"><b>Два дня подряд на низком. Убавить громкость?</b>'+
+        '<div class="btnrow"><button class="btn small" data-act="quiet-ask">Убавить</button>'+
+        '<button class="btn ghost small" data-act="quiet-decline">Обычный день</button></div></div>';
+    }
+  }
+  /* Предложение райдера: только в хороший день, не чаще раза в 14 дней */
+  if(!quiet && !S.off.rider && !S.rider.helps && rec.energy !== null && rec.energy >= 4 &&
+     (S.riderOfferedAt === null || ctx.dn - S.riderOfferedAt >= 14)){
+    S.riderOfferedAt = ctx.dn; save();
+    return '<div class="note"><b>Сегодня энергия есть.</b><p class="mut" style="margin-top:4px">Это лучший день, чтобы написать инструкцию для дня, когда её не будет.</p>'+
+      '<div class="btnrow"><button class="btn small" data-act="rider-open">Записать</button>'+
+      '<button class="btn ghost small" data-act="hide-hint">не сейчас</button></div></div>';
+  }
+  if(dayMarked(rec)) return '<div class="banner"><b>День записан.</b><p>Дальше — по желанию.</p></div>';
+  if(gap <= 2){
+    const y = S.days[keyOfNum(ctx.dn-1)];
+    if(y && isActive(y)){
+      let n = 0; for(const id in (y.missions||{})) if(y.missions[id]) n++;
+      return '<p class="yline">Вчера: '+(y.energy?"энергия «"+ELBL[y.energy]+"», ":"")+nTasks(n)+(y.answer?", запись есть":"")+".</p>";
+    }
+  }
+  return "";
+}
+
+/* ================= ПЕРЕХВАТЫ ВОЗВРАТА ================= */
+
+function takeoverGap(ctx, rec, gap){
+  const s = stats();
+  let h = headerHtml()+
+    '<div class="card" style="margin-top:14px">'+eyebrow("Пульт был выключен")+
+    '<h2>'+nDays(gap)+'</h2>'+
+    '<p class="body">Всё цело: '+nRec(s.records)+", "+nTasks(s.tasks)+", "+nDays(s.marked)+'. Ничего не сгорело и никуда не делось.</p>'+
+    '<div class="btnrow"><button class="btn small" data-act="ret-back">просто вернуться</button>'+
+    '<button class="btn ghost small" data-act="ret-normal">показать обычный день</button></div></div>';
+  if(gap >= 30){
+    h += '<div class="card">'+eyebrow("Пересобрать пульт")+
+      '<p class="mut">Если то, что ты настроил раньше, больше не про тебя.</p>'+
+      '<button class="toggle" data-act="rb-keep" data-k="missions" aria-pressed="'+(RB.missions)+'"><span>оставить мой сетлист</span><span class="sw"><i></i></span></button>'+
+      '<button class="toggle" data-act="rb-keep" data-k="questions" aria-pressed="'+(RB.questions)+'"><span>оставить мои вопросы</span><span class="sw"><i></i></span></button>'+
+      '<button class="toggle" data-act="rb-keep" data-k="people" aria-pressed="'+(RB.people)+'"><span>оставить своих людей</span><span class="sw"><i></i></span></button>'+
+      '<button class="btn ghost small" data-act="rebuild">собрать заново</button>'+
+      '<p class="tiny-note">Дневник не трогаем — он остаётся целиком, что бы ты ни выбрал.</p></div>';
+  }
+  return h;
+}
+let RB = {missions:true, questions:true, people:true};
+
+/* ================= ВКЛАДКА «СЕГОДНЯ» ================= */
+
+function viewPaused(ctx){
+  const s = stats();
+  return headerHtml()+'<div class="card" style="margin-top:20px">'+eyebrow("Пауза","quiet")+
+    '<p class="body">Пульт на паузе. Данные целы: '+nRec(s.records)+", "+nDays(s.marked)+'.</p>'+
+    '<button class="btn small" data-act="unpause">Включить</button></div>';
 }
 
 function viewToday(){
-  const tk = todayKey();
-  const rec = ensureDayContent(tk);
-  const dn = dayNum(tk);
-  const h = new Date().getHours();
-  const phase = (h>=17 || h<5) ? "evening" : (h<12 ? "morning" : "day");
-  const scDone = rec.energy !== null;
-  const quiet = ((scDone && rec.energy <= 2) || !!rec.quietOn) && !rec.quietOff;
+  const ctx = CTX;
+  const rec = ensureDayContent(ctx.key);
+  const quiet = quietActive(ctx);
+  const gap = gapDays(ctx.dn);
 
-  /* возвращение и «вчера» — считаем по последнему АКТИВНОМУ дню, без укора */
-  let backLine = "";
-  if(!isActive(rec) && !scDone){
-    const lastAct = lastActiveDayBefore(dn);
-    const gap = lastAct===null ? (S.lastVisit ? dn - dayNum(S.lastVisit) : 0) : dn - lastAct;
-    if(gap >= 3){
-      backLine = "Начинаем с сегодня. Что было — было.";
-    } else {
-      const y = S.days[keyOfNum(dn-1)];
-      if(y && isActive(y)){
-        const n = Object.values(y.missions||{}).filter(Boolean).length;
-        backLine = `Вчера: ${y.energy?("энергия «"+ELBL[y.energy]+"», "):""}задач ${n}${y.answer?", запись есть":""}.`;
-      } else if(S.lastVisit){
-        backLine = "Вчера был тихий эфир — ничего не сгорело.";
-      }
-    }
-  }
-  if(S.lastVisit !== tk){ S.lastVisit = tk; save(); }
+  if(S.lastVisit !== ctx.key){ S.lastVisit = ctx.key; save(); }
 
-  /* детектор отката: последние два отмеченных дня ≤2 */
-  let quietSuggest = "";
-  if(!scDone && !rec.quietOn && !rec.quietAsked){
-    const marked = [];
-    for(let i=1;i<=7 && marked.length<2;i++){
-      const r = S.days[keyOfNum(dn-i)];
-      if(r && r.energy!==null) marked.push(r.energy);
-    }
-    if(marked.length===2 && marked[0]<=2 && marked[1]<=2){
-      quietSuggest = `<div class="quiet-note"><b>Похоже, последние дни были тяжёлые.</b> Включить тихий режим — без подвигов, только мягкие задачи?
-        <div class="btnrow"><button class="btn small" data-act="quieton">Включить</button><button class="btn ghost small" data-act="quietno">Обычный день</button></div></div>`;
-    }
+  /* Перехваты: crash → gap30 → gap7 → обычный день. Тихий режим экран не перехватывает. */
+  if(gap >= 7 && !rec.returned && !rec.returnSeen) return takeoverGap(ctx, rec, gap);
+
+  let h = headerHtml();
+  h += '<p class="greet">'+greeting(ctx.h)+', <b>Батыр</b>. '+(quiet ? "Тихий режим. Без подвигов." : "Пульт включён — день твой.")+'</p>';
+  h += saveAlarmHtml();
+  h += metaBlock(ctx, rec, quiet);
+
+  if(rec.idle && !SHOW_ALL){
+    return h + '<div class="card">'+eyebrow("Отмечено","ok")+
+      '<p class="body">Отмечено'+(rec.closedAt?" · "+rec.closedAt:"")+'. Сегодня больше ничего не нужно.</p>'+
+      '<div class="minirow"><button class="mini" data-act="show-all">Показать остальное ›</button></div></div>';
   }
 
-  let html = headerHtml();
-  html += `<p class="greet">${greeting()}, <b>Батыр</b>. ${quiet ? "Сегодня — тихий день. Без подвигов." : "Пульт включён — день твой."}</p>`;
-  html += backLine ? `<p class="yline">${backLine}</p>` : `<div style="height:12px"></div>`;
-  html += `<div id="banner-slot">${bannerHtml(rec)}</div>`;
-  html += browserHintHtml();
-  html += quietSuggest;
+  h += archiveHtml(ctx, rec, quiet);
 
-  if(quiet && scDone){
-    html += `<div class="quiet-note"><b>Режим восстановления.</b> Энергии мало — и это нормально: у тебя бывают циклы. Апатия сегодня не значит, что амбиций нет. Пульт убрал всё лишнее. Отдых — это тоже работа над собой.
-      <div class="btnrow"><button class="btn ghost small" data-act="quietoff">Вернуть обычный день</button></div></div>`;
+  if(!rec.idle){
+    h += '<button class="here" data-act="idle"><b>Я тут</b><span>одна кнопка,<br>ничего не спросит</span></button>';
   }
 
-  const cards = [];
-  cards.push(scCardHtml(rec, scDone));
-  const mp = morningPlanCardHtml(); if(mp) cards.push(mp);
-  if(phase==="evening" && !rec.answer) cards.push(questionCardHtml(rec, phase));
-  cards.push(setlistCardHtml(rec, quiet));
-  cards.push(strengthCardHtml(rec, quiet));
-  if(!(phase==="evening" && !rec.answer)) cards.push(questionCardHtml(rec, phase));
-  const wkC = weeklyCardHtml(); if(wkC) cards.push(wkC);
-  if(phase==="evening"){ const e = echoCardHtml(); if(e) cards.push(e); }
-  const sl = sleepCardHtml(rec); if(sl) cards.push(sl);
-  cards.push(rhythmHtml());
+  /* Какие карточки существуют сегодня */
+  const has = {sc:true, setlist:true, q:true, str:!S.off.strength && !(gap>=3&&gap<=6), night:false, weekly:false, plan:false, rider:false};
+  if(quiet && S.rider.helps && !S.off.rider) has.rider = true;
+  if(ctx.h < 12 && !rec.seenPlan){ const y = S.days[keyOfNum(ctx.dn-1)]; if(y && y.sleepPlan) has.plan = true; }
+  if(!S.off.weekly && !quiet && (ctx.dow === 0 || ctx.dow === 1)){
+    const wk = weekKeyOf(ctx.dow === 1 ? keyOfNum(ctx.dn-1) : ctx.key);
+    if(!S.weeks[wk]) has.weekly = true;
+  }
+  const nightShow = rec.kind === "show" && !S.off.demontazh;
+  if(nightShow ? (ctx.h >= 23 || ctx.h < 5) : (ctx.h >= 21 || ctx.h < 5)) has.night = true;
 
-  html += cards.join("");
-  html += `<p class="footer-note">Все данные хранятся только на этом устройстве. Резервная копия — во вкладке «Я».</p>`;
-  return html;
+  /* Главная карточка — детерминированно, сверху вниз до первого совпадения */
+  let primary;
+  if(has.rider) primary = "rider";
+  else if(quiet) primary = "setlist";
+  else if(rec.energy === null) primary = "sc";
+  else if(has.plan) primary = "plan";
+  else if(has.night) primary = "night";
+  else if(ctx.h >= 17 && !rec.answer) primary = "q";
+  else primary = "setlist";
+
+  const order = ["rider","plan","sc","setlist","night","q","weekly","str"];
+  const render1 = id => {
+    const exp = (id === primary) || EXPANDED.has(id);
+    if(id === "sc") return cardSoundcheck(ctx, rec, exp);
+    if(id === "setlist") return cardSetlist(ctx, rec, quiet, exp);
+    if(id === "str") return cardStrength(ctx, rec, quiet, exp);
+    if(id === "q") return cardQuestion(ctx, rec, quiet, exp);
+    if(id === "weekly") return cardWeekly(ctx, exp);
+    if(id === "plan") return cardPlan(ctx, rec, exp);
+    if(id === "night") return cardNight(ctx, rec, exp);
+    if(id === "rider") return cardRider(exp);
+    return "";
+  };
+  h += render1(primary);
+  for(const id of order){ if(id !== primary && has[id]) h += render1(id); }
+
+  h += '<p class="footer-note">Всё хранится только на этом устройстве. Копия — во вкладке «Я».</p>';
+  return h;
 }
 
-/* ---------- Путь ---------- */
+/* ================= ВКЛАДКА «ПУТЬ» ================= */
 
 function viewPath(){
-  const xp = totalXp();
-  const {cur, next} = levelFor(xp);
-  const progress = next ? Math.round(((xp-cur.xp)/(next.xp-cur.xp))*100) : 100;
-  const total = activeDaysCount();
-  let missionsDone = 0, answers = 0, lights = 0;
-  for(const k in S.days){ const r=S.days[k]; missionsDone += Object.values(r.missions||{}).filter(Boolean).length; if(r.answer) answers++; if(r.weekly) answers++; if(r.lightsOut) lights++; }
-  answers += Object.keys(S.weeks||{}).length;
+  const ctx = CTX;
+  const s = stats();
+  const quiet = quietActive(ctx);
+  let h = headerHtml();
 
-  let html = headerHtml();
+  h += '<div class="card">'+eyebrow("Что накопилось")+
+    '<div class="stats">'+
+    '<div class="stat"><div class="n">'+s.records+'</div><div class="l">записей</div></div>'+
+    '<div class="stat"><div class="n">'+s.tasks+'</div><div class="l">задач сделано</div></div>'+
+    '<div class="stat"><div class="n">'+s.marked+'</div><div class="l">отмеченных дней</div></div></div>'+
+    '<p class="mut" style="margin-top:10px">Это факты о тебе. Они накапливаются и не сгорают — их нельзя обесценить.</p></div>';
 
-  html += `<div class="card"><div class="eyebrow"><span class="led"></span>Артефакты</div>
-    <div class="stats">
-      <div class="stat"><div class="n">${answers}</div><div class="l">записей</div></div>
-      <div class="stat"><div class="n">${missionsDone}</div><div class="l">задач сделано</div></div>
-      <div class="stat"><div class="n">${total}</div><div class="l">активных дней</div></div>
-    </div>
-    <p class="mut" style="margin-top:10px">Это факты о тебе. Они накапливаются и не сгорают — их нельзя обесценить.</p></div>`;
-
-  html += `<div class="card"><div class="eyebrow"><span class="led"></span>Уровень</div>
-    <div class="level-line"><span class="level-name">${cur.name}</span><span class="xp-num">${xp} XP${next?` / ${next.xp}`:""}</span></div>
-    <div class="xpbar"><i style="width:${progress}%"></i></div>
-    ${next?`<p class="mut" style="margin-top:8px">До уровня «${next.name}» — ${next.xp-xp} XP. Уровень не сгорает: всё, что прокачано, — прокачано.</p>`:`<p class="mut" style="margin-top:8px">Максимальный уровень. Ты и есть шоу.</p>`}</div>`;
-
-  const pct = ((Math.pow(1.01, total)-1)*100).toFixed(1);
-  html += `<div class="card"><div class="eyebrow"><span class="led"></span>Дни складываются</div>
-    <p class="body" style="font-family:'JetBrains Mono',monospace; font-size:26px; color:var(--amber)">+${pct}%</p>
-    <p class="mut" style="margin-top:6px">Это не измерение — это символ: напоминание, что дни складываются, а не исчезают. Настоящие цифры — выше, в артефактах.</p></div>`;
-
-  const tk = todayKey(); const dn = dayNum(tk);
-  const pts = [];
-  const DAYS_BACK = 41;
-  for(let i=DAYS_BACK; i>=0; i--){
-    const r = S.days[keyOfNum(dn-i)];
-    if(r && r.energy!==null) pts.push({x: DAYS_BACK-i, y: r.energy});
+  /* Суждения об эхе — единственная агрегация: подсчёт его собственных тапов */
+  let yes=0, no=0, dunno=0, shown=0;
+  for(const k in S.days){ const r = S.days[k]; if(r.stillTrue){ if(r.stillTrue==="yes") yes++; else if(r.stillTrue==="no") no++; else dunno++; } }
+  for(const k in (S.echoShown||{})) shown++;
+  if(yes+no+dunno >= 5){
+    h += '<div class="card">'+eyebrow("Возвращённые записи")+
+      '<p class="body">Из '+shown+' возвращённых записей: '+yes+' — всё ещё так, '+no+' — уже не так, '+dunno+' — сложно сказать.</p>'+
+      '<p class="mut" style="margin-top:8px">Это твои собственные отметки, а не мнение приложения.</p></div>';
   }
+
+  /* Линия энергии */
+  const pts = []; const BACK = 41;
+  for(let i=BACK;i>=0;i--){ const r = S.days[keyOfNum(ctx.dn-i)]; if(r && r.energy !== null) pts.push({x:BACK-i, y:r.energy}); }
   if(pts.length >= 2){
-    const W=420, H=90, px = x=> 10 + x*(W-20)/DAYS_BACK, py = y=> H-12 - (y-1)*(H-28)/4;
-    const line = pts.map(p=>px(p.x).toFixed(1)+","+py(p.y).toFixed(1)).join(" ");
-    const dots = pts.map(p=>`<circle cx="${px(p.x).toFixed(1)}" cy="${py(p.y).toFixed(1)}" r="3" fill="#F2A93B"/>`).join("");
-    html += `<div class="card"><div class="eyebrow"><span class="led"></span>Линия энергии · 6 недель</div>
-      <svg class="spark" viewBox="0 0 ${W} ${H}" role="img" aria-label="График энергии">
-        <line x1="10" y1="${py(3)}" x2="${W-10}" y2="${py(3)}" stroke="#262D45" stroke-dasharray="3 4"/>
-        <polyline points="${line}" fill="none" stroke="#F2A93B" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity=".85"/>
-        ${dots}</svg>
-      <p class="mut" style="margin-top:6px">Подъёмы и спады — это цикл, а не характер. Когда линия накопится, ты впервые увидишь его целиком: фаза станет известной величиной, которую можно планировать.</p></div>`;
+    const W=420, H=90;
+    const px = x=> 10 + x*(W-20)/BACK, py = y=> H-12 - (y-1)*(H-28)/4;
+    const line = pts.map(p=> px(p.x).toFixed(1)+","+py(p.y).toFixed(1)).join(" ");
+    const dots = pts.map(p=> '<circle cx="'+px(p.x).toFixed(1)+'" cy="'+py(p.y).toFixed(1)+'" r="3" style="fill:var(--amber)"/>').join("");
+    const avg = (pts.reduce((a,p)=>a+p.y,0)/pts.length).toFixed(1);
+    h += '<div class="card">'+eyebrow("Линия энергии · 6 недель")+
+      '<svg class="spark" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Энергия за 6 недель: '+pts.length+' отметок, в среднем '+avg+' из 5">'+
+      '<line x1="10" y1="'+py(3)+'" x2="'+(W-10)+'" y2="'+py(3)+'" style="stroke:var(--line)" stroke-dasharray="3 4"/>'+
+      '<polyline points="'+line+'" fill="none" style="stroke:var(--amber)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" opacity=".85"/>'+
+      dots+'</svg>'+
+      '<p class="mut" style="margin-top:6px">Подъёмы и спады — это цикл, а не характер. Когда линия накопится, ты увидишь его целиком.</p></div>';
   }
 
-  const todayDow = (new Date().getDay()+6)%7;
+  /* Карта 10 недель */
+  const todayDow = (ctx.dn + 3) % 7;   /* понедельник = 0 */
   let cells = "";
-  const start = dn - todayDow - 63;
+  const start = ctx.dn - todayDow - 63;
   for(let col=0; col<10; col++){
     for(let row=0; row<7; row++){
       const n = start + col*7 + row;
-      const future = n > dn;
-      cells += `<span class="hcell ${!future && isActive(S.days[keyOfNum(n)])?"on":""} ${future?"future":""}"></span>`;
+      const future = n > ctx.dn;
+      cells += '<span class="hcell'+(!future && isActive(S.days[keyOfNum(n)])?" on":"")+(future?" future":"")+'"></span>';
     }
   }
-  html += `<div class="card"><div class="eyebrow"><span class="led"></span>Карта · 10 недель</div><div class="heat">${cells}</div>
-    <p class="mut" style="margin-top:8px">Не гонись за сплошной заливкой. Дыры — это жизнь, а не провал.</p></div>`;
+  h += '<div class="card">'+eyebrow("Карта · 10 недель")+'<div class="heat">'+cells+'</div>'+
+    '<p class="mut" style="margin-top:8px">Не гонись за сплошной заливкой. Дыры — это жизнь, а не провал.</p></div>';
 
-  const counts = {};
-  let uncat = 0;
+  /* Каналы: резолв категории по содержимому */
+  const counts = {}; let uncat = 0;
   for(const k in S.days){
-    const r = S.days[k]; if(!Object.values(r.missions||{}).some(Boolean)) continue;
-    for(const id in r.missions){ if(!r.missions[id]) continue;
-      const idx = Number(id.slice(1));
-      const list = id[0]==="r" ? (r.restlist||[]) : (r.setlist||[]);
-      const m = list[idx];
-      if(m) counts[m.cat] = (counts[m.cat]||0)+1; else uncat++;
+    const r = S.days[k];
+    const all = (r.setlist||[]).concat(r.restlist||[], r.pool||[]);
+    for(const id in (r.missions||{})){
+      if(!r.missions[id]) continue;
+      const m = all.find(x=> x.id === id);
+      if(m && CATS[m.cat]) counts[m.cat] = (counts[m.cat]||0)+1; else uncat++;
     }
   }
-  const maxc = Math.max(1, ...Object.values(counts), 1);
-  html += `<div class="card"><div class="eyebrow"><span class="led"></span>Каналы</div><div class="meters">`;
+  const vals = Object.keys(counts).map(k=>counts[k]);
+  const maxc = Math.max(1, vals.length ? Math.max.apply(null, vals) : 1);
+  h += '<div class="card">'+eyebrow("Каналы")+'<div class="meters">';
   for(const c in CATS){
+    if(c === "rest" && !counts[c]) continue;
     const n = counts[c]||0;
-    html += `<div class="meter"><span class="ml">${CATS[c].name}</span><span class="track"><span class="fill" style="width:${Math.round(n/maxc*100)}%; background:${CATS[c].color}"></span></span><span class="mn">${n}</span></div>`;
+    h += '<div class="meter"><span class="ml">'+CATS[c].name+'</span><span class="track"><span class="fill" style="width:'+Math.round(n/maxc*100)+'%; background:'+CATS[c].color+'"></span></span><span class="mn">'+n+'</span></div>';
   }
-  html += `</div><p class="mut" style="margin-top:10px">Куда идёт твоя энергия. Перекос — не ошибка, а информация.${uncat?` (${uncat} ранних задач без категории — до версии 2 они не сохранялись.)`:""}</p></div>`;
-  if(lights>0) html += `<p class="footer-note">«Свет погашен» отмечен ${lights} раз — время отбоя копится в дневнике.</p>`;
-  return html;
+  h += '</div><p class="mut" style="margin-top:10px">Куда идёт твоя энергия. Перекос — не ошибка, а информация.'+
+    (uncat ? " ("+uncat+" ранних задач без категории — до версии 2 они не сохранялись.)" : "")+'</p></div>';
+
+  /* Ритм — внизу, без счётчика и без оценок */
+  if(!S.off.rhythm && !quiet){
+    let leds = "", act = 0;
+    for(let i=6;i>=0;i--){
+      const on = isActive(S.days[keyOfNum(ctx.dn-i)]);
+      if(on) act++;
+      leds += '<span class="rled'+(on?" on":"")+(i===0?" today":"")+'"></span>';
+    }
+    if(act > 0){
+      h += '<div class="card">'+eyebrow("Последние 7 дней")+'<div class="leds">'+leds+'</div>'+
+        '<p class="mut" style="margin-top:10px">Пропуск ничего не обнуляет.</p></div>';
+    }
+  }
+
+  /* Тихая строка про копию */
+  if(s.records >= 30){
+    const lastAt = S.lastBackup ? Math.floor((Date.now() - S.lastBackup.at)/86400000) : null;
+    const nagOk = S.backupNagAt === null || ctx.dn - S.backupNagAt >= 7;
+    if((lastAt === null || lastAt > 21) && nagOk){
+      h += '<div class="card">'+eyebrow("Копия")+
+        '<p class="mut">'+(lastAt === null ? "Копия ещё не делалась." : "Копия последний раз делалась "+nDays(lastAt)+" назад.")+" "+nRec(s.records)+' живут в одном месте.</p>'+
+        '<div class="btnrow"><button class="btn small" data-act="backup">Сохранить копию</button>'+
+        '<button class="btn quiet small" data-act="nag-later">Не сейчас</button></div></div>';
+    }
+  }
+  return h;
 }
 
-/* ---------- Дневник ---------- */
+/* ================= ВКЛАДКА «ДНЕВНИК» ================= */
 
 function viewJournal(){
-  let html = headerHtml();
-  const keys = Object.keys(S.days).filter(k=>{const r=S.days[k]; return r.answer||r.weekly||r.energy!==null||r.lightsOut||r.sleepPlan;}).sort().reverse();
-  if(!keys.length){
-    html += `<div class="card"><div class="eyebrow"><span class="led"></span>Дневник</div>
-      <p class="body">Пока пусто. Первый ответ на вопрос вечера появится здесь.</p>
-      <p class="mut" style="margin-top:8px">Мышление — твоя девятая сила: письмо для тебя не отчётность, а способ услышать себя. Перечитывать старые записи будет интереснее, чем писать новые.</p></div>`;
-    return html;
+  const ctx = CTX;
+  let h = headerHtml();
+  let keys = Object.keys(S.days).filter(k=>{ const r = S.days[k]; return r.answer || r.weekly || r.sleepPlan; }).sort().reverse();
+
+  if(J_FILTER === "low") keys = keys.filter(k=> S.days[k].energy !== null && S.days[k].energy <= 2);
+  if(J_FILTER === "high") keys = keys.filter(k=> S.days[k].energy !== null && S.days[k].energy >= 4);
+  if(J_SEARCH){
+    const n = J_SEARCH.toLowerCase();
+    keys = keys.filter(k=>{ const r = S.days[k]; return ((r.answer||"")+" "+(r.weekly||"")+" "+(r.q||"")).toLowerCase().indexOf(n) >= 0; });
   }
-  html += `<div class="card"><div class="eyebrow"><span class="led"></span>Дневник · ${keys.length} ${keys.length===1?"день":"дней"}</div>`;
-  for(const k of keys){
+
+  const total = Object.keys(S.days).filter(k=> S.days[k].answer || S.days[k].weekly || S.days[k].sleepPlan).length;
+  if(!total){
+    return h + '<div class="card">'+eyebrow("Дневник")+
+      '<p class="body">Пока пусто. Первый ответ на вопрос вечера появится здесь.</p>'+
+      '<p class="mut" style="margin-top:8px">Мышление — твоя девятая сила: письмо для тебя не отчётность, а способ услышать себя. Перечитывать старые записи будет интереснее, чем писать новые.</p></div>';
+  }
+
+  h += '<div class="card">'+eyebrow("Дневник · "+nDays(total))+
+    '<input type="search" id="j-search" placeholder="искать в своих записях" value="'+esc(J_SEARCH)+'">'+
+    '<div class="filters">'+
+    '<button class="chipbtn" data-act="j-filter" data-v="all" aria-pressed="'+(J_FILTER==="all")+'">всё</button>'+
+    '<button class="chipbtn" data-act="j-filter" data-v="low" aria-pressed="'+(J_FILTER==="low")+'">энергия ≤2</button>'+
+    '<button class="chipbtn" data-act="j-filter" data-v="high" aria-pressed="'+(J_FILTER==="high")+'">энергия ≥4</button>'+
+    '</div>';
+  if(!keys.length) h += '<p class="mut" style="margin-top:14px">Ничего не нашлось.</p>';
+  const page = keys.slice(0, J_LIMIT);
+  for(const k of page){
     const r = S.days[k];
-    html += `<div class="j-entry"><div class="j-date">${fmtDate(k)}${r.energy?`<span class="energy-pill">энергия: ${ELBL[r.energy]}</span>`:""}${r.lightsOut?`<span class="energy-pill">отбой: ${r.lightsOut}</span>`:""}</div>`;
-    if(r.answer) html += `<div class="j-q">${esc(r.q||"Запись дня")}</div><div class="j-a">${esc(r.answer)}</div>`;
-    if(r.weekly) html += `<div class="j-q" style="margin-top:8px">Прогон недели</div><div class="j-a">${esc(r.weekly)}</div>`;
-    if(r.sleepPlan) html += `<div class="j-q" style="margin-top:8px">План перед сном</div><div class="j-a">${esc(r.sleepPlan)}</div>`;
-    if(!r.answer && !r.weekly && !r.sleepPlan) html += `<div class="j-a" style="color:var(--dim)">Без записи — но день был отмечен.</div>`;
-    html += `</div>`;
-  }
-  html += `</div>`;
-  const wkeys = Object.keys(S.weeks||{}).sort().reverse();
-  if(wkeys.length){
-    html += `<div class="card"><div class="eyebrow"><span class="led"></span>Прогоны недель</div>`;
-    for(const wk of wkeys){
-      html += `<div class="j-entry"><div class="j-date">${wk}</div><div class="j-a">${esc(S.weeks[wk])}</div></div>`;
+    h += '<div class="j-entry"><div class="j-date">'+fmtDate(k)+
+      (r.energy?'<span class="pill">энергия: '+ELBL[r.energy]+'</span>':"")+
+      (r.kind?'<span class="pill">'+KINDS[r.kind]+'</span>':"")+
+      ((r.closedAt||r.lightsOut)?'<span class="pill">отбой: '+(r.closedAt||r.lightsOut)+'</span>':"")+
+      (r.stillTrue?'<span class="pill">'+(r.stillTrue==="yes"?"всё ещё так":r.stillTrue==="no"?"уже не так":"сложно сказать")+(r.stillTrueAt?" · "+fmtDate(r.stillTrueAt):"")+'</span>':"")+
+      '</div>';
+    if(r.answer){
+      h += '<div class="j-q">'+hl(esc(r.q||"Запись дня"), J_SEARCH)+'</div><div class="j-a">'+hl(esc(r.answer), J_SEARCH)+'</div>'+
+        '<div class="minirow"><button class="mini" data-act="del-entry" data-k="'+k+'">убрать</button></div>';
     }
-    html += `</div>`;
+    if(r.weekly) h += '<div class="j-q" style="margin-top:8px">Прогон недели</div><div class="j-a">'+hl(esc(r.weekly), J_SEARCH)+'</div>';
+    if(r.sleepPlan) h += '<div class="j-q" style="margin-top:8px">План перед сном</div><div class="j-a">'+esc(r.sleepPlan)+'</div>';
+    h += '</div>';
   }
-  return html;
+  if(keys.length > J_LIMIT) h += '<button class="btn ghost small" data-act="j-more">показать ещё 30</button>';
+  h += '</div>';
+
+  const wkeys = Object.keys(S.weeks||{}).sort().reverse();
+  if(wkeys.length && !J_SEARCH && J_FILTER === "all"){
+    h += '<div class="card">'+eyebrow("Прогоны недель")+'';
+    for(const wk of wkeys) h += '<div class="j-entry"><div class="j-date">'+wk+'</div><div class="j-a">'+esc(S.weeks[wk])+'</div></div>';
+    h += '</div>';
+  }
+  return h;
 }
 
-/* ---------- Я ---------- */
+/* ================= ВКЛАДКА «Я» ================= */
+
+const OFF_LABELS = {archive:"Из твоего архива", rider:"Райдер", weekly:"Прогон недели", strength:"Сила дня", demontazh:"Демонтаж", rhythm:"Ритм"};
 
 function viewMe(){
-  const dn = dayNum(todayKey());
-  let html = headerHtml();
-  html += `<div class="card"><div class="eyebrow"><span class="led"></span>Кто за пультом</div>
-    <h2>Батырхан</h2>
-    <p class="body">25, Алматы. Технический менеджер в Tynda music: LED-экраны, звук, видео, операторы — ты человек, который держит шоу. По Gallup ты ведёшь <b style="color:var(--pink)">Отношениями</b> и <b style="color:var(--blue)">Стратегией</b>: видишь людей насквозь и просчитываешь пути там, где другие видят стену.</p>
-    <p class="mut" style="margin-top:10px">Главная цель: вернуть контроль над своей жизнью — чтобы работа и деньги служили тебе, а не наоборот.</p></div>`;
+  const ctx = CTX;
+  const s = stats();
+  const quiet = quietActive(ctx);
+  let h = headerHtml();
 
-  /* свои */
-  html += `<div class="card"><div class="eyebrow"><span class="led"></span>Свои</div>
-    <p class="mut">Близость — твоя третья сила: несколько своих людей заряжают тебя сильнее, чем что-либо ещё. Добавь их сюда — пульт будет подсказывать, с кем давно не было контакта. Счётчик — информация, не упрёк.</p>`;
-  if((S.people||[]).length){
-    for(let i=0;i<S.people.length;i++){
-      const p = S.people[i];
-      const gap = p.last ? dn - dayNum(p.last) : null;
-      const gapTxt = gap===null ? "ещё не отмечал" : (gap===0 ? "сегодня" : gap+" дн. назад");
-      html += `<div class="p-row"><span class="p-name">${esc(p.name)}</span><span class="p-days">${gapTxt}</span>
-        <button class="p-btn" data-touch="${i}">Был контакт</button><button class="p-del" data-pdel="${i}" aria-label="Убрать">✕</button></div>`;
-    }
+  h += '<div class="card">'+eyebrow("Кто за пультом")+'<h2>Батырхан</h2>'+
+    '<p class="body">25, Алматы. Технический менеджер в Tynda music: LED-экраны, звук, видео, операторы — ты человек, который держит шоу. По Gallup ты ведёшь <b style="color:var(--pink)">Отношениями</b> и <b style="color:var(--blue)">Стратегией</b>: видишь людей насквозь и просчитываешь пути там, где другие видят стену.</p>'+
+    '<p class="mut" style="margin-top:10px">Главная цель: вернуть контроль над своей жизнью — чтобы работа и деньги служили тебе, а не наоборот.</p></div>';
+
+  /* Что включено */
+  h += '<div class="card">'+eyebrow("Что включено")+
+    '<p class="mut" style="margin-bottom:6px">Выключай что угодно. Обратно включится там же, когда захочешь.</p>';
+  for(const k in OFF_LABELS){
+    h += '<button class="toggle" data-act="toggle-off" data-k="'+k+'" aria-pressed="'+(!S.off[k])+'"><span>'+OFF_LABELS[k]+'</span><span class="sw"><i></i></span></button>';
   }
+  h += '<div class="minirow"><button class="mini" data-act="quiet-ask">'+(quiet?"тихий режим активен — изменить":"убавить громкость")+'</button>'+
+    '<button class="mini" data-act="pause-ask">поставить пульт на паузу</button></div></div>';
+
+  /* Свои */
+  h += '<div class="card">'+eyebrow("Свои")+
+    '<p class="mut">Близость — твоя третья сила: несколько своих людей заряжают тебя сильнее, чем что-либо ещё.</p>';
+  (S.people||[]).forEach((p,i)=>{
+    h += '<div class="p-row"><span class="p-name">'+esc(p.name)+'</span>'+
+      '<button class="p-btn" data-act="touch" data-i="'+i+'">Был контакт</button>'+
+      '<button class="p-del" data-act="del-person" data-i="'+i+'" aria-label="Убрать">✕</button></div>';
+  });
   if((S.people||[]).length < 7){
-    html += `<input type="text" id="pname" placeholder="Имя близкого человека" maxlength="30">
-      <button class="btn ghost small" data-act="addperson">Добавить</button>`;
-  } else {
-    html += `<p class="mut" style="margin-top:10px">Семь — достаточно. Это круг, а не список.</p>`;
-  }
-  html += `</div>`;
+    h += '<input type="text" id="pname" placeholder="Имя близкого человека" maxlength="30">'+
+      '<button class="btn ghost small" data-act="add-person">Добавить</button>';
+  } else h += '<p class="tiny-note">Семь — достаточно. Это круг, а не список.</p>';
+  h += '</div>';
 
-  /* топ-10 */
-  html += `<div class="card"><div class="eyebrow"><span class="led"></span>Топ-10 сил · CliftonStrengths 34</div>`;
+  /* Райдер */
+  if(!S.off.rider){
+    h += '<div class="card" id="card-rider-edit">'+eyebrow("Райдер")+
+      '<p class="mut">Что мне реально помогало, когда было пусто. В прошедшем времени — это наблюдение, а не обещание.</p>';
+    if(quiet){
+      h += '<p class="j-a" style="margin-top:10px">'+(S.rider.helps ? esc(S.rider.helps) : "—")+'</p>'+
+        '<p class="tiny-note">Сейчас не редактируем. Вернёшься — перепишешь.</p>';
+    } else {
+      h += '<textarea id="riderta" placeholder="Например: горячий душ. Один разговор с тем, кто не лечит. Выйти на улицу без цели.">'+esc(S.rider.helps)+'</textarea>'+
+        '<button class="btn ghost small" data-act="save-rider">Сохранить</button>';
+    }
+    h += '</div>';
+  }
+
+  /* Топ-10 сил */
+  h += '<div class="card">'+eyebrow("Топ-10 сил · CliftonStrengths 34")+'';
   STRENGTHS.forEach(st=>{
     const dom = DOMAINS[st.dom];
-    html += `<div class="s-item" data-str="${st.rank}">
-      <div class="s-head" role="button" tabindex="0"><span class="rk">${st.rank}</span><span class="nm">${st.name}</span><span class="chip" style="color:${dom.color}; border-color:${dom.color}">${dom.name}</span><span class="ar">›</span></div>
-      <div class="s-body"><p>${st.insight}</p><p style="color:var(--muted)"><b style="color:var(--text)">Слепая зона:</b> ${st.blind}</p></div></div>`;
+    h += '<div class="s-item'+(EXPANDED.has("s"+st.rank)?" open":"")+'">'+
+      '<button class="s-head" data-act="expand" data-id="s'+st.rank+'"><span class="rk">'+st.rank+'</span><span class="nm">'+st.name+'</span>'+
+      '<span class="chip" style="color:'+dom.color+'; border-color:'+dom.color+'">'+dom.name+'</span><span class="ar" aria-hidden="true">›</span></button>'+
+      '<div class="s-body"><p>'+st.insight+'</p><p style="color:var(--muted)"><b style="color:var(--text)">Слепая зона:</b> '+st.blind+'</p></div></div>';
   });
-  html += `</div>`;
+  h += '</div>';
 
-  /* свой контент */
-  html += `<div class="card"><div class="eyebrow"><span class="led"></span>Добавить свой трек</div>
-    <p class="mut">Генератор идей — твоя четвёртая сила. Система, которую ты достраиваешь сам, — твоя, а не чужая программа. Свои задачи и вопросы попадают в общую ротацию.</p>
-    <select id="cm-cat">${Object.keys(CATS).filter(c=>c!=="rest").map(c=>`<option value="${c}">${CATS[c].name}</option>`).join("")}</select>
-    <input type="text" id="cm-text" placeholder="Своя задача (например: 20 минут английского)" maxlength="120">
-    <button class="btn ghost small" data-act="addmission">В сетлист</button>
-    <div style="height:10px"></div>
-    <input type="text" id="cq-text" placeholder="Свой вопрос для вечера" maxlength="160">
-    <button class="btn ghost small" data-act="addquestion">В банк вопросов</button>`;
-  if(S.customMissions.length){
-    html += `<p class="mut" style="margin-top:12px; margin-bottom:2px">Твои задачи:</p>`;
+  /* Свой контент */
+  h += '<div class="card">'+eyebrow("Свои треки и вопросы")+
+    '<p class="mut">Генератор идей — твоя четвёртая сила. Система, которую ты достраиваешь сам, — твоя, а не чужая программа.</p>'+
+    '<select id="cm-cat">'+Object.keys(CATS).filter(c=>c!=="rest").map(c=>'<option value="'+c+'">'+CATS[c].name+'</option>').join("")+'</select>'+
+    '<input type="text" id="cm-text" placeholder="Своя задача" maxlength="140">'+
+    '<button class="btn ghost small" data-act="add-mission">В сетлист</button>'+
+    '<div style="height:10px"></div>'+
+    '<input type="text" id="cq-text" placeholder="Свой вопрос для вечера" maxlength="180">'+
+    '<button class="btn ghost small" data-act="add-question">В банк вопросов</button>';
+  if((S.customMissions||[]).length){
+    h += '<p class="mut" style="margin-top:14px; margin-bottom:2px">Твои задачи:</p>';
     S.customMissions.forEach((m,i)=>{
-      html += `<div class="p-row"><span class="p-name thin">${esc(m.text)}</span><span class="p-days">${CATS[m.cat]?CATS[m.cat].name:""}</span><button class="p-del" data-cmdel="${i}" aria-label="Удалить">✕</button></div>`;
+      h += '<div class="p-row"><span class="p-name thin">'+esc(m.text)+'</span><span class="pill">'+(CATS[m.cat]?CATS[m.cat].name:"—")+'</span>'+
+        '<button class="p-del" data-act="del-mission" data-i="'+i+'" aria-label="Удалить">✕</button></div>';
     });
   }
-  if(S.customQuestions.length){
-    html += `<p class="mut" style="margin-top:12px; margin-bottom:2px">Твои вопросы:</p>`;
+  if((S.customQuestions||[]).length){
+    h += '<p class="mut" style="margin-top:14px; margin-bottom:2px">Твои вопросы:</p>';
     S.customQuestions.forEach((q,i)=>{
-      html += `<div class="p-row"><span class="p-name thin">${esc(q)}</span><button class="p-del" data-cqdel="${i}" aria-label="Удалить">✕</button></div>`;
+      h += '<div class="p-row"><span class="p-name thin">'+esc(q)+'</span><button class="p-del" data-act="del-question" data-i="'+i+'" aria-label="Удалить">✕</button></div>';
     });
   }
-  html += `</div>`;
+  h += '</div>';
 
-  /* резервная копия */
-  html += `<div class="card"><div class="eyebrow"><span class="led"></span>Резервная копия</div>
-    <p class="mut">Дневник и прогресс живут только в этом устройстве. Раз в пару недель сохраняй копию — вставь её потом сюда же, и всё вернётся.</p>
-    <div class="btnrow"><button class="btn small" data-act="backup">Скопировать данные</button><button class="btn ghost small" data-act="showbackup">Показать</button></div>
-    <div id="backup-area" style="display:none"><textarea class="backup-box" id="backupta" readonly></textarea></div>
-    <p class="mut" style="margin-top:14px; margin-bottom:2px">Восстановление из копии:</p>
-    <textarea class="backup-box" id="importta" placeholder="Вставь сюда сохранённую копию..."></textarea>
-    <button class="btn ghost small" data-act="restore">Восстановить</button></div>`;
+  /* Убрано из ротации */
+  const bm = S.banned.missions.length, bq = S.banned.questions.length;
+  if(bm + bq > 0){
+    h += '<div class="card">'+
+      (EXPANDED.has("banned")
+        ? eyebrow("Убрано из ротации: "+(bm+bq))
+        : '')+
+      (EXPANDED.has("banned") ? "" : '<button class="s-head" style="padding:0" data-act="expand" data-id="banned"><span class="nm">Убрано из ротации: '+(bm+bq)+'</span><span class="ar" aria-hidden="true">›</span></button>');
+    if(EXPANDED.has("banned")){
+      S.banned.missions.forEach((id,i)=>{
+        const m = MISSIONS.concat(S.customMissions||[]).find(x=> mid(x.text) === id);
+        h += '<div class="p-row"><span class="p-name thin">'+esc(m ? m.text : id)+'</span><button class="p-btn" data-act="unban-mission" data-i="'+i+'">вернуть</button></div>';
+      });
+      S.banned.questions.forEach((q,i)=>{
+        h += '<div class="p-row"><span class="p-name thin">'+esc(q)+'</span><button class="p-btn" data-act="unban-question" data-i="'+i+'">вернуть</button></div>';
+      });
+    }
+    h += '</div>';
+  }
 
-  html += `<div class="card"><div class="eyebrow"><span class="led"></span>Почему этот пульт устроен именно так</div>
-    <p class="body" style="margin-bottom:10px">Это не обычный трекер привычек. Он собран под твой профиль:</p>
-    <p class="mut" style="margin-bottom:8px"><b style="color:var(--text)">Нет жёстких стриков.</b> Дисциплина у тебя на 27 месте из 34 — жёсткие цепочки «не пропусти ни дня» тебя не мотивируют, а добивают. Здесь считается ритм за неделю, и пропуск ничего не сжигает.</p>
-    <p class="mut" style="margin-bottom:8px"><b style="color:var(--text)">Каждый день — выбор из трёх.</b> Стратегичность (№2) любит варианты, а Адаптивность (№13) — свободу решать по ситуации. Никто не говорит тебе, что делать. Ты выбираешь сам.</p>
-    <p class="mut" style="margin-bottom:8px"><b style="color:var(--text)">Саундчек энергии.</b> У тебя циклы: мощная собранность, потом откат. Это не дефект. В дни отката пульт предлагает тихий режим — а включать его или нет, решаешь ты.</p>
-    <p class="mut" style="margin-bottom:8px"><b style="color:var(--text)">Вопрос вечера.</b> Мышление (№9) и Осмотрительность (№5): тебе нужно время наедине с головой. Письмо — твой родной инструмент, «кто я?» — твой главный вопрос. Дневник копит ответы, а «эхо» возвращает их тебе через месяц.</p>
-    <p class="mut"><b style="color:var(--text)">Ставка на сильное.</b> Максимализм (№8): растить сильные стороны эффективнее, чем чинить слабые. Поэтому здесь качаются твои топ-10, а не «универсальный список успешного человека».</p></div>`;
+  /* Резервная копия */
+  let snap = null;
+  try{ snap = localStorage.getItem(SNAP_KEY); }catch(e){}
+  h += '<div class="card">'+eyebrow("Резервная копия")+
+    '<p class="mut">'+(S.persisted
+      ? "Система закрепила хранилище — сама его не вытеснит."
+      : "Система может вытеснить данные при нехватке места. Держи копию.")+'</p>'+
+    '<div class="btnrow"><button class="btn small" data-act="backup">Сохранить копию</button>'+
+    '<button class="btn ghost small" data-act="show-backup">Показать текстом</button></div>'+
+    (EXPANDED.has("backup") ? '<textarea class="backup-box" id="backupta" readonly>'+esc(JSON.stringify(S))+'</textarea>' : '')+
+    '<p class="tiny-note">При переезде на новый телефон память установленного Пульта не переезжает сама — резервная копия iPhone её не тянет. Переедет только та копия, которую ты сохранил в Файлы или отправил себе.</p>'+
+    '<p class="mut" style="margin-top:14px; margin-bottom:2px">Восстановление из копии:</p>'+
+    '<textarea class="backup-box" id="importta" placeholder="Вставь сюда сохранённую копию..."></textarea>'+
+    '<button class="btn ghost small" data-act="preview-restore">Проверить копию</button>'+
+    (RESTORE_PREVIEW ? '<div class="note" style="margin-top:12px"><p class="mut">'+esc(RESTORE_PREVIEW.text)+'</p>'+
+      '<div class="btnrow"><button class="btn small" data-act="restore-merge">Добавить недостающие дни</button>'+
+      '<button class="btn ghost small" data-act="restore-replace">Заменить всё</button></div></div>' : '')+
+    (snap ? '<div class="minirow"><button class="mini" data-act="undo-replace">откатить восстановление</button></div>' : '')+
+    '<div class="minirow"><button class="mini" data-act="wipe-journal">стереть весь дневник</button></div>'+
+    (EXPANDED.has("wipe") ? '<input type="text" id="wipeword" placeholder="впиши слово: стереть"><button class="btn ghost small" data-act="wipe-confirm">Стереть</button><p class="tiny-note">Это необратимо.</p>' : '')+
+    '</div>';
 
-  html += `<div class="card"><div class="eyebrow"><span class="led"></span>Нижние темы · для честности</div>
-    <p class="mut">Внизу твоего профиля: Woo (№33), Постоянство (№34), Дисциплина (№27), Уверенность (№28), Коммуникация (№30). Это не слабости — это то, кем ты не обязан быть. Не строй жизнь, требующую ежедневного нетворкинга, железного распорядка и публичных выступлений. Строй ту, где решают глубина, стратегия и свои люди.</p></div>`;
-  html += `<p class="footer-note">Профиль: CliftonStrengths 34 от 10.07.2024 · Все данные — только на этом устройстве</p>`;
-  return html;
+  /* Почему устроен так */
+  h += '<div class="card">'+eyebrow("Почему этот пульт устроен именно так")+
+    '<p class="mut" style="margin-bottom:8px"><b style="color:var(--text)">Нет очков и уровней.</b> Они считали нажатия, а не тебя. Осмотрительность №5 раскусила бы это за минуту, и заодно перестала бы верить честным цифрам рядом. Осталось только то, что можно проверить: записи, задачи, дни.</p>'+
+    '<p class="mut" style="margin-bottom:8px"><b style="color:var(--text)">Нет стриков.</b> Постоянство у тебя №34, Дисциплина №27 — цепочки «не пропусти ни дня» тебя не мотивируют, а добивают. Пропуск здесь не существует как сущность.</p>'+
+    '<p class="mut" style="margin-bottom:8px"><b style="color:var(--text)">Энергия только убирает.</b> Низкая цифра снимает лишнее с экрана и никогда ничего не открывает — иначе фейдер перестал бы быть измерением и ты начал бы его подгонять.</p>'+
+    '<p class="mut" style="margin-bottom:8px"><b style="color:var(--text)">День кончается в 5 утра.</b> Ты ложишься в три — значит, написанное в час ночи принадлежит тому дню, который ты ещё живёшь.</p>'+
+    '<p class="mut" style="margin-bottom:8px"><b style="color:var(--text)">Сначала отдаёт, потом просит.</b> Твоя же запись из архива стоит выше всех форм ввода. Забывают то, что просит; помнят то, что даёт.</p>'+
+    '<p class="mut"><b style="color:var(--text)">Всё разбирается.</b> Свобода у тебя ценность №1, поэтому любой модуль выключается одним тапом, а весь пульт ставится на паузу.</p></div>';
+
+  h += '<div class="card">'+eyebrow("Нижние темы · для честности")+
+    '<p class="mut">Внизу твоего профиля: Постоянство (№34), Woo (№33), Коммуникация (№30), Уверенность (№28), Дисциплина (№27). Это не слабости — это то, кем ты не обязан быть. Не строй жизнь, требующую ежедневного нетворкинга, железного распорядка и публичных выступлений. Строй ту, где решают глубина, стратегия и свои люди.</p></div>';
+
+  if(CRISIS){
+    h += '<p class="footer-note">Если станет совсем тяжело: '+CRISIS+' — круглосуточно и бесплатно с любого номера. Там есть психологи.</p>';
+  }
+  h += '<p class="footer-note">Профиль: CliftonStrengths 34 от 10.07.2024 · Всё хранится только на этом устройстве</p>';
+  return h;
+}
+let RESTORE_PREVIEW = null;
+
+/* ================= РЕНДЕР ================= */
+
+let QUIET_PICK = false, PAUSE_PICK = false;
+
+function pickerHtml(){
+  if(QUIET_PICK){
+    const cur = quietActive(CTX);
+    return '<div class="note"><b>На сколько убавить?</b>'+
+      (cur ? '<p class="mut" style="margin-top:4px">Тихий режим сейчас включён'+(S.mode.until?" до "+fmtDate(S.mode.until):" бессрочно")+'.</p>' : '')+
+      '<div class="btnrow"><button class="btn small" data-act="quiet-set" data-d="3">3 дня</button>'+
+      '<button class="btn small" data-act="quiet-set" data-d="7">7 дней</button>'+
+      '<button class="btn small" data-act="quiet-set" data-d="14">14 дней</button>'+
+      '<button class="btn ghost small" data-act="quiet-set" data-d="0">пока не выключу</button></div>'+
+      '<div class="btnrow">'+(cur?'<button class="btn quiet small" data-act="quiet-off">Вернуть обычный день</button>':'')+
+      '<button class="btn quiet small" data-act="pick-cancel">отмена</button></div></div>';
+  }
+  if(PAUSE_PICK){
+    return '<div class="note"><b>Поставить пульт на паузу?</b><p class="mut" style="margin-top:4px">Приложения не будет. Ни вопросов, ни карточек, ни слова о том, сколько дней прошло.</p>'+
+      '<div class="btnrow"><button class="btn small" data-act="pause-set" data-d="7">7 дней</button>'+
+      '<button class="btn small" data-act="pause-set" data-d="30">30 дней</button>'+
+      '<button class="btn ghost small" data-act="pause-set" data-d="0">пока не включу</button>'+
+      '<button class="btn quiet small" data-act="pick-cancel">отмена</button></div></div>';
+  }
+  return "";
 }
 
-/* ================= EVENTS ================= */
-
-function updateDayDynamic(){
-  const rec = day(todayKey());
-  const r = $("#card-rhythm");
-  if(r){ const tmp = document.createElement("div"); tmp.innerHTML = rhythmHtml(); r.replaceWith(tmp.firstElementChild); }
-  const slot = $("#banner-slot");
-  if(slot) slot.innerHTML = bannerHtml(rec);
+function screenSig(){
+  const h = new Date().getHours();
+  const ph = (h>=17||h<5) ? "e" : (h<12 ? "m" : "d");
+  return todayKey()+"|"+ph+"|"+((h>=21||h<5)?"s":"")+"|"+((h>=23||h<5)?"n":"")+"|"+(h<12?"p":"");
 }
 
-function bind(){
-  document.querySelectorAll("[data-tab]").forEach(el=>el.onclick=()=>{ TAB = el.dataset.tab; EXPANDED.clear(); render(); window.scrollTo(0,0); });
-
-  document.querySelectorAll("[data-expand]").forEach(el=>{
-    const fire = ()=>{ if(!guardDay()) return; EXPANDED.add(el.dataset.expand); rerenderKeepScroll(); };
-    el.onclick = fire;
-    el.onkeydown = e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); fire(); } };
-  });
-
-  document.querySelectorAll("[data-energy]").forEach(el=>el.onclick=()=>{
-    if(!guardDay()) return;
-    const rec = day(todayKey());
-    const first = rec.energy === null;
-    rec.energy = Number(el.dataset.energy);
-    if(first && !rec.scXp){ rec.scXp = true; award(XP.soundcheck); toast("Саундчек принят · +"+XP.soundcheck+" XP"); buzz(20); }
-    EXPANDED.delete("sc");
-    save(); rerenderKeepScroll();
-  });
-
-  document.querySelectorAll("[data-mission]").forEach(el=>{
-    const fire = ()=>{
-      if(!guardDay()) return;
-      const rec = day(todayKey());
-      const id = el.dataset.mission;
-      const wasComplete = dayComplete(rec);
-      rec.missions[id] = !rec.missions[id];
-      const done = !!rec.missions[id];
-      if(done) awardOnce(rec, "m_"+id, XP.mission); /* второй раз за ту же задачу XP не даётся, но и не отнимается */
-      save();
-      el.classList.toggle("done", done);
-      el.querySelector(".tick").textContent = done ? "✔" : "";
-      if(done){
-        buzz(30);
-        const led = $("#setlist-led"); if(led){ led.classList.remove("flash"); void led.offsetWidth; led.classList.add("flash"); }
-        toast(!wasComplete && dayComplete(rec) ? "Прогон дня отыгран" : "Сделано");
-        if(el.dataset.cat==="people"){ rerenderKeepScroll(); return; } /* показать кнопку «отметить контакт» */
-      }
-      updateDayDynamic();
-    };
-    el.onclick = fire;
-    el.onkeydown = e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); fire(); } };
-  });
-
-  document.querySelectorAll("textarea[data-draft]").forEach(ta=>{
-    ta.oninput = ()=>{
-      setDraft(ta.dataset.draft, ta.value, ta.dataset.scope);
-      const ind = $("#draft-"+ta.dataset.draft);
-      if(ind){ ind.textContent = "черновик сохранён"; clearTimeout(ind._t); ind._t = setTimeout(()=>ind.textContent="", 1500); }
-    };
-  });
-
-  document.querySelectorAll("[data-act]").forEach(el=>el.onclick=()=>{
-    const act = el.dataset.act;
-    if(act!=="backup" && act!=="showbackup" && act!=="restore" && !guardDay()) return;
-    const rec = day(todayKey());
-    if(act==="strength"){
-      if(!rec.strengthDone){ rec.strengthDone = true; awardOnce(rec, "strength", XP.strength); }
-      save(); buzz(30); rerenderKeepScroll();
-      toast("Сила прокачана · +"+XP.strength+" XP");
-    }
-    if(act==="saveanswer"){
-      const ta = $("#answerta");
-      const v = ta ? ta.value.trim() : "";
-      if(!v){ toast("Напиши хотя бы пару слов"); return; }
-      const had = !!rec.answer;
-      const wasComplete = dayComplete(rec);
-      rec.answer = v; EDITING.answer = false; setDraft("answer","");
-      if(!had) awardOnce(rec, "answer", XP.answer);
-      save(); buzz(30); render(); window.scrollTo(0,0);
-      toast(had ? "Сохранено" : (!wasComplete && dayComplete(rec) ? "Прогон дня отыгран" : "В дневник · +"+XP.answer+" XP"));
-    }
-    if(act==="editanswer"){
-      EDITING.answer = true; setDraft("answer", rec.answer); rerenderKeepScroll();
-      const ta = $("#answerta"); ta && ta.focus();
-    }
-    if(act==="saveweekly"){
-      const ta = $("#weeklyta");
-      const v = ta ? ta.value.trim() : "";
-      if(!v){ toast("Пара честных строк — и неделя закрыта"); return; }
-      const wk = el.dataset.wk;
-      const had = !!S.weeks[wk];
-      S.weeks[wk] = v; setDraft("weekly","",wk);
-      if(!had) award(XP.weekly);
-      save(); buzz(30); render(); window.scrollTo(0,0);
-      toast("Неделя закрыта · +"+XP.weekly+" XP");
-    }
-    if(act==="lightsout"){
-      const ta = $("#sleepta");
-      rec.sleepPlan = ta ? ta.value.trim() : "";
-      if(!rec.lightsOut){
-        const d = new Date();
-        rec.lightsOut = String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");
-        awardOnce(rec, "sleep", XP.sleep);
-      }
-      setDraft("sleep","");
-      save(); buzz(40); rerenderKeepScroll();
-      toast("Свет погашен. Тишина в зале.");
-    }
-    if(act==="quieton"){ rec.quietOn = true; rec.quietOff = false; rec.quietAsked = true; save(); rerenderKeepScroll(); }
-    if(act==="quietno"){ rec.quietAsked = true; save(); rerenderKeepScroll(); }
-    if(act==="quietoff"){ rec.quietOff = true; rec.quietOn = false; save(); rerenderKeepScroll(); toast("Обычный день. Решаешь ты."); }
-    if(act==="hidehint"){ HIDE_BROWSER_HINT = true; rerenderKeepScroll(); }
-    if(act==="addperson"){
-      const inp = $("#pname"); const v = inp ? inp.value.trim() : "";
-      if(!v) return;
-      if((S.people||[]).length>=7){ toast("Семь — достаточно"); return; }
-      S.people.push({name:v, last:null}); save(); rerenderKeepScroll();
-    }
-    if(act==="addmission"){
-      const t = $("#cm-text"), c = $("#cm-cat");
-      const v = t ? t.value.trim() : "";
-      if(!v){ toast("Напиши задачу"); return; }
-      S.customMissions.push({cat: c.value, min: 15, text: v}); save(); rerenderKeepScroll();
-      toast("Трек добавлен в ротацию");
-    }
-    if(act==="addquestion"){
-      const t = $("#cq-text");
-      const v = t ? t.value.trim() : "";
-      if(!v){ toast("Напиши вопрос"); return; }
-      S.customQuestions.push(v); save(); rerenderKeepScroll();
-      toast("Вопрос добавлен в банк");
-    }
-    if(act==="backup" || act==="showbackup"){
-      const json = JSON.stringify(S);
-      const area = $("#backup-area"), ta = $("#backupta");
-      if(act==="backup" && navigator.clipboard && navigator.clipboard.writeText){
-        navigator.clipboard.writeText(json).then(()=>toast("Скопировано. Сохрани в заметки."), ()=>{
-          if(area && ta){ area.style.display="block"; ta.value=json; ta.select(); toast("Выдели и скопируй вручную"); }
-        });
-      } else if(area && ta){
-        area.style.display = area.style.display==="none" ? "block" : "none";
-        ta.value = json;
-      }
-    }
-    if(act==="restore"){
-      const ta = $("#importta");
-      const v = ta ? ta.value.trim() : "";
-      if(!v){ toast("Вставь копию в поле выше"); return; }
-      try{
-        const o = JSON.parse(v);
-        if(!o || typeof o!=="object" || !o.days) throw new Error("bad");
-        if(!window.confirm("Заменить текущие данные восстановленной копией?")) return;
-        o.days = o.days||{}; o.people = o.people||[]; o.weeks = o.weeks||{};
-        o.customMissions = o.customMissions||[]; o.customQuestions = o.customQuestions||[];
-        S = o; save(); render(); window.scrollTo(0,0);
-        toast("Данные восстановлены");
-      }catch(e){ toast("Это не похоже на копию Пульта"); }
-    }
-  });
-
-  document.querySelectorAll("[data-touch],[data-ptouch]").forEach(el=>el.onclick=()=>{
-    if(!guardDay()) return;
-    const idx = Number(el.dataset.touch !== undefined ? el.dataset.touch : el.dataset.ptouch);
-    const p = S.people[idx];
-    if(p){ p.last = todayKey(); save(); rerenderKeepScroll(); toast("Отмечено"); }
-  });
-  document.querySelectorAll("[data-pdel]").forEach(el=>el.onclick=()=>{
-    S.people.splice(Number(el.dataset.pdel),1); save(); rerenderKeepScroll();
-  });
-  document.querySelectorAll("[data-cmdel]").forEach(el=>el.onclick=()=>{
-    S.customMissions.splice(Number(el.dataset.cmdel),1); save(); rerenderKeepScroll();
-  });
-  document.querySelectorAll("[data-cqdel]").forEach(el=>el.onclick=()=>{
-    S.customQuestions.splice(Number(el.dataset.cqdel),1); save(); rerenderKeepScroll();
-  });
-
-  document.querySelectorAll(".s-head").forEach(el=>{
-    const fire = ()=> el.parentElement.classList.toggle("open");
-    el.onclick = fire;
-    el.onkeydown = e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); fire(); } };
-  });
+function render(){
+  CTX = makeCtx();
+  RENDERED_SIG = screenSig();
+  const app = $("#app");
+  try{
+    $("#tabs").innerHTML = TABS.map(t=>
+      '<button class="tab" role="tab" data-act="tab" data-id="'+t.id+'" aria-selected="'+(TAB===t.id)+'">'+
+      '<span class="ico" aria-hidden="true">'+t.ico+'</span>'+t.name+'</button>').join("");
+    if(pausedActive(CTX)){ app.innerHTML = viewPaused(CTX); return; }
+    let h = pickerHtml();
+    if(TAB === "today") h += viewToday();
+    else if(TAB === "path") h += viewPath();
+    else if(TAB === "journal") h += viewJournal();
+    else h += viewMe();
+    app.innerHTML = h;
+  }catch(e){
+    try{ app.innerHTML = crashScreen(e); }catch(e2){}
+    if(window.console) console.error(e);
+  }
 }
+function rerender(){ const y = window.scrollY; render(); window.scrollTo(0, y); }
 
-/* ================= BOOT ================= */
+/* ================= ДЫХАНИЕ ================= */
 
+let wakeLock = null;
+async function askWake(){ try{ if("wakeLock" in navigator) wakeLock = await navigator.wakeLock.request("screen"); }catch(e){} }
+function dropWake(){ try{ wakeLock && wakeLock.release(); }catch(e){} wakeLock = null; }
+function breathTick(){
+  if(!BREATH || !BREATH.on) return;
+  BREATH.t--;
+  if(BREATH.t <= 0){
+    if(BREATH.phase === "in"){ BREATH.phase = "out"; BREATH.t = 6; }
+    else { BREATH.phase = "in"; BREATH.t = 4; BREATH.left--; }
+  }
+  if(BREATH.left <= 0){ stopBreath(); rerender(); return; }
+  const cap = $("#breath-cap");
+  if(cap) cap.textContent = (BREATH.phase === "in" ? "вдох "+BREATH.t : "выдох "+BREATH.t)+" · осталось "+BREATH.left;
+}
+function startBreath(){
+  BREATH = {on:true, phase:"in", t:4, left:12, timer:setInterval(breathTick, 1000)};
+  askWake();
+}
+function stopBreath(){ if(BREATH && BREATH.timer) clearInterval(BREATH.timer); BREATH = null; dropWake(); }
+
+/* ================= ДЕЙСТВИЯ ================= */
+
+function val(id){ const el = $(id); return el ? String(el.value||"").trim() : ""; }
+function markToast(msg){ toast(msg); }
+
+const ACTIONS = {
+  tab(d){ TAB = d.id; EXPANDED.clear(); SHOW_ALL = false; render(); window.scrollTo(0,0); },
+  expand(d){ EXPANDED.has(d.id) ? EXPANDED.delete(d.id) : EXPANDED.add(d.id); rerender(); },
+  reload(){ location.reload(); },
+  "pick-cancel"(){ QUIET_PICK = false; PAUSE_PICK = false; rerender(); },
+  "seen-v4"(){ S.seenV4 = true; HIDE_UPD = true; save(); rerender(); },
+  "hide-hint"(){ HIDE_HINT = true; rerender(); },
+  "nag-later"(){ S.backupNagAt = CTX.dn; save(); rerender(); },
+  "show-all"(){ SHOW_ALL = true; rerender(); },
+
+  energy(d){
+    const rec = day(CTX.key);
+    rec.energy = Number(d.v);
+    /* карточка остаётся раскрытой: иначе чипы «тип дня» под фейдерами исчезают
+       в тот же миг, когда он поставил энергию, и отметить день нечем */
+    EXPANDED.add("sc");
+    save(); rerender();
+  },
+  "collapse-sc"(){ EXPANDED.delete("sc"); rerender(); },
+  kind(d){
+    const rec = day(CTX.key);
+    rec.kind = (rec.kind === d.v) ? undefined : d.v;
+    if(!rec.kind) delete rec.kind;
+    save(); rerender();
+  },
+  mission(d, el){
+    const rec = day(CTX.key);
+    const on = !rec.missions[d.id];
+    rec.missions[d.id] = on;
+    if(!on) delete rec.missions[d.id];
+    save();
+    if(on){
+      el.setAttribute("aria-checked","true");
+      el.querySelector(".tick").textContent = "✔";
+      const led = el.closest(".card") && el.closest(".card").querySelector(".led");
+      if(led){ led.classList.remove("flash"); void led.offsetWidth; led.classList.add("flash"); }
+      markToast("Записано · "+nowHM());
+      if(d.cat === "people"){ rerender(); return; }
+    } else {
+      el.setAttribute("aria-checked","false");
+      el.querySelector(".tick").textContent = "";
+    }
+    rerender();
+  },
+  tiny(d){
+    const rec = day(CTX.key);
+    rec.tiny = rec.tiny || {};
+    rec.tiny[d.id] = true;
+    const first = !S.seenTiny;
+    if(first){ S.seenTiny = true; }
+    save(); rerender();
+    if(first) markToast("Крошечная версия весит столько же");
+  },
+  another(){ PICK_I++; rerender(); },
+  "show-all-tasks"(){ SHOW_ALL_TASKS = true; rerender(); },
+  reroll(){
+    const rec = day(CTX.key);
+    rec.pool = (rec.pool||[]).concat(rec.setlist||[]);
+    rec.reroll = (rec.reroll||0)+1;
+    rec.setlist = buildSetlist(CTX.dn, rec.reroll, rec);
+    PICK_I = 0; save(); rerender();
+  },
+  optout(){ const rec = day(CTX.key); rec.optOut = true; save(); rerender(); },
+  "optout-off"(){ const rec = day(CTX.key); delete rec.optOut; save(); rerender(); },
+  "own-open"(){ EXPANDED.add("own"); rerender(); },
+  "own-add"(){
+    const t = val("#own-text"); if(!t) return;
+    const c = $("#own-cat") ? $("#own-cat").value : "mind";
+    const obj = {cat:c, min:15, text:t};
+    S.customMissions.push(obj);
+    const rec = day(CTX.key);
+    rec.setlist = (rec.setlist||[]).concat([{id:mid(t), cat:c, min:15, text:t, tiny:""}]);
+    EXPANDED.delete("own"); save(); rerender(); markToast("Добавлено");
+  },
+  "ban-mission"(d){
+    const rec = day(CTX.key);
+    const m = (rec.setlist||[]).find(x=> x.id === d.id);
+    if(m && S.banned.missions.indexOf(mid(m.text)) < 0) S.banned.missions.push(mid(m.text));
+    rec.setlist = (rec.setlist||[]).filter(x=> x.id !== d.id);
+    const extra = buildSetlist(CTX.dn, (rec.reroll||0)+7, rec).filter(x=> !(rec.setlist||[]).some(y=> y.id === x.id));
+    if(extra.length) rec.setlist.push(extra[0]);
+    save(); rerender(); markToast("Убрано. Больше не появится.");
+  },
+  "ban-question"(){
+    const rec = day(CTX.key);
+    if(rec.q && S.banned.questions.indexOf(rec.q) < 0) S.banned.questions.push(rec.q);
+    rec.q = pickQuestion(CTX.dn) || "Что сегодня было настоящим?";
+    save(); rerender(); markToast("Убрано. Больше не появится.");
+  },
+  "unban-mission"(d){ S.banned.missions.splice(Number(d.i),1); save(); rerender(); },
+  "unban-question"(d){ S.banned.questions.splice(Number(d.i),1); save(); rerender(); },
+
+  strength(){ const rec = day(CTX.key); rec.strengthDone = true; save(); rerender(); markToast("Отмечено"); },
+  "save-answer"(){
+    const rec = day(CTX.key);
+    const v = val("#answerta"); if(!v) return;
+    rec.answer = v; EDITING.answer = false; setDraft("answer","");
+    save(); rerender(); markToast("В дневник · "+nowHM());
+  },
+  "edit-answer"(){ const rec = day(CTX.key); EDITING.answer = true; setDraft("answer", rec.answer); rerender(); const t = $("#answerta"); t && t.focus(); },
+  "skip-write"(){ const rec = day(CTX.key); rec.skipped = true; save(); rerender(); },
+  "save-weekly"(d){
+    const v = val("#weeklyta"); if(!v) return;
+    S.weeks[d.wk] = v; setDraft("weekly","",d.wk);
+    save(); rerender(); markToast("Неделя закрыта");
+  },
+  "demo-next"(){ const rec = day(CTX.key); rec.demoStep = Math.min(4,(rec.demoStep||1)+1); save(); rerender(); },
+  breath(){ if(BREATH && BREATH.on) stopBreath(); else startBreath(); rerender(); },
+  lightsout(){
+    const rec = day(CTX.key);
+    const t = $("#sleepta");
+    if(t) rec.sleepPlan = String(t.value||"").trim();
+    rec.closedAt = nowHM();
+    setDraft("sleep","");
+    stopBreath(); save(); rerender();
+    markToast("Свет погашен · "+rec.closedAt);
+  },
+  "seen-plan"(){ const rec = day(CTX.key); rec.seenPlan = true; save(); rerender(); },
+  idle(){ const rec = day(CTX.key); rec.idle = true; rec.closedAt = rec.closedAt || nowHM(); save(); rerender(); window.scrollTo(0,0); },
+
+  "arch-next"(){ ARCH_I++; rerender(); },
+  still(d){
+    const r = S.days[d.k];
+    if(r){ r.stillTrue = d.v; r.stillTrueAt = CTX.key; save(); }
+    rerender();
+  },
+
+  "quiet-ask"(){ QUIET_PICK = true; rerender(); window.scrollTo(0,0); },
+  "quiet-decline"(){ S.quietOfferedAt = CTX.dn; save(); rerender(); },
+  "quiet-set"(d){
+    const days = Number(d.d);
+    S.mode = {type:"quiet", from:CTX.key, until: days ? keyOfNum(CTX.dn + days) : null};
+    S.quietOfferedAt = CTX.dn;
+    QUIET_PICK = false; save(); rerender(); window.scrollTo(0,0);
+  },
+  "quiet-off"(){ S.mode = null; QUIET_PICK = false; save(); rerender(); markToast("Обычный день. Решаешь ты."); },
+  "quiet-keep"(){ if(S.mode) S.mode.until = keyOfNum(CTX.dn + 7); save(); rerender(); },
+
+  "rider-open"(){ TAB = "me"; EXPANDED.add("rider"); render(); const t = $("#riderta"); if(t){ t.scrollIntoView({block:"center"}); t.focus(); } },
+  "save-rider"(){
+    const v = val("#riderta");
+    S.rider.helps = v; S.rider.updatedAt = CTX.key;
+    save(); rerender(); markToast(v ? "Записано" : "Очищено");
+  },
+
+  "pause-ask"(){ PAUSE_PICK = true; rerender(); window.scrollTo(0,0); },
+  "pause-set"(d){
+    const days = Number(d.d);
+    S.paused = {until: days ? CTX.dn + days : null};
+    PAUSE_PICK = false; save(); render(); window.scrollTo(0,0);
+  },
+  unpause(){ S.paused = null; save(); render(); window.scrollTo(0,0); },
+  "toggle-off"(d){ S.off[d.k] = !S.off[d.k]; save(); rerender(); },
+
+  touch(d){ const p = S.people[Number(d.i)]; if(p){ p.last = CTX.key; save(); rerender(); markToast("Отмечено"); } },
+  "del-person"(d){ S.people.splice(Number(d.i),1); save(); rerender(); },
+  "add-person"(){
+    const v = val("#pname"); if(!v) return;
+    if(S.people.length >= 7){ markToast("Семь — достаточно"); return; }
+    S.people.push({name:v, last:null}); save(); rerender();
+  },
+  "add-mission"(){
+    const t = val("#cm-text"); if(!t) return;
+    const c = $("#cm-cat") ? $("#cm-cat").value : "mind";
+    S.customMissions.push({cat:c, min:15, text:t}); save(); rerender(); markToast("Добавлено в ротацию");
+  },
+  "add-question"(){
+    const t = val("#cq-text"); if(!t) return;
+    S.customQuestions.push(t); save(); rerender(); markToast("Добавлено в банк");
+  },
+  "del-mission"(d){ S.customMissions.splice(Number(d.i),1); save(); rerender(); },
+  "del-question"(d){ S.customQuestions.splice(Number(d.i),1); save(); rerender(); },
+
+  "j-filter"(d){ J_FILTER = d.v; J_LIMIT = 30; rerender(); },
+  "j-more"(){ J_LIMIT += 30; rerender(); },
+  "del-entry"(d){
+    if(!window.confirm("Стереть эту запись? Вернуть будет нельзя.")) return;
+    const r = S.days[d.k]; if(r){ r.answer = ""; save(); }
+    rerender();
+  },
+  "wipe-journal"(){ EXPANDED.add("wipe"); rerender(); },
+  "wipe-confirm"(){
+    if(val("#wipeword").toLowerCase() !== "стереть"){ markToast("Впиши слово «стереть»"); return; }
+    for(const k in S.days){ S.days[k].answer = ""; S.days[k].weekly = ""; S.days[k].sleepPlan = ""; }
+    S.weeks = {};
+    EXPANDED.delete("wipe"); save(); rerender(); markToast("Дневник стёрт");
+  },
+
+  backup(){
+    const json = JSON.stringify(S);
+    const s = stats();
+    const name = "pult-"+CTX.key+".txt";
+    try{
+      const f = new File([json], name, {type:"text/plain"});
+      if(navigator.canShare && navigator.canShare({files:[f]})){
+        navigator.share({files:[f], title:"Копия Пульта"}).then(()=>{
+          S.lastBackup = {at:Date.now(), days:s.marked}; save();
+        }).catch(()=>{});
+        return;
+      }
+    }catch(e){}
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(json).then(()=>{
+        S.lastBackup = {at:Date.now(), days:s.marked}; save();
+        markToast("Скопировано. Сохрани в заметки.");
+      }, ()=>{ EXPANDED.add("backup"); rerender(); markToast("Выдели и скопируй вручную"); });
+      return;
+    }
+    EXPANDED.add("backup"); rerender();
+  },
+  "show-backup"(){ EXPANDED.has("backup") ? EXPANDED.delete("backup") : EXPANDED.add("backup"); rerender(); },
+  "preview-restore"(){
+    const v = val("#importta");
+    if(!v){ markToast("Вставь копию в поле выше"); return; }
+    try{
+      const o = JSON.parse(v);
+      if(!o || typeof o !== "object" || !o.days) throw new Error("bad");
+      let inDays = 0, inRec = 0, fresh = 0;
+      for(const k in o.days){
+        inDays++;
+        if(o.days[k] && o.days[k].answer) inRec++;
+        if(!S.days[k]) fresh++;
+      }
+      inRec += Object.keys(o.weeks||{}).length;   /* как в stats(): прогоны недель тоже записи */
+      const mine = stats();
+      const myDays = Object.keys(S.days).length;
+      RESTORE_PREVIEW = {data:o, text:"В копии "+nDays(inDays)+" и "+nRec(inRec)+". У тебя "+nDays(myDays)+" и "+nRec(mine.records)+". Новых дней придёт: "+fresh+". Ничего не будет удалено."};
+      rerender();
+    }catch(e){ RESTORE_PREVIEW = null; markToast("Это не похоже на копию Пульта"); }
+  },
+  "restore-merge"(){
+    if(!RESTORE_PREVIEW) return;
+    const o = RESTORE_PREVIEW.data;
+    for(const k in o.days) if(!S.days[k]) S.days[k] = normalizeDay(o.days[k]);
+    for(const w in (o.weeks||{})) if(!S.weeks[w]) S.weeks[w] = o.weeks[w];
+    (o.people||[]).forEach(p=>{ if(p && p.name && S.people.length<7 && !S.people.some(x=>x.name===p.name)) S.people.push(p); });
+    (o.customMissions||[]).forEach(m=>{ if(m && m.text && !S.customMissions.some(x=>x.text===m.text)) S.customMissions.push(m); });
+    (o.customQuestions||[]).forEach(q=>{ if(q && S.customQuestions.indexOf(q)<0) S.customQuestions.push(q); });
+    if(o.rider && o.rider.helps && !S.rider.helps) S.rider = o.rider;
+    RESTORE_PREVIEW = null; save(); rerender(); markToast("Дни добавлены");
+  },
+  "restore-replace"(){
+    if(!RESTORE_PREVIEW) return;
+    const o = RESTORE_PREVIEW.data;
+    let lost = 0;
+    for(const k in S.days) if(!o.days[k]) lost++;
+    if(!window.confirm("Заменить всё целиком? Потеряешь "+nDays(lost)+", которых нет в копии.")) return;
+    try{ localStorage.setItem(SNAP_KEY, JSON.stringify(S)); }catch(e){}
+    S = fill(o); RESTORE_PREVIEW = null; save(); render(); window.scrollTo(0,0);
+    markToast("Заменено");
+  },
+  "undo-replace"(){
+    let snap = null;
+    try{ snap = localStorage.getItem(SNAP_KEY); }catch(e){}
+    if(!snap) return;
+    try{ S = fill(JSON.parse(snap)); }catch(e){ markToast("Копия повреждена"); return; }
+    try{ localStorage.removeItem(SNAP_KEY); }catch(e){}
+    save(); render(); window.scrollTo(0,0); markToast("Откатили");
+  },
+
+  "ret-back"(){ const rec = day(CTX.key); rec.returned = true; save(); render(); window.scrollTo(0,0); },
+  "ret-normal"(){ const rec = day(CTX.key); rec.returnSeen = true; save(); render(); window.scrollTo(0,0); },
+  "rb-keep"(d){ RB[d.k] = !RB[d.k]; rerender(); },
+  rebuild(){
+    if(!RB.missions) S.customMissions = [];
+    if(!RB.questions) S.customQuestions = [];
+    if(!RB.people) S.people = [];
+    S.banned = {missions:[], questions:[]};
+    const rec = day(CTX.key);
+    rec.returned = true;
+    delete rec.setlist;
+    save(); render(); window.scrollTo(0,0); markToast("Собрано заново. Дневник цел.");
+  },
+};
+
+/* Делегирование: один слушатель на весь экран вместо перевешивания onclick */
+document.addEventListener("click", function(e){
+  const el = e.target.closest("[data-act]");
+  if(!el) return;
+  const act = el.dataset.act;
+  const fn = ACTIONS[act];
+  if(!fn) return;
+  e.preventDefault();
+  try{ fn(el.dataset, el); }
+  catch(err){ if(window.console) console.error(err); toast("Что-то пошло не так"); }
+});
+document.addEventListener("keydown", function(e){
+  if(e.key !== "Enter" && e.key !== " ") return;
+  const el = e.target.closest && e.target.closest('[data-act="mission"]');
+  if(!el) return;
+  e.preventDefault();
+  ACTIONS.mission(el.dataset, el);
+});
+document.addEventListener("input", function(e){
+  const t = e.target;
+  if(t.id === "j-search"){ J_SEARCH = t.value; J_LIMIT = 30;
+    const pos = t.selectionStart; rerender();
+    const n = $("#j-search"); if(n){ n.focus(); try{ n.setSelectionRange(pos,pos); }catch(err){} }
+    return;
+  }
+  if(t.dataset && t.dataset.draft){
+    setDraft(t.dataset.draft, t.value, t.dataset.scope);
+    const ind = $("#draft-"+t.dataset.draft);
+    if(ind){ ind.textContent = "черновик сохранён"; clearTimeout(ind._t); ind._t = setTimeout(()=>{ ind.textContent = ""; }, 1500); }
+  }
+});
+document.addEventListener("focusin", function(e){
+  const t = e.target;
+  if(t.tagName === "TEXTAREA") setTimeout(()=>{ try{ t.scrollIntoView({block:"center", behavior:"smooth"}); }catch(err){} }, 250);
+});
+document.addEventListener("focusout", function(){
+  if(PENDING_RERENDER){ PENDING_RERENDER = false; setTimeout(()=>{ render(); }, 60); }
+});
+
+/* ================= КЛАВИАТУРА ================= */
+
+(function(){
+  const vv = window.visualViewport;
+  if(!vv) return;
+  const upd = ()=>{
+    const gap = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+    document.documentElement.style.setProperty("--kb", gap+"px");
+    const nav = $("#nav");
+    if(nav) nav.classList.toggle("hidden", gap > 80);
+  };
+  vv.addEventListener("resize", upd);
+  vv.addEventListener("scroll", upd);
+  upd();
+})();
+
+/* ================= СМЕНА КОНТЕКСТА ================= */
+
+function checkContext(){
+  if(!RENDERED_SIG || RENDERED_SIG === screenSig()) return;
+  const ae = document.activeElement;
+  if(ae && (ae.tagName === "TEXTAREA" || ae.tagName === "INPUT") && String(ae.value||"").trim()){ PENDING_RERENDER = true; return; }
+  EXPANDED.clear(); EDITING = {}; SHOW_ALL = false;
+  render(); window.scrollTo(0,0);
+}
+document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState === "visible"){ checkContext(); if(BREATH && BREATH.on) askWake(); } });
+window.addEventListener("pageshow", checkContext);
+window.addEventListener("pagehide", dropWake);
+setInterval(checkContext, 60000);
+
+/* ================= СТАРТ ================= */
+
+try{
+  if(navigator.storage && navigator.storage.persist){
+    navigator.storage.persist().then(ok=>{ if(S.persisted !== !!ok){ S.persisted = !!ok; save(); } }).catch(()=>{});
+  }
+}catch(e){}
+
+migrateIds();
 sweepDrafts();
-totalXp(); /* миграция XP из старых данных — до первого действия, чтобы ничего не задвоилось */
 
-/* диплинки: #soundcheck / #question / #sleep — до первого рендера, без двойной отрисовки */
 function applyHash(){
   const h = (location.hash||"").replace("#","");
-  if(h==="question") EXPANDED.add("q");
+  if(h === "question") EXPANDED.add("q");
+  if(h === "sleep") EXPANDED.add("night");
   render();
-  const map = {soundcheck:"#card-sc", question:"#card-q", sleep:"#card-sleep"};
+  const map = {soundcheck:"#card-sc", question:"#card-q", sleep:"#card-night"};
   const el = map[h] && document.querySelector(map[h]);
-  el && el.scrollIntoView({block:"start"});
+  if(el) el.scrollIntoView({block:"start"});
 }
 applyHash();
 window.addEventListener("hashchange", applyHash);
-
-/* смена дня, пока приложение живёт в памяти (iOS держит PWA сутками) */
-function checkDayRollover(){
-  if(RENDERED_KEY && RENDERED_KEY !== todayKey()){
-    EXPANDED.clear(); EDITING = {};
-    render(); window.scrollTo(0,0);
-  }
-}
-document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible") checkDayRollover(); });
-window.addEventListener("focus", checkDayRollover);
-window.addEventListener("pageshow", checkDayRollover);
 </script>
