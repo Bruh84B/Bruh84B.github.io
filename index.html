@@ -398,7 +398,7 @@ const MISSIONS = [
  {cat:"craft", min:25, text:"Изучи одну функцию в пульте или софте, которой не пользуешься. Одну, но до конца."},
  {cat:"craft", min:20, text:"Наведи порядок в рабочих файлах: проекты, пресеты, схемы."},
  {cat:"craft", min:15, text:"Спроси у коллеги, как он решает задачу, которую ты решаешь по-своему. Сравни."},
- {cat:"craft", min:30, text:"Опиши свой райдер или техспеку так, чтобы понял человек, который тебя не знает."},
+ {cat:"craft", min:30, text:"Опиши техтребования своего сетапа так, чтобы понял человек, который тебя не знает."},
  {cat:"craft", min:25, text:"Посмотри разбор от инженера крупного тура: что у них устроено иначе."},
  {cat:"craft", min:15, text:"Один кабель, один кейс, один разъём — почини или замени то, что давно бесит."},
  {cat:"craft", min:5,  text:"Сфотографируй свой сетап на площадке. Через год это будет архив твоего роста."},
@@ -417,7 +417,7 @@ const MISSIONS = [
  {cat:"world", min:30, text:"Посмотри, куда есть прямые рейсы из Алматы и сколько стоят. Просто посмотри."},
  /* ---- Создание: делать своё ---- */
  {cat:"make", min:60, text:"Час на свою идею: не думать о ней, а сделать первый кусок. Любой."},
- {cat:"make", min:60, text:"Собери что-нибудь с AI за один вечер: бота, скрипт, страницу. Не идеально — рабочее."},
+ {cat:"make", min:90, text:"Собери что-нибудь с AI за один вечер: бота, скрипт, страницу. Не идеально — рабочее."},
  {cat:"make", min:10, text:"Запиши голосом три идеи, пока они свежие. Расшифруешь потом."},
  {cat:"make", min:20, text:"Возьми свою старую идею и убей её честно — или назначь ей следующий шаг."},
  {cat:"make", min:15, text:"Покажи кому-то то, что делаешь. Раньше, чем оно готово."},
@@ -430,7 +430,6 @@ const MISSIONS = [
  {cat:"limits", min:5,  text:"Скажи «нет» одной просьбе, которая тебе сегодня не по силам. Без объяснений на три абзаца."},
  {cat:"limits", min:15, text:"Найди одно обязательство, которое ты тащишь по инерции. Сними его."},
  {cat:"limits", min:60, text:"Сегодня один час без рабочих чатов и звонков. Один."},
- {cat:"limits", min:3,  text:"Скажи «мне нужно подумать» там, где тебя торопят. Это твоё право, а не слабость."},
  {cat:"limits", min:10, text:"Проверь, где ты работаешь бесплатно, хотя не должен. Просто заметь."},
  {cat:"limits", min:5,  text:"Уйди с работы вовремя один раз. Мир не рухнет — проверь эмпирически."},
  {cat:"limits", min:5,  text:"Отключи уведомления одного чата, который дёргает тебя без повода."},
@@ -515,10 +514,9 @@ const QUESTIONS = [
  "Если бы завтра пришлось объяснить незнакомому, чем ты занимаешься и почему это важно, — что бы ты сказал?",
  "Что бы ты сделал своими руками, если бы точно знал, что никто не оценит?",
  "Какую свою идею ты не начал только потому, что она казалась глупой?",
- "Где ты сегодня сказал «да», а внутри было «нет»?",
  "Что в твоём ремесле ты умеешь такого, чему стоило бы кого-то научить?",
  "Какой день за последний месяц ты бы прожил ещё раз — и почему именно его?",
- "Что ты откладываешь до момента, когда «станет полегче»? Станет ли?",
+ "Что ты откладываешь до момента, когда «станет полегче»?",
  "Какая часть твоей работы даёт тебе больше всего — и можно ли её увеличить?",
  "Если бы у тебя был свободный год без денежного вопроса — на что бы он ушёл?",
  "Что тебе нужно перестать доказывать?",
@@ -537,9 +535,14 @@ const SNAP_KEY = "pult_snap_replace";
 let SAVE_FAILS = 0, SAVE_COUNT = 0, SAVE_ALARM = false;
 
 function defaults(){
+  /* ПРАВИЛО НА БУДУЩЕЕ: любой НОВЫЙ модуль добавляется в S.off и не имеет права
+     появиться на «Сегодня» сам — только осознанным включением в «Я».
+     (Четыре новые сферы v4 — единственное анонсированное исключение: включены,
+      но выключаются здесь же, тумблером на сферу.) */
   return {days:{}, weeks:{}, people:[], customMissions:[], customQuestions:[],
     banned:{missions:[], questions:[]},
-    off:{archive:false, rider:false, weekly:false, strength:false, demontazh:false, rhythm:false},
+    off:{archive:false, rider:false, weekly:false, strength:false, demontazh:false, rhythm:false,
+         sphere_craft:false, sphere_world:false, sphere_make:false, sphere_limits:false},
     mode:null, paused:null, rider:{helps:"", updatedAt:""},
     quietOfferedAt:null, riderOfferedAt:null, echoShown:{}, idsV:0,
     seenV4:false, seenTiny:false, persisted:false, lastBackup:null, backupNagAt:null, lastVisit:null};
@@ -708,14 +711,14 @@ function isActive(rec){
   if(!rec) return false;
   if(rec.energy !== null && rec.energy !== undefined) return true;
   if(rec.strengthDone || rec.answer || rec.weekly || rec.sleepPlan) return true;
-  if(rec.lightsOut || rec.closedAt || rec.idle || rec.returned || rec.skipped || rec.kind) return true;
+  if(rec.lightsOut || rec.closedAt || rec.idle || rec.returned || rec.skipped || rec.kind || rec.optOut) return true;
   for(const k in (rec.missions||{})) if(rec.missions[k]) return true;
   return false;
 }
 function dayMarked(rec){
   if(!rec) return false;
   if(rec.energy !== null && rec.energy !== undefined) return true;
-  if(rec.idle || rec.returned || rec.answer || rec.strengthDone) return true;
+  if(rec.idle || rec.returned || rec.answer || rec.strengthDone || rec.optOut) return true;
   for(const k in (rec.missions||{})) if(rec.missions[k]) return true;
   return false;
 }
@@ -730,10 +733,10 @@ function lastActiveDayBefore(dn){
 function gapDays(dn){ const l = lastActiveDayBefore(dn); return l === null ? 0 : dn - l; }
 
 function quietActive(ctx){
+  /* Сам режим НИКОГДА не выключается по календарю: истечение срока лишь
+     показывает карточку выбора, а наполнение остаётся тихим до решения. */
   const m = S.mode;
-  if(!m || m.type !== "quiet") return false;
-  if(!m.until) return true;
-  return dayNum(m.until) >= ctx.dn;
+  return !!(m && m.type === "quiet");
 }
 function quietExpired(ctx){
   const m = S.mode;
@@ -763,7 +766,8 @@ function stats(){
 
 function missionPool(){
   const banned = S.banned.missions;
-  return MISSIONS.concat(S.customMissions||[]).filter(m=> banned.indexOf(mid(m.text)) < 0);
+  return MISSIONS.concat(S.customMissions||[]).filter(m=>
+    banned.indexOf(mid(m.text)) < 0 && !S.off["sphere_"+m.cat]);
 }
 function questionPool(){
   const banned = S.banned.questions;
@@ -821,9 +825,10 @@ function ensureDayContent(key){
   const rec = day(key);
   const dn = dayNum(key);
   let dirty = false;
-  if(!rec.setlist){ rec.setlist = buildSetlist(dn, rec.reroll||0, rec); dirty = true; }
+  /* пустой результат не записываем: иначе normalizeDay его удалит и save() зациклится на каждом рендере */
+  if(!rec.setlist){ const sl = buildSetlist(dn, rec.reroll||0, rec); if(sl.length){ rec.setlist = sl; dirty = true; } }
   if(!rec.restlist){ rec.restlist = buildRestlist(dn); dirty = true; }
-  if(!rec.q){ rec.q = pickQuestion(dn); dirty = true; }
+  if(!rec.q){ const q = pickQuestion(dn); if(q){ rec.q = q; dirty = true; } }
   if(!rec.sAction){ const st = strengthOf(dn); rec.sAction = st.actions[dn % st.actions.length]; dirty = true; }
   if(dirty) save();
   return rec;
@@ -837,9 +842,11 @@ function setlistItems(ctx, rec, quiet){
   if(!list.length) list = (rec.setlist||[]).slice(0,1);
   const gap = gapDays(ctx.dn);
   const narrow = (rec.energy !== null && rec.energy <= 3) || (gap >= 3 && gap <= 6) || rec.kind === "show";
+  if(!list.length) return {list:[], limited:false, prefix:quiet?"r":"m", total:0};
   if(narrow && !SHOW_ALL_TASKS){
     const undone = list.filter(m=> !rec.missions[m.id]);
     const base = undone.length ? undone : list;
+    if(!base.length) return {list:[], limited:false, prefix:"m", total:0};
     const pick = base[((PICK_I % base.length) + base.length) % base.length];
     const done = list.filter(m=> rec.missions[m.id]);
     return {list:[pick].concat(done.filter(d=> d.id !== pick.id)), limited:true, prefix:"m", total:list.length};
@@ -851,12 +858,14 @@ function setlistItems(ctx, rec, quiet){
 
 const $ = sel => document.querySelector(sel);
 function esc(s){ return String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
-function hl(safe, needle){
-  if(!needle) return safe;
-  const n = esc(needle);
-  const i = safe.toLowerCase().indexOf(n.toLowerCase());
-  if(i < 0) return safe;
-  return safe.slice(0,i)+"<mark>"+safe.slice(i,i+n.length)+"</mark>"+safe.slice(i+n.length);
+/* Ищем по сырой строке, экранируем три куска раздельно —
+   иначе поиск «amp» ловил бы внутренности HTML-entity и рвал разметку. */
+function hl(raw, needle){
+  const s = String(raw);
+  if(!needle) return esc(s);
+  const i = s.toLowerCase().indexOf(String(needle).toLowerCase());
+  if(i < 0) return esc(s);
+  return esc(s.slice(0,i))+"<mark>"+esc(s.slice(i,i+needle.length))+"</mark>"+esc(s.slice(i+needle.length));
 }
 let toastTimer = null;
 function toast(msg){
@@ -884,7 +893,7 @@ let SHOW_ALL_TASKS = false;    /* «показать все три» */
 let PICK_I = 0;                /* «дай другую» */
 let ARCH_I = 0;                /* «ещё» в архиве */
 let J_SEARCH = "", J_FILTER = "all", J_LIMIT = 30;
-let HIDE_HINT = false, HIDE_UPD = false;
+let HIDE_HINT = false, HIDE_UPD = false, RIDER_HIDE = false;
 let RENDERED_SIG = null, PENDING_RERENDER = false;
 let BREATH = null;
 
@@ -962,7 +971,10 @@ function archiveCandidates(ctx, rec, quiet){
   for(const k in S.days){
     const r = S.days[k];
     if(!r.answer) continue;
-    all.push({key:k, dn:dayNum(k), text:r.answer, q:r.q||"", energy:r.energy, judged:!!r.stillTrue});
+    /* отмеченная СЕГОДНЯ запись остаётся кандидатом — иначе тап «всё ещё так»
+       мгновенно подменял бы карточку другой записью и подтверждение исчезало */
+    const judged = !!r.stillTrue && r.stillTrueAt !== ctx.key;
+    all.push({key:k, dn:dayNum(k), text:r.answer, q:r.q||"", energy:r.energy, judged});
   }
   all.sort((a,b)=> b.dn - a.dn);
   const gap = gapDays(ctx.dn);
@@ -1020,7 +1032,8 @@ function archiveHtml(ctx, rec, quiet){
 
 function cardSoundcheck(ctx, rec, expanded){
   if(!expanded){
-    return line("sc","Саундчек","Энергия: "+ELBL[rec.energy]+(rec.kind?" · "+KINDS[rec.kind]:""), false);
+    const e = (typeof rec.energy === "number") ? ELBL[rec.energy] : "не отмечена";
+    return line("sc","Саундчек","Энергия: "+e+(rec.kind?" · "+KINDS[rec.kind]:""), false);
   }
   let h = '<div class="card" id="card-sc">'+eyebrow("Саундчек", rec.energy===null ? "live" : "ok")+
     '<p class="body">'+(rec.energy===null ? "Сколько в тебе сегодня энергии?" : "Уровень принят. Можно поменять, если день изменился.")+'</p><div class="faders">';
@@ -1055,6 +1068,10 @@ function cardSetlist(ctx, rec, quiet, expanded){
       '<div class="minirow"><button class="mini" data-act="optout-off">вернуть</button></div></div>';
   }
   let h = '<div class="card" id="card-setlist">'+eyebrow(quiet ? "Сетлист тихого дня" : "Сетлист дня", doneCount ? "ok" : "live")+'';
+  if(!info.list.length){
+    return h + '<p class="body">Сетлист пуст — всё убрано из ротации.</p>'+
+      '<p class="mut" style="margin-top:8px">Верни задачи в «Я» — или добавь свои.</p></div>';
+  }
   for(const m of info.list){
     const done = !!rec.missions[m.id];
     const cat = CATS[m.cat] || {name:"—", color:"var(--muted)"};
@@ -1064,7 +1081,7 @@ function cardSetlist(ctx, rec, quiet, expanded){
       '<div class="txt">'+esc(useTiny ? m.tiny : m.text)+'</div>'+
       '<div class="meta"><span class="chip" style="color:'+cat.color+'; border-color:'+cat.color+'">'+cat.name+'</span>'+
       (useTiny ? '<span>~1 мин</span>' : (m.min ? '<span>~'+m.min+' мин</span>' : ''))+'</div></div></div>';
-    if(!done){
+    if(!done && !quiet && m.cat !== "rest"){
       h += '<div class="minirow">';
       if(m.tiny && !useTiny) h += '<button class="mini" data-act="tiny" data-id="'+m.id+'">уменьшить</button>';
       h += '<button class="mini" data-act="ban-mission" data-id="'+m.id+'">убрать из ротации</button></div>';
@@ -1076,6 +1093,9 @@ function cardSetlist(ctx, rec, quiet, expanded){
     }
   }
   h += '<p class="mut" style="margin-top:12px">'+(quiet ? "Одна мягкая задача. Ни одна не обязательна." : "Три варианта на сегодня. Ни одно не обязательно.")+'</p>';
+  if(info.list.some(m=> rec.tiny && rec.tiny[m.id])){
+    h += '<p class="tiny-note">Крошечная версия весит столько же. Это не поблажка: начатое почти всегда продолжается, неначатое — никогда.</p>';
+  }
   h += '<div class="minirow">';
   if(info.limited && info.total > 1){
     h += '<button class="mini" data-act="another">дай другую</button><button class="mini" data-act="show-all-tasks">показать все три</button>';
@@ -1115,7 +1135,9 @@ function cardStrength(ctx, rec, quiet, expanded){
 function cardQuestion(ctx, rec, quiet, expanded){
   const gap = gapDays(ctx.dn);
   const shortGap = gap >= 3 && gap <= 6;
-  const q = shortGap ? "Что происходило?" : (quiet ? "Одно слово про сегодня" : (rec.q || ""));
+  const drained = !shortGap && !quiet && !rec.q;   /* пул вопросов пуст — всё забанено */
+  const q = shortGap ? "Что происходило?" : (quiet ? "Одно слово про сегодня"
+    : (rec.q || "Свои вопросы закончились. Добавь свой в «Я» — или верни убранные."));
   if(!expanded){
     if(rec.answer) return line("q","Вопрос вечера","✔ "+esc(rec.answer.slice(0,44)), true);
     return line("q","Вопрос вечера", esc(q.slice(0,44))+(q.length>44?"…":""), false);
@@ -1134,7 +1156,7 @@ function cardQuestion(ctx, rec, quiet, expanded){
     h += '<div class="savestate" id="draft-answer"></div>'+
       '<div class="btnrow"><button class="btn small sticky" data-act="save-answer">Сохранить в дневник</button>'+
       (shortGap ? '<button class="btn quiet small" data-act="skip-write">не хочу писать</button>' : '')+'</div>';
-    if(!shortGap && !quiet && rec.q) h += '<div class="minirow"><button class="mini" data-act="ban-question">убрать этот вопрос из ротации</button></div>';
+    if(!shortGap && !quiet && rec.q && !drained) h += '<div class="minirow"><button class="mini" data-act="ban-question">убрать этот вопрос из ротации</button></div>';
   }
   return h+'</div>';
 }
@@ -1168,7 +1190,7 @@ function breathHtml(){
 }
 
 function cardNight(ctx, rec, expanded){
-  const show = rec.kind === "show";
+  const show = rec.kind === "show" && !S.off.demontazh;   /* выключенный «Демонтаж» = обычный «Последний трек» */
   const cap = show ? "Демонтаж" : "Последний трек";
   if(rec.closedAt || rec.lightsOut){
     if(!expanded) return line("night", cap, "✔ Свет погашен в "+(rec.closedAt||rec.lightsOut), true);
@@ -1246,7 +1268,7 @@ function metaBlock(ctx, rec, quiet){
     const marked = [];
     for(let i=1;i<=7 && marked.length<2;i++){
       const r = S.days[keyOfNum(ctx.dn-i)];
-      if(r && r.energy !== null) marked.push(r.energy);
+      if(r && typeof r.energy === "number") marked.push(r.energy);
     }
     if(marked.length === 2 && marked[0] <= 2 && marked[1] <= 2){
       return '<div class="note"><b>Два дня подряд на низком. Убавить громкость?</b>'+
@@ -1254,13 +1276,15 @@ function metaBlock(ctx, rec, quiet){
         '<button class="btn ghost small" data-act="quiet-decline">Обычный день</button></div></div>';
     }
   }
-  /* Предложение райдера: только в хороший день, не чаще раза в 14 дней */
-  if(!quiet && !S.off.rider && !S.rider.helps && rec.energy !== null && rec.energy >= 4 &&
-     (S.riderOfferedAt === null || ctx.dn - S.riderOfferedAt >= 14)){
-    S.riderOfferedAt = ctx.dn; save();
+  /* Предложение райдера: только в хороший день, не чаще раза в 14 дней.
+     Пометка дня ставится при показе, поэтому «показан сегодня» — тоже условие показа:
+     иначе предложение исчезало бы после первой же перерисовки экрана. */
+  if(!quiet && !S.off.rider && !S.rider.helps && !RIDER_HIDE && rec.energy !== null && rec.energy >= 4 &&
+     (S.riderOfferedAt === null || S.riderOfferedAt === ctx.dn || ctx.dn - S.riderOfferedAt >= 14)){
+    if(S.riderOfferedAt !== ctx.dn){ S.riderOfferedAt = ctx.dn; save(); }
     return '<div class="note"><b>Сегодня энергия есть.</b><p class="mut" style="margin-top:4px">Это лучший день, чтобы написать инструкцию для дня, когда её не будет.</p>'+
       '<div class="btnrow"><button class="btn small" data-act="rider-open">Записать</button>'+
-      '<button class="btn ghost small" data-act="hide-hint">не сейчас</button></div></div>';
+      '<button class="btn ghost small" data-act="rider-later">не сейчас</button></div></div>';
   }
   if(dayMarked(rec)) return '<div class="banner"><b>День записан.</b><p>Дальше — по желанию.</p></div>';
   if(gap <= 2){
@@ -1280,9 +1304,9 @@ function takeoverGap(ctx, rec, gap){
   let h = headerHtml()+
     '<div class="card" style="margin-top:14px">'+eyebrow("Пульт был выключен")+
     '<h2>'+nDays(gap)+'</h2>'+
-    '<p class="body">Всё цело: '+nRec(s.records)+", "+nTasks(s.tasks)+", "+nDays(s.marked)+'. Ничего не сгорело и никуда не делось.</p>'+
+    '<p class="body">Всё цело: '+nRec(s.records)+", "+nTasks(s.tasks)+", отмеченных дней: "+s.marked+'. Ничего не сгорело и никуда не делось.</p>'+
     '<div class="btnrow"><button class="btn small" data-act="ret-back">просто вернуться</button>'+
-    '<button class="btn ghost small" data-act="ret-normal">показать обычный день</button></div></div>';
+    '<button class="btn small" data-act="ret-normal">показать обычный день</button></div></div>';
   if(gap >= 30){
     h += '<div class="card">'+eyebrow("Пересобрать пульт")+
       '<p class="mut">Если то, что ты настроил раньше, больше не про тебя.</p>'+
@@ -1309,6 +1333,13 @@ function viewToday(){
   const ctx = CTX;
   const rec = ensureDayContent(ctx.key);
   const quiet = quietActive(ctx);
+
+  /* Истёкшая пауза снимается сама и без комментария; поставленная осознанно
+     пауза не считается молчанием — день возврата помечается, чтобы не было
+     перехвата «Пульт был выключен 30 дней» после его же собственного решения. */
+  if(S.paused && S.paused.until !== null && S.paused.until < ctx.dn){
+    S.paused = null; rec.returned = true; save();
+  }
   const gap = gapDays(ctx.dn);
 
   if(S.lastVisit !== ctx.key){ S.lastVisit = ctx.key; save(); }
@@ -1318,12 +1349,11 @@ function viewToday(){
 
   let h = headerHtml();
   h += '<p class="greet">'+greeting(ctx.h)+', <b>Батыр</b>. '+(quiet ? "Тихий режим. Без подвигов." : "Пульт включён — день твой.")+'</p>';
-  h += saveAlarmHtml();
   h += metaBlock(ctx, rec, quiet);
 
   if(rec.idle && !SHOW_ALL){
     return h + '<div class="card">'+eyebrow("Отмечено","ok")+
-      '<p class="body">Отмечено'+(rec.closedAt?" · "+rec.closedAt:"")+'. Сегодня больше ничего не нужно.</p>'+
+      '<p class="body">Отмечено'+(rec.idleAt?" · "+rec.idleAt:"")+'. Сегодня больше ничего не нужно.</p>'+
       '<div class="minirow"><button class="mini" data-act="show-all">Показать остальное ›</button></div></div>';
   }
 
@@ -1394,14 +1424,15 @@ function viewPath(){
   for(const k in S.days){ const r = S.days[k]; if(r.stillTrue){ if(r.stillTrue==="yes") yes++; else if(r.stillTrue==="no") no++; else dunno++; } }
   for(const k in (S.echoShown||{})) shown++;
   if(yes+no+dunno >= 5){
+    const blank = Math.max(0, shown - (yes+no+dunno));
     h += '<div class="card">'+eyebrow("Возвращённые записи")+
-      '<p class="body">Из '+shown+' возвращённых записей: '+yes+' — всё ещё так, '+no+' — уже не так, '+dunno+' — сложно сказать.</p>'+
+      '<p class="body">Из '+shown+' возвращённых записей: '+yes+' — всё ещё так, '+no+' — уже не так, '+dunno+' — сложно сказать'+(blank?', '+blank+' — без отметки':'')+'.</p>'+
       '<p class="mut" style="margin-top:8px">Это твои собственные отметки, а не мнение приложения.</p></div>';
   }
 
   /* Линия энергии */
   const pts = []; const BACK = 41;
-  for(let i=BACK;i>=0;i--){ const r = S.days[keyOfNum(ctx.dn-i)]; if(r && r.energy !== null) pts.push({x:BACK-i, y:r.energy}); }
+  for(let i=BACK;i>=0;i--){ const r = S.days[keyOfNum(ctx.dn-i)]; if(r && typeof r.energy === "number") pts.push({x:BACK-i, y:r.energy}); }
   if(pts.length >= 2){
     const W=420, H=90;
     const px = x=> 10 + x*(W-20)/BACK, py = y=> H-12 - (y-1)*(H-28)/4;
@@ -1519,10 +1550,10 @@ function viewJournal(){
       (r.stillTrue?'<span class="pill">'+(r.stillTrue==="yes"?"всё ещё так":r.stillTrue==="no"?"уже не так":"сложно сказать")+(r.stillTrueAt?" · "+fmtDate(r.stillTrueAt):"")+'</span>':"")+
       '</div>';
     if(r.answer){
-      h += '<div class="j-q">'+hl(esc(r.q||"Запись дня"), J_SEARCH)+'</div><div class="j-a">'+hl(esc(r.answer), J_SEARCH)+'</div>'+
+      h += '<div class="j-q">'+hl(r.q||"Запись дня", J_SEARCH)+'</div><div class="j-a">'+hl(r.answer, J_SEARCH)+'</div>'+
         '<div class="minirow"><button class="mini" data-act="del-entry" data-k="'+k+'">убрать</button></div>';
     }
-    if(r.weekly) h += '<div class="j-q" style="margin-top:8px">Прогон недели</div><div class="j-a">'+hl(esc(r.weekly), J_SEARCH)+'</div>';
+    if(r.weekly) h += '<div class="j-q" style="margin-top:8px">Прогон недели</div><div class="j-a">'+hl(r.weekly, J_SEARCH)+'</div>';
     if(r.sleepPlan) h += '<div class="j-q" style="margin-top:8px">План перед сном</div><div class="j-a">'+esc(r.sleepPlan)+'</div>';
     h += '</div>';
   }
@@ -1541,6 +1572,7 @@ function viewJournal(){
 /* ================= ВКЛАДКА «Я» ================= */
 
 const OFF_LABELS = {archive:"Из твоего архива", rider:"Райдер", weekly:"Прогон недели", strength:"Сила дня", demontazh:"Демонтаж", rhythm:"Ритм"};
+const SPHERE_LABELS = {sphere_craft:"Ремесло", sphere_world:"Дорога", sphere_make:"Создание", sphere_limits:"Границы"};
 
 function viewMe(){
   const ctx = CTX;
@@ -1557,6 +1589,10 @@ function viewMe(){
     '<p class="mut" style="margin-bottom:6px">Выключай что угодно. Обратно включится там же, когда захочешь.</p>';
   for(const k in OFF_LABELS){
     h += '<button class="toggle" data-act="toggle-off" data-k="'+k+'" aria-pressed="'+(!S.off[k])+'"><span>'+OFF_LABELS[k]+'</span><span class="sw"><i></i></span></button>';
+  }
+  h += '<p class="mut" style="margin:14px 0 2px">Сферы сетлиста:</p>';
+  for(const k in SPHERE_LABELS){
+    h += '<button class="toggle" data-act="toggle-off" data-k="'+k+'" aria-pressed="'+(!S.off[k])+'"><span>'+SPHERE_LABELS[k]+'</span><span class="sw"><i></i></span></button>';
   }
   h += '<div class="minirow"><button class="mini" data-act="quiet-ask">'+(quiet?"тихий режим активен — изменить":"убавить громкость")+'</button>'+
     '<button class="mini" data-act="pause-ask">поставить пульт на паузу</button></div></div>';
@@ -1644,6 +1680,24 @@ function viewMe(){
     h += '</div>';
   }
 
+  /* Спасённая копия после битого JSON */
+  let brokenKey = null;
+  try{
+    for(let i=0;i<localStorage.length;i++){
+      const k = localStorage.key(i);
+      if(k && k.indexOf(KEY+"_broken_") === 0 && (!brokenKey || k > brokenKey)) brokenKey = k;
+    }
+  }catch(e){}
+  if(brokenKey){
+    const ts = Number(brokenKey.slice((KEY+"_broken_").length));
+    const when = isFinite(ts) ? fmtDate(new Date(ts).toISOString().slice(0,10)) : "";
+    h += '<div class="card">'+eyebrow("Непрочитанная копия")+
+      '<p class="mut">Однажды данные не прочитались, и сырая копия была спрятана'+(when?" ("+when+")":"")+'. Она всё ещё здесь.</p>'+
+      '<div class="btnrow"><button class="btn ghost small" data-act="broken-try" data-k="'+esc(brokenKey)+'">попробовать восстановить</button>'+
+      '<button class="btn ghost small" data-act="broken-share" data-k="'+esc(brokenKey)+'">выгрузить файлом</button>'+
+      '<button class="btn quiet small" data-act="broken-del" data-k="'+esc(brokenKey)+'">удалить</button></div></div>';
+  }
+
   /* Резервная копия */
   let snap = null;
   try{ snap = localStorage.getItem(SNAP_KEY); }catch(e){}
@@ -1726,8 +1780,8 @@ function render(){
     $("#tabs").innerHTML = TABS.map(t=>
       '<button class="tab" role="tab" data-act="tab" data-id="'+t.id+'" aria-selected="'+(TAB===t.id)+'">'+
       '<span class="ico" aria-hidden="true">'+t.ico+'</span>'+t.name+'</button>').join("");
-    if(pausedActive(CTX)){ app.innerHTML = viewPaused(CTX); return; }
-    let h = pickerHtml();
+    if(pausedActive(CTX)){ app.innerHTML = saveAlarmHtml() + viewPaused(CTX); return; }
+    let h = saveAlarmHtml() + pickerHtml();   /* плашка сбоя записи — на любой вкладке, первым элементом */
     if(TAB === "today") h += viewToday();
     else if(TAB === "path") h += viewPath();
     else if(TAB === "journal") h += viewJournal();
@@ -1765,6 +1819,8 @@ function stopBreath(){ if(BREATH && BREATH.timer) clearInterval(BREATH.timer); B
 /* ================= ДЕЙСТВИЯ ================= */
 
 function val(id){ const el = $(id); return el ? String(el.value||"").trim() : ""; }
+/* Инвариант надёжности: тост успеха невозможен без успешной записи. */
+function commit(msg){ const ok = save(); if(ok && msg) toast(msg); return ok; }
 function markToast(msg){ toast(msg); }
 
 const ACTIONS = {
@@ -1774,6 +1830,7 @@ const ACTIONS = {
   "pick-cancel"(){ QUIET_PICK = false; PAUSE_PICK = false; rerender(); },
   "seen-v4"(){ S.seenV4 = true; HIDE_UPD = true; save(); rerender(); },
   "hide-hint"(){ HIDE_HINT = true; rerender(); },
+  "rider-later"(){ RIDER_HIDE = true; rerender(); },
   "nag-later"(){ S.backupNagAt = CTX.dn; save(); rerender(); },
   "show-all"(){ SHOW_ALL = true; rerender(); },
 
@@ -1797,13 +1854,13 @@ const ACTIONS = {
     const on = !rec.missions[d.id];
     rec.missions[d.id] = on;
     if(!on) delete rec.missions[d.id];
-    save();
+    const ok = save();
     if(on){
       el.setAttribute("aria-checked","true");
       el.querySelector(".tick").textContent = "✔";
       const led = el.closest(".card") && el.closest(".card").querySelector(".led");
       if(led){ led.classList.remove("flash"); void led.offsetWidth; led.classList.add("flash"); }
-      markToast("Записано · "+nowHM());
+      if(ok) markToast("Записано · "+nowHM());
       if(d.cat === "people"){ rerender(); return; }
     } else {
       el.setAttribute("aria-checked","false");
@@ -1844,11 +1901,14 @@ const ACTIONS = {
   "ban-mission"(d){
     const rec = day(CTX.key);
     const m = (rec.setlist||[]).find(x=> x.id === d.id);
-    if(m && S.banned.missions.indexOf(mid(m.text)) < 0) S.banned.missions.push(mid(m.text));
-    rec.setlist = (rec.setlist||[]).filter(x=> x.id !== d.id);
-    const extra = buildSetlist(CTX.dn, (rec.reroll||0)+7, rec).filter(x=> !(rec.setlist||[]).some(y=> y.id === x.id));
+    if(!m) return;   /* задача не из сетлиста (например, тихого дня) — ничего не трогаем */
+    if(S.banned.missions.indexOf(mid(m.text)) < 0) S.banned.missions.push(mid(m.text));
+    rec.setlist = rec.setlist.filter(x=> x.id !== d.id);
+    const usedCats = rec.setlist.map(x=> x.cat);
+    const extra = buildSetlist(CTX.dn, (rec.reroll||0)+7, rec).filter(x=>
+      !rec.setlist.some(y=> y.id === x.id) && usedCats.indexOf(x.cat) < 0 && !rec.missions[x.id]);
     if(extra.length) rec.setlist.push(extra[0]);
-    save(); rerender(); markToast("Убрано. Больше не появится.");
+    if(commit("Убрано. Больше не появится.")) rerender(); else rerender();
   },
   "ban-question"(){
     const rec = day(CTX.key);
@@ -1863,15 +1923,17 @@ const ACTIONS = {
   "save-answer"(){
     const rec = day(CTX.key);
     const v = val("#answerta"); if(!v) return;
-    rec.answer = v; EDITING.answer = false; setDraft("answer","");
-    save(); rerender(); markToast("В дневник · "+nowHM());
+    rec.answer = v; EDITING.answer = false;
+    if(commit("В дневник · "+nowHM())) setDraft("answer","");   /* черновик стираем только после успешной записи */
+    rerender();
   },
   "edit-answer"(){ const rec = day(CTX.key); EDITING.answer = true; setDraft("answer", rec.answer); rerender(); const t = $("#answerta"); t && t.focus(); },
   "skip-write"(){ const rec = day(CTX.key); rec.skipped = true; save(); rerender(); },
   "save-weekly"(d){
     const v = val("#weeklyta"); if(!v) return;
-    S.weeks[d.wk] = v; setDraft("weekly","",d.wk);
-    save(); rerender(); markToast("Неделя закрыта");
+    S.weeks[d.wk] = v;
+    if(commit("Неделя закрыта")) setDraft("weekly","",d.wk);
+    rerender();
   },
   "demo-next"(){ const rec = day(CTX.key); rec.demoStep = Math.min(4,(rec.demoStep||1)+1); save(); rerender(); },
   breath(){ if(BREATH && BREATH.on) stopBreath(); else startBreath(); rerender(); },
@@ -1880,12 +1942,16 @@ const ACTIONS = {
     const t = $("#sleepta");
     if(t) rec.sleepPlan = String(t.value||"").trim();
     rec.closedAt = nowHM();
-    setDraft("sleep","");
-    stopBreath(); save(); rerender();
-    markToast("Свет погашен · "+rec.closedAt);
+    stopBreath();
+    if(commit("Свет погашен · "+rec.closedAt)) setDraft("sleep","");
+    rerender();
   },
   "seen-plan"(){ const rec = day(CTX.key); rec.seenPlan = true; save(); rerender(); },
-  idle(){ const rec = day(CTX.key); rec.idle = true; rec.closedAt = rec.closedAt || nowHM(); save(); rerender(); window.scrollTo(0,0); },
+  idle(){
+    /* «Я тут» днём не имеет права породить «отбой» в дневнике — время в отдельном поле */
+    const rec = day(CTX.key); rec.idle = true; rec.idleAt = rec.idleAt || nowHM();
+    save(); rerender(); window.scrollTo(0,0);
+  },
 
   "arch-next"(){ ARCH_I++; rerender(); },
   still(d){
@@ -1903,7 +1969,7 @@ const ACTIONS = {
     QUIET_PICK = false; save(); rerender(); window.scrollTo(0,0);
   },
   "quiet-off"(){ S.mode = null; QUIET_PICK = false; save(); rerender(); markToast("Обычный день. Решаешь ты."); },
-  "quiet-keep"(){ if(S.mode) S.mode.until = keyOfNum(CTX.dn + 7); save(); rerender(); },
+  "quiet-keep"(){ if(S.mode) S.mode.until = null; save(); rerender(); },   /* «оставить как есть» = бессрочно, а не молчаливое +7 */
 
   "rider-open"(){ TAB = "me"; EXPANDED.add("rider"); render(); const t = $("#riderta"); if(t){ t.scrollIntoView({block:"center"}); t.focus(); } },
   "save-rider"(){
@@ -1918,7 +1984,11 @@ const ACTIONS = {
     S.paused = {until: days ? CTX.dn + days : null};
     PAUSE_PICK = false; save(); render(); window.scrollTo(0,0);
   },
-  unpause(){ S.paused = null; save(); render(); window.scrollTo(0,0); },
+  unpause(){
+    S.paused = null;
+    day(CTX.key).returned = true;   /* осознанная пауза — не молчание: перехвата возврата не будет */
+    save(); render(); window.scrollTo(0,0);
+  },
   "toggle-off"(d){ S.off[d.k] = !S.off[d.k]; save(); rerender(); },
 
   touch(d){ const p = S.people[Number(d.i)]; if(p){ p.last = CTX.key; save(); rerender(); markToast("Отмечено"); } },
@@ -1991,6 +2061,7 @@ const ACTIONS = {
         if(!S.days[k]) fresh++;
       }
       inRec += Object.keys(o.weeks||{}).length;   /* как в stats(): прогоны недель тоже записи */
+      for(const k in o.days){ const r = o.days[k]; if(r && r.weekly && !(o.weeks||{})[weekKeyOf(k)]) inRec++; }
       const mine = stats();
       const myDays = Object.keys(S.days).length;
       RESTORE_PREVIEW = {data:o, text:"В копии "+nDays(inDays)+" и "+nRec(inRec)+". У тебя "+nDays(myDays)+" и "+nRec(mine.records)+". Новых дней придёт: "+fresh+". Ничего не будет удалено."};
@@ -2006,7 +2077,9 @@ const ACTIONS = {
     (o.customMissions||[]).forEach(m=>{ if(m && m.text && !S.customMissions.some(x=>x.text===m.text)) S.customMissions.push(m); });
     (o.customQuestions||[]).forEach(q=>{ if(q && S.customQuestions.indexOf(q)<0) S.customQuestions.push(q); });
     if(o.rider && o.rider.helps && !S.rider.helps) S.rider = o.rider;
-    RESTORE_PREVIEW = null; save(); rerender(); markToast("Дни добавлены");
+    S.idsV = 0; migrateIds();   /* дни из старой копии могли прийти с позиционными ключами m0/m1 */
+    RESTORE_PREVIEW = null;
+    commit("Дни добавлены"); rerender();
   },
   "restore-replace"(){
     if(!RESTORE_PREVIEW) return;
@@ -2014,17 +2087,59 @@ const ACTIONS = {
     let lost = 0;
     for(const k in S.days) if(!o.days[k]) lost++;
     if(!window.confirm("Заменить всё целиком? Потеряешь "+nDays(lost)+", которых нет в копии.")) return;
-    try{ localStorage.setItem(SNAP_KEY, JSON.stringify(S)); }catch(e){}
-    S = fill(o); RESTORE_PREVIEW = null; save(); render(); window.scrollTo(0,0);
+    let snapOk = false;
+    try{ localStorage.setItem(SNAP_KEY, JSON.stringify({at:Date.now(), data:S})); snapOk = true; }catch(e){}
+    if(!snapOk && !window.confirm("Снимок для отката сохранить не удалось. Заменить БЕЗ возможности отката?")) return;
+    S = fill(o); S.idsV = 0; migrateIds();
+    RESTORE_PREVIEW = null; save(); render(); window.scrollTo(0,0);
     markToast("Заменено");
   },
   "undo-replace"(){
-    let snap = null;
-    try{ snap = localStorage.getItem(SNAP_KEY); }catch(e){}
-    if(!snap) return;
-    try{ S = fill(JSON.parse(snap)); }catch(e){ markToast("Копия повреждена"); return; }
-    try{ localStorage.removeItem(SNAP_KEY); }catch(e){}
-    save(); render(); window.scrollTo(0,0); markToast("Откатили");
+    /* Откат — обратимый свап с подтверждением: текущее состояние встаёт на место снимка. */
+    let raw = null;
+    try{ raw = localStorage.getItem(SNAP_KEY); }catch(e){}
+    if(!raw) return;
+    let snap;
+    try{ snap = JSON.parse(raw); }catch(e){ markToast("Снимок повреждён"); return; }
+    const data = (snap && snap.data) ? snap.data : snap;   /* поддержка старого формата: голый S */
+    const when = (snap && snap.at) ? fmtDate(new Date(snap.at).toISOString().slice(0,10)) : "неизвестной даты";
+    if(!window.confirm("Вернуть состояние на момент замены ("+when+")? Текущие данные встанут на его место — откат можно будет повторить.")) return;
+    let cur = null;
+    try{ cur = JSON.stringify({at:Date.now(), data:S}); }catch(e){}
+    let newS;
+    try{ newS = fill(data); }catch(e){ markToast("Снимок повреждён"); return; }
+    S = newS; S.idsV = 0; migrateIds();
+    try{ if(cur) localStorage.setItem(SNAP_KEY, cur); }catch(e){}
+    save(); render(); window.scrollTo(0,0); markToast("Вернули. Свап можно повторить.");
+  },
+  "broken-try"(d){
+    let raw = null;
+    try{ raw = localStorage.getItem(d.k); }catch(e){}
+    if(!raw) return;
+    try{
+      const o = JSON.parse(raw);
+      if(!o || typeof o !== "object" || !o.days) throw new Error("bad");
+      let inDays = 0, inRec = 0, fresh = 0;
+      for(const k in o.days){ inDays++; if(o.days[k] && o.days[k].answer) inRec++; if(!S.days[k]) fresh++; }
+      const mine = stats();
+      RESTORE_PREVIEW = {data:o, text:"В копии "+nDays(inDays)+" и "+nRec(inRec)+". У тебя "+nDays(Object.keys(S.days).length)+" и "+nRec(mine.records)+". Новых дней придёт: "+fresh+". Ничего не будет удалено."};
+      rerender();
+    }catch(e){ markToast("Копия не читается — выгрузи её файлом"); }
+  },
+  "broken-share"(d){
+    let raw = null;
+    try{ raw = localStorage.getItem(d.k); }catch(e){}
+    if(!raw) return;
+    try{
+      const f = new File([raw], "pult-broken.txt", {type:"text/plain"});
+      if(navigator.canShare && navigator.canShare({files:[f]})){ navigator.share({files:[f], title:"Спасённая копия Пульта"}).catch(()=>{}); return; }
+    }catch(e){}
+    if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(raw).then(()=>markToast("Скопировано"), ()=>{});
+  },
+  "broken-del"(d){
+    if(!window.confirm("Удалить спасённую копию? Вернуть будет нельзя.")) return;
+    try{ localStorage.removeItem(d.k); }catch(e){}
+    rerender();
   },
 
   "ret-back"(){ const rec = day(CTX.key); rec.returned = true; save(); render(); window.scrollTo(0,0); },
@@ -2034,11 +2149,10 @@ const ACTIONS = {
     if(!RB.missions) S.customMissions = [];
     if(!RB.questions) S.customQuestions = [];
     if(!RB.people) S.people = [];
-    S.banned = {missions:[], questions:[]};
     const rec = day(CTX.key);
     rec.returned = true;
     delete rec.setlist;
-    save(); render(); window.scrollTo(0,0); markToast("Собрано заново. Дневник цел.");
+    commit("Собрано заново. Дневник цел."); render(); window.scrollTo(0,0);
   },
 };
 
@@ -2075,7 +2189,8 @@ document.addEventListener("input", function(e){
 });
 document.addEventListener("focusin", function(e){
   const t = e.target;
-  if(t.tagName === "TEXTAREA") setTimeout(()=>{ try{ t.scrollIntoView({block:"center", behavior:"smooth"}); }catch(err){} }, 250);
+  if(t.tagName === "TEXTAREA" || (t.tagName === "INPUT" && (t.type === "text" || t.type === "search")))
+    setTimeout(()=>{ try{ t.scrollIntoView({block:"center", behavior:"smooth"}); }catch(err){} }, 250);
 });
 document.addEventListener("focusout", function(){
   if(PENDING_RERENDER){ PENDING_RERENDER = false; setTimeout(()=>{ render(); }, 60); }
@@ -2104,6 +2219,7 @@ function checkContext(){
   const ae = document.activeElement;
   if(ae && (ae.tagName === "TEXTAREA" || ae.tagName === "INPUT") && String(ae.value||"").trim()){ PENDING_RERENDER = true; return; }
   EXPANDED.clear(); EDITING = {}; SHOW_ALL = false;
+  SHOW_ALL_TASKS = false; PICK_I = 0; ARCH_I = 0;   /* сессионные выборы вчерашнего дня не переживают его */
   render(); window.scrollTo(0,0);
 }
 document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState === "visible"){ checkContext(); if(BREATH && BREATH.on) askWake(); } });
@@ -2119,8 +2235,8 @@ try{
   }
 }catch(e){}
 
-migrateIds();
-sweepDrafts();
+try{ migrateIds(); }catch(e){ if(window.console) console.error(e); }
+try{ sweepDrafts(); }catch(e){ if(window.console) console.error(e); }
 
 function applyHash(){
   const h = (location.hash||"").replace("#","");
