@@ -177,9 +177,9 @@
   .s-head .rk{font-family:"JetBrains Mono",monospace; font-size:13px; color:var(--amber); width:24px; flex:none; text-align:right}
   .s-head .nm{font-weight:600; font-size:15.5px; flex:1}
   .s-head .ar{color:var(--dim); transition:transform .2s}
-  .s-item.open .s-head .ar{transform:rotate(90deg)}
+  .s-item.open > .s-head .ar{transform:rotate(90deg)}
   .s-body{display:none; padding:0 13px 14px; border-top:1px solid var(--line)}
-  .s-item.open .s-body{display:block}
+  .s-item.open > .s-body{display:block}
   .s-body p{margin-top:10px; font-size:14.5px}
   .p-row{display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--line); padding:8px 0}
   .p-row:last-child{border-bottom:none}
@@ -216,6 +216,14 @@
   .tab .ico{font-size:19px; display:block; margin-bottom:2px; filter:grayscale(1) opacity(.55)}
   .tab[aria-selected="true"]{color:var(--amber)}
   .tab[aria-selected="true"] .ico{filter:none}
+  /* ---------- долги ---------- */
+  .dotrow{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 12px}
+  .dled{width:10px;height:10px;border-radius:50%;background:var(--panel2);border:1px solid var(--line)}
+  .dled.on{background:var(--green);border-color:var(--green);box-shadow:0 0 5px rgba(91,201,143,.45)}
+  .dmono{font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--muted)}
+  input[type=checkbox]{width:18px;height:18px;margin:0}
+  .payok{display:flex;align-items:center;gap:9px;margin-top:10px;font-size:14px;color:var(--text);cursor:pointer}
+  input[type=date]{width:100%;background:var(--panel2);border:1px solid var(--line-strong);border-radius:10px;color:var(--text);font-family:inherit;font-size:16px;padding:12px;margin-top:10px;min-height:44px}
   @media (prefers-reduced-motion:reduce){ *:not(.breath){transition:none!important; animation:none!important} }
 </style>
 
@@ -600,6 +608,48 @@ const AID = [
    "Запиши как есть: «что-то мутное в груди, похоже на…». Примерно названное уже управляемее безымянного."]},
 ];
 
+/* ---- «Ходы»: статичный справочник дверей по долгам РК. Написан советом.
+   Ссылки — плоским текстом (ноль переходов из приложения). Ни одной цифры
+   пользователя здесь нет и быть не может; числа — нормы закона РК. ---- */
+const HODY = [
+ {id:"hod_penalty", t:"Пеня: что проверить и что просить", steps:[
+  "По закону РК неустойка по займу физлица ограничена: ориентир — не больше 0,5% в день от просроченной суммы и не больше 10% от выданной суммы за каждый год. Посчитай на бумажке: пеня в день × 365 против 10% от того, что брал. Выходит больше — повод для жалобы в АРРФР (arrfr.gov.kz, есть онлайн-приёмная).",
+  "При звонке проси у МФО две вещи: зафиксировать пеню на сегодня и списать пеню при полном погашении тела. Соглашаются часто — живые деньги им нужнее суда. Ответ проси письменно.",
+  "Что уточнить: лимиты и формулировки меняются — сверь актуальные цифры на fingramota.kz перед разговором."]},
+ {id:"hod_mfo", t:"Проверка МФО в реестре", steps:[
+  "Каждая легальная МФО есть в реестре АРРФР — проверь на arrfr.gov.kz, раздел «Реестры». Нет в реестре — организация не имела права выдавать займ, и вознаграждение можно оспорить.",
+  "Годовая эффективная ставка в договоре не может превышать предел регулятора; для займов «до зарплаты» есть отдельные потолки переплаты.",
+  "Что уточнить: действующий предел ставки — на fingramota.kz, нормы меняются."]},
+ {id:"hod_restruct", t:"Реструктуризация: банк обязан рассмотреть", steps:[
+  "По закону о банках РК в течение 30 дней после просрочки ты вправе подать письменное заявление об изменении условий: снизить платёж, растянуть срок, взять отсрочку. Банк обязан рассмотреть за 15 календарных дней и ответить письменно.",
+  "Это процедура, а не унижение. В приложении банка — через чат; требуй регистрацию обращения. Отказали — жалоба в АРРФР.",
+  "Что уточнить: сроки и порядок могли поменяться — сверь на fingramota.kz или arrfr.gov.kz перед подачей."]},
+ {id:"hod_refi", t:"Рефинансирование: когда станет реальным", steps:[
+  "Банки смотрят долговую нагрузку: платежи по всем долгам против подтверждённого дохода, ориентир — не больше половины. Рабочая последовательность: закрыть горящие МФО → нагрузка падает → просить свой банк объединить самые дорогие займы под меньшую ставку.",
+  "Два вопроса банку: «какая у меня сейчас нагрузка по вашим данным» и «какие займы вы готовы рефинансировать». Рассрочки 0% в рефинансирование не тащить — они и так бесплатные.",
+  "Что уточнить: порог нагрузки и программы банков меняются — перепроверь на fingramota.kz и в самом банке."]},
+ {id:"hod_report", t:"Все остатки за 10 минут", steps:[
+  "Возьми персональный кредитный отчёт: Госкредитбюро — через eGov, Первое кредитное бюро — 1cb.kz. В нём все банковские займы и легальные МФО: остатки, просрочки, статусы. Один документ вместо обхода приложений.",
+  "После — обнови остатки здесь: открыл долг в списке, поправил цифру, дата сверки встала сама. По одному, сколько захочешь — никто не требует все сразу.",
+  "Что уточнить: условия выдачи отчёта (что бесплатно и как часто) — на сайтах бюро, они меняются."]},
+ {id:"hod_collectors", t:"Коллекторы: рамки", steps:[
+  "Коллектор обязан быть в реестре АРРФР. Ему нельзя угрожать, звонить ночью, беспокоить чаще лимитов закона и трогать твоих близких без их согласия. Требуй: наименование агентства, номер в реестре, документ-основание долга.",
+  "Нарушают — фиксируй (запись, скрин) и жалуйся в АРРФР; при угрозах — полиция. Разговор о скидке при разовом погашении — нормальная практика; предложение проси письменно.",
+  "Что уточнить: лимиты частоты звонков и правила — на arrfr.gov.kz, они уточняются."]},
+ {id:"hod_bankrupt", t:"Банкротство физлиц: знать, не спешить", steps:[
+  "Действует с 2023 года. Внесудебное — через eGov: долг до порога в МРП, просрочка от 12 месяцев, нет имущества, пройдено урегулирование с кредиторами. Судебное — без потолка по сумме.",
+  "Цена: пять лет нельзя брать займы, мониторинг после процедуры. Пока есть доход и платежи идут — это запасной выход, а не план. Знать, что дверь существует, полезно; открывать её — отдельное решение.",
+  "Что уточнить: порог в тенге зависит от МРП года — актуальный на gov.kz."]},
+ {id:"hod_private", t:"Долг человеку, не организации", steps:[
+  "Частный долг — не кредит: пеня, коллекторы и реестры к нему неприменимы. Рабочий ход — договориться напрямую: зафиксировать сумму в тенге на сегодняшнюю дату и график, письменно — хоть в мессенджере.",
+  "Если долг в валюте или крипте — фиксация в тенге выгоднее любой математики: курс перестаёт быть твоим риском. В Пульте держи его в тенге на дату сверки, детали — в заметке.",
+  "Что уточнить: курс на день фиксации — и сохрани переписку, где вы оба согласились."]},
+ {id:"hod_order", t:"Какой из горящих МФО закрывать первым", steps:[
+  "Твой порядок (он и стоит в Пульте): из горящих первым — самый крупный. Он самый тяжёлый, и его закрытие освобождает больше всего.",
+  "Второй способ: первым — тот, у кого пеня в день больше на каждый тенге остатка. Подели пеню на остаток у каждого горящего и сравни доли: у кого выше, тот жжёт быстрее — если гасить его первым, суммарно сгорит меньше.",
+  "Проверяется на бумажке за пять минут: посчитай, сколько пени накапает по каждому сценарию, пока копишь на следующий. Какой порядок дешевле — тот и твой; решишь перейти на второй — в коде это правка одной строки."]},
+];
+
 /* ================= ХРАНИЛИЩЕ ================= */
 
 const DEV = /[?&]dev=1/.test(location.search);
@@ -613,9 +663,10 @@ function defaults(){
      появиться на «Сегодня» сам — только осознанным включением в «Я».
      (Четыре новые сферы v4 — единственное анонсированное исключение: включены,
       но выключаются здесь же, тумблером на сферу.) */
-  return {days:{}, weeks:{}, people:[], customMissions:[], customQuestions:[],
+  return {days:{}, weeks:{}, people:[], customMissions:[], customQuestions:[], debts:[],
     banned:{missions:[], questions:[]},
-    off:{archive:false, rider:false, weekly:false, strength:false, demontazh:false, rhythm:false, aid:false,
+    /* долги: новый модуль по умолчанию ВЫКЛЮЧЕН — ни один модуль не появляется на экране сам */
+    off:{archive:false, rider:false, weekly:false, strength:false, demontazh:false, rhythm:false, aid:false, debts:true,
          sphere_craft:false, sphere_world:false, sphere_make:false, sphere_limits:false},
     mode:null, paused:null, rider:{helps:"", updatedAt:""},
     quietOfferedAt:null, riderOfferedAt:null, echoShown:{}, idsV:0,
@@ -628,7 +679,7 @@ function fill(o){
   if(!Array.isArray(o.banned.missions)) o.banned.missions = [];
   if(!Array.isArray(o.banned.questions)) o.banned.questions = [];
   if(!o.off || typeof o.off !== "object") o.off = d.off;
-  for(const k in d.off) if(typeof o.off[k] !== "boolean") o.off[k] = false;
+  for(const k in d.off) if(typeof o.off[k] !== "boolean") o.off[k] = d.off[k];
   if(!o.rider || typeof o.rider !== "object") o.rider = {helps:"", updatedAt:""};
   if(typeof o.rider.helps !== "string") o.rider.helps = "";
   if(!o.echoShown || typeof o.echoShown !== "object") o.echoShown = {};
@@ -637,6 +688,7 @@ function fill(o){
   if(!Array.isArray(o.people)) o.people = [];
   if(!Array.isArray(o.customMissions)) o.customMissions = [];
   if(!Array.isArray(o.customQuestions)) o.customQuestions = [];
+  o.debts = normalizeDebts(o.debts);
   return o;
 }
 function load(){
@@ -838,10 +890,14 @@ function stats(){
 
 /* ================= ПУЛЫ ================= */
 
+const DEBT_MISSION = {cat:"money", min:10,
+  text:"Сделай один платёж по очереди долгов — если есть чем. Очередь — в «Пути». Если нечем — это не задача на сегодня.",
+  tiny:"Открой очередь в «Пути». Просто посмотри, кто следующий."};
 function missionPool(){
   const banned = S.banned.missions;
-  return MISSIONS.concat(S.customMissions||[]).filter(m=>
-    banned.indexOf(mid(m.text)) < 0 && !S.off["sphere_"+m.cat]);
+  let arr = MISSIONS.concat(S.customMissions||[]);
+  if(!S.off.debts && (S.debts||[]).some(d=> !d.closedAt)) arr = arr.concat([DEBT_MISSION]);
+  return arr.filter(m=> banned.indexOf(mid(m.text)) < 0 && !S.off["sphere_"+m.cat]);
 }
 function questionPool(){
   const banned = S.banned.questions;
@@ -926,6 +982,126 @@ function setlistItems(ctx, rec, quiet){
     return {list:[pick].concat(done.filter(d=> d.id !== pick.id)), limited:true, prefix:"m", total:list.length};
   }
   return {list, limited:false, prefix:"m", total:list.length};
+}
+
+/* ================= ДОЛГИ: модель и чистая математика =================
+   Схема долга: {id, name, kind:'bank'|'mfo', balance (тг на asOf), asOf,
+   monthly|null, endDate|null (КОНТРАКТНЫЙ конец графика, не прогноз), rate|null,
+   penaltyDaily (тг/день, дробь допустима), pays:[{d,a}], note, closedAt|null}.
+   closedAt долга — ДАТА закрытия долга; не путать с S.days[k].closedAt (время отбоя дня).
+   Запрещённые поля: currency, курс, дата выплаты, хранимый accrued, percent.
+   Математика — только чистые функции от (долг, ctx.key): ноль записи в S на рендере. */
+
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+function normalizeDebts(list){
+  if(!Array.isArray(list)) return [];
+  const out = [], seen = {};
+  for(const raw of list.slice(0,200)){
+    if(!raw || typeof raw !== "object") continue;
+    const id = (typeof raw.id === "string" && raw.id.trim()) ? raw.id.trim() : null;
+    const name = (typeof raw.name === "string" && raw.name.trim()) ? raw.name.trim().slice(0,40) : null;
+    const kind = (raw.kind === "bank" || raw.kind === "mfo") ? raw.kind : null;
+    if(!id || !name || !kind || !isFinite(raw.balance) || seen[id]) continue;
+    seen[id] = 1;
+    const d = {
+      id, name, kind,
+      balance: Math.max(0, Math.round(Number(raw.balance))),
+      asOf: DATE_RE.test(String(raw.asOf)) ? String(raw.asOf) : todayKey(),
+      monthly: (isFinite(raw.monthly) && raw.monthly > 0) ? Math.round(Number(raw.monthly)) : null,
+      endDate: DATE_RE.test(String(raw.endDate)) ? String(raw.endDate) : null,
+      rate: (isFinite(raw.rate) && raw.rate > 0) ? Number(raw.rate) : null,
+      penaltyDaily: (isFinite(raw.penaltyDaily) && raw.penaltyDaily > 0) ? Number(raw.penaltyDaily) : 0,
+      note: (typeof raw.note === "string") ? raw.note.slice(0,120) : "",
+      pays: [],
+      closedAt: DATE_RE.test(String(raw.closedAt)) ? String(raw.closedAt) : null,
+    };
+    if(Array.isArray(raw.pays)){
+      d.pays = raw.pays
+        .filter(p=> p && DATE_RE.test(String(p.d)) && isFinite(p.a) && p.a > 0)
+        .map(p=> ({d:String(p.d), a:Math.round(Number(p.a))}))
+        .sort((a,b)=> a.d < b.d ? -1 : a.d > b.d ? 1 : 0)
+        .slice(0,500);
+    }
+    out.push(d);
+  }
+  return out;
+}
+
+function debtCalc(d, tk){
+  const days = Math.max(0, dayNum(tk) - dayNum(d.asOf));
+  const accrued = (d.penaltyDaily||0) * days;
+  let paidAfter = 0, paidTotal = 0;
+  for(const p of (d.pays||[])){ paidTotal += p.a; if(p.d > d.asOf) paidAfter += p.a; }
+  const remaining = Math.max(0, Math.round(d.balance + accrued - paidAfter));
+  let monthsLeft = null;
+  if(d.kind === "bank" && d.endDate){
+    const e = d.endDate.split("-").map(Number), t = tk.split("-").map(Number);
+    monthsLeft = Math.max(0, (e[0]-t[0])*12 + (e[1]-t[1]));
+  }
+  const schedule = (d.kind === "bank" && d.monthly && monthsLeft > 0) ? d.monthly * monthsLeft : remaining;
+  const overpay = Math.max(0, schedule - remaining);
+  const hot = d.kind === "mfo" && !d.closedAt && (d.penaltyDaily > 0 || /просроч/i.test(d.note||""));
+  return {days, accrued, paidAfter, paidTotal, remaining, monthsLeft, schedule, overpay, hot};
+}
+
+function debtsSummary(tk){
+  const open = [], closed = [];
+  let totalRemaining = 0, totalAccrued = 0, totalPaid = 0, burnOpen = 0, burnStopped = 0, instRemaining = 0, paidClosed = 0;
+  for(const d of (S.debts||[])){
+    const c = debtCalc(d, tk);
+    totalPaid += c.paidTotal;   /* по ВСЕМ долгам, включая закрытые — монотонный */
+    if(d.closedAt){
+      closed.push({d, c});
+      burnStopped += d.penaltyDaily || 0;
+      paidClosed += c.paidTotal;
+    } else {
+      open.push({d, c});
+      totalRemaining += c.remaining;
+      totalAccrued += c.accrued;
+      burnOpen += d.penaltyDaily || 0;
+      if(d.kind === "bank" && (d.rate||0) < 3) instRemaining += c.remaining;
+    }
+  }
+  return {open, closed, totalRemaining: Math.round(totalRemaining), totalAccrued: Math.round(totalAccrued),
+    totalPaid: Math.round(totalPaid), burnOpen, burnStopped, instRemaining: Math.round(instRemaining),
+    paidClosed: Math.round(paidClosed), closedCount: closed.length, totalCount: (S.debts||[]).length};
+}
+
+/* Очередь погашения — ЕГО правило из бота, дословно (db.py:payoff_order):
+   0) горящие МФО (пеня или «просроч» в note) — крупные первыми;
+   1) банки — по убыванию ставки; 2) прочие МФО — по возрастанию остатка. */
+function payoffOrder(open){
+  return open.slice().sort((A,B)=>{
+    const pa = A.c.hot ? [0, -A.c.remaining] : (A.d.kind === "bank" ? [1, -(A.d.rate||0)] : [2, A.c.remaining]);
+    const pb = B.c.hot ? [0, -B.c.remaining] : (B.d.kind === "bank" ? [1, -(B.d.rate||0)] : [2, B.c.remaining]);
+    return pa[0] - pb[0] || pa[1] - pb[1];
+  });
+}
+
+function mergeDebts(list){
+  for(const inc of list){
+    const mine = (S.debts||[]).find(x=> x.id === inc.id);
+    if(!mine){ S.debts.push(inc); continue; }
+    const seenP = {};
+    for(const p of mine.pays) seenP[p.d+"|"+p.a] = 1;
+    for(const p of inc.pays) if(!seenP[p.d+"|"+p.a]){ mine.pays.push(p); seenP[p.d+"|"+p.a] = 1; }
+    mine.pays.sort((a,b)=> a.d < b.d ? -1 : a.d > b.d ? 1 : 0);
+    if(inc.asOf >= mine.asOf){
+      mine.balance = inc.balance; mine.asOf = inc.asOf;
+      mine.penaltyDaily = inc.penaltyDaily; mine.monthly = inc.monthly;
+      mine.endDate = inc.endDate; mine.rate = inc.rate;
+      mine.name = inc.name; mine.note = inc.note;
+    }
+    if(inc.closedAt && !mine.closedAt) mine.closedAt = inc.closedAt;  /* слиянием НИКОГДА не снимается */
+  }
+}
+
+function fmtT(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " ₸"; }
+function fmtD(key){
+  const p = String(key).split("-");
+  const yearNow = todayKey().slice(0,4);
+  return p[2] + "." + p[1] + (p[0] !== yearNow ? "." + p[0].slice(2) : "");
 }
 
 /* ================= UI-ХЕЛПЕРЫ ================= */
@@ -1588,6 +1764,16 @@ function viewPath(){
       '<p class="mut" style="margin-top:6px">Подъёмы и спады — это цикл, а не характер. Когда линия накопится, ты увидишь его целиком.</p></div>';
   }
 
+  /* ---- Долги: одна тихая строка; раскрытие живёт один день (ключ с датой) ---- */
+  const debtsOn = !S.off.debts && (S.debts||[]).length > 0;
+  if(debtsOn){
+    const recD = S.days[ctx.key];
+    const lowD = quiet || (recD && typeof recD.energy === "number" && recD.energy <= 2);
+    const dkey = "debts@" + ctx.key;
+    h += line(dkey, "Долги", lowD ? "открыть" : debtLineText(ctx), lowD);
+    if(EXPANDED.has(dkey)) h += debtsCards(ctx);
+  }
+
   /* Карта 10 недель */
   const todayDow = (ctx.dn + 3) % 7;   /* понедельник = 0 */
   let cells = "";
@@ -1712,7 +1898,7 @@ function viewJournal(){
 
 /* ================= ВКЛАДКА «Я» ================= */
 
-const OFF_LABELS = {archive:"Из твоего архива", rider:"Записка на плохой день", weekly:"Итоги недели", strength:"Сила дня", demontazh:"Демонтаж после шоу", rhythm:"Ритм · 7 дней", aid:"Аптечка"};
+const OFF_LABELS = {archive:"Из твоего архива", rider:"Записка на плохой день", weekly:"Итоги недели", strength:"Сила дня", demontazh:"Демонтаж после шоу", rhythm:"Ритм · 7 дней", aid:"Аптечка", debts:"Долги"};
 const SPHERE_LABELS = {sphere_craft:"Ремесло", sphere_world:"Дорога", sphere_make:"Создание", sphere_limits:"Границы"};
 
 function viewMe(){
@@ -1874,6 +2060,8 @@ function viewMe(){
     (EXPANDED.has("wipe") ? '<input type="text" id="wipeword" placeholder="впиши слово: стереть"><button class="btn ghost small" data-act="wipe-confirm">Стереть</button><p class="tiny-note">Это необратимо.</p>' : '')+
     '</div>';
 
+  h += debtsDataCardHtml();
+
   /* Почему устроен так */
   h += '<div class="card">'+eyebrow("Почему этот пульт устроен именно так")+
     '<p class="mut" style="margin-bottom:8px"><b style="color:var(--text)">Нет очков и уровней.</b> Они считали нажатия, а не тебя. Осмотрительность №5 раскусила бы это за минуту, и заодно перестала бы верить честным цифрам рядом. Осталось только то, что можно проверить: записи, задачи, дни.</p>'+
@@ -1893,6 +2081,226 @@ function viewMe(){
   return h;
 }
 let RESTORE_PREVIEW = null;
+
+/* ================= ДОЛГИ: рендер =================
+   КОНТРАКТ ВИДИМОСТИ: модуль присутствует ровно в 4 местах —
+   (1) строка+карточки в «Пути»; (2) карточка «Долги · данные» и тумблер в «Я»;
+   (3) текст DEBT_MISSION в «Сегодня» (словами, без цифр); (4) больше нигде.
+   Ноль уведомлений, бейджей, плашек «обнови»; аптечка данные долгов не читает.
+   В свёрнутой строке запрещены: общий остаток, пеня, любые растущие числа. */
+
+let DEBT_FLASH = false;
+let DEBTS_PREVIEW = null;
+
+function debtLineText(ctx){
+  const sm = debtsSummary(ctx.key);
+  const parts = [];
+  if(sm.closedCount > 0) parts.push("закрыто "+sm.closedCount+" из "+sm.totalCount);
+  if(sm.totalPaid > 0) parts.push("выплачено "+fmtT(sm.totalPaid));
+  return parts.length ? parts.join(" · ") : sm.totalCount+" "+plural(sm.totalCount,"долг","долга","долгов")+" · очередь внутри";
+}
+
+function debtReason(q0){
+  const d = q0.d, c = q0.c;
+  if(c.hot && d.penaltyDaily > 0) return "Пеня ≈ "+fmtT(d.penaltyDaily)+"/день, пока он открыт.";
+  if(c.hot) return "Просрочка — по твоему правилу он идёт раньше остальных.";
+  if(d.kind === "bank" && d.rate) return "Самая дорогая ставка из оставшихся: ~"+Math.round(d.rate)+"%.";
+  if(d.kind === "bank") return "Банк — следующий по твоему порядку.";
+  return "Самый маленький из оставшихся — закроется быстрее всех.";
+}
+
+function debtRowHtml(item, ctx){
+  const d = item.d, c = item.c;
+  let chip = "";
+  if(d.penaltyDaily > 0) chip = '<span class="chip" style="color:var(--coral);border-color:var(--coral)">≈'+Math.round(d.penaltyDaily)+' ₸/д</span>';
+  else if(c.hot) chip = '<span class="chip" style="color:var(--coral);border-color:var(--coral)">просрочка</span>';
+  else if(d.kind === "bank" && (d.rate||0) >= 3) chip = '<span class="chip" style="color:var(--dim-text);border-color:var(--line-strong)">~'+Math.round(d.rate)+'%</span>';
+  else if(d.kind === "bank") chip = '<span class="chip" style="color:var(--dim-text);border-color:var(--line-strong)">0%</span>';
+  let h = '<button class="s-head" style="padding:9px 0;min-height:44px" data-act="debt-row" data-id="'+esc(d.id)+'">'+
+    '<span class="nm" style="font-size:14.5px">'+esc(d.name)+'</span>'+chip+
+    '<span class="pill">≈ '+fmtT(c.remaining)+'</span><span class="ar" aria-hidden="true">›</span></button>';
+  if(!EXPANDED.has("debt_"+d.id)) return h;
+
+  let b = '<div style="padding:4px 0 12px;border-bottom:1px solid var(--line)">';
+  b += '<p class="body">Закрыть сегодня ≈ '+fmtT(c.remaining)+'</p>';
+  if(d.kind === "mfo" && d.penaltyDaily > 0){
+    b += '<p class="mut">'+fmtT(d.balance)+' на '+fmtD(d.asOf)+' + пеня ≈'+fmtT(d.penaltyDaily)+'/день × '+c.days+' дн'+
+      (c.paidAfter>0 ? ' − платежи '+fmtT(c.paidAfter) : '')+'</p>'+
+      '<p class="tiny-note">Пеня — расчёт по твоей ставке. Точную цифру скажет МФО при закрытии.</p>';
+  } else {
+    b += '<p class="mut">остаток '+fmtT(d.balance)+' на '+fmtD(d.asOf)+(c.paidAfter>0 ? ' − платежи '+fmtT(c.paidAfter) : '')+'</p>';
+    if(d.kind === "bank" && d.monthly && c.monthsLeft > 0){
+      b += '<p class="mut">по графику ≈ '+fmtT(d.monthly)+' × '+c.monthsLeft+' мес = '+fmtT(c.schedule)+' · переплата ≈ '+fmtT(c.overpay)+'</p>';
+    }
+    if(d.rate) b += '<p class="tiny-note">ставка ~'+Math.round(d.rate)+'% — расчёт по платежу, в договоре может отличаться</p>';
+  }
+  if(d.note) b += '<p class="tiny-note">'+esc(d.note)+'</p>';
+  if(!d.closedAt && (c.remaining === 0 || d.balance - c.paidAfter <= 0)){
+    b += '<div class="note" style="margin-top:10px"><b>Похоже, он закрыт.</b>'+
+      '<div class="btnrow"><button class="btn small" data-act="debt-close-ask" data-id="'+esc(d.id)+'">Закрыт полностью</button></div></div>';
+  }
+  /* платёж одной фазой */
+  const payDef = d.kind === "mfo" ? String(c.remaining) : (d.monthly ? String(d.monthly) : "");
+  b += '<input type="text" inputmode="numeric" id="pay_a_'+esc(d.id)+'" value="'+payDef+'" placeholder="Сумма, ₸">'+
+    '<input type="date" id="pay_d_'+esc(d.id)+'" value="'+ctx.key+'">'+
+    '<label class="payok"><input type="checkbox" id="pay_ok_'+esc(d.id)+'"> Списание видел</label>'+
+    '<button class="btn small" data-act="debt-pay" data-id="'+esc(d.id)+'">Записать</button>'+
+    '<p class="tiny-note">Твоё правило: без подтверждения не считается.</p>';
+  /* история платежей */
+  const pays = (d.pays||[]);
+  if(pays.length){
+    const showAll = EXPANDED.has("debtpays_"+d.id);
+    const shown = showAll ? pays.slice().reverse() : pays.slice(-4).reverse();
+    for(const p of shown){
+      b += '<p class="dmono">'+fmtD(p.d)+' · '+fmtT(p.a)+' <button class="mini" data-act="debt-unpay" data-id="'+esc(d.id)+'" data-k="'+esc(p.d+"|"+p.a)+'">убрать</button></p>';
+    }
+    if(!showAll && pays.length > 4) b += '<div class="minirow"><button class="mini" data-act="expand" data-id="debtpays_'+esc(d.id)+'">вся история · '+pays.length+'</button></div>';
+  }
+  /* сверка */
+  if(EXPANDED.has("debtfix_"+d.id)){
+    b += '<input type="text" inputmode="numeric" id="fix_'+esc(d.id)+'" value="'+String(c.remaining)+'">'+
+      '<button class="btn ghost small" data-act="debt-fix" data-id="'+esc(d.id)+'">Остаток на сегодня</button>'+
+      '<p class="tiny-note">Цифра из приложения банка — она уже учитывает твои платежи.</p>';
+  }
+  b += '<div class="minirow">'+
+    '<button class="mini" data-act="expand" data-id="debtfix_'+esc(d.id)+'">сверил остаток — исправить</button>'+
+    '<button class="mini" data-act="debt-close-ask" data-id="'+esc(d.id)+'">закрыт полностью</button>'+
+    '<button class="mini" data-act="debt-del" data-id="'+esc(d.id)+'">убрать долг</button></div>';
+  return h + b + '</div>';
+}
+
+function debtsCards(ctx){
+  const sm = debtsSummary(ctx.key);
+  const queue = payoffOrder(sm.open);
+  let h = "";
+
+  /* --- Очередь --- */
+  if(queue.length){
+    const q0 = queue[0];
+    h += '<div class="card">'+eyebrow("Долги · очередь","live")+
+      '<p class="tiny-note" style="margin-top:0">остаток — на '+fmtD(q0.d.asOf)+' · обновляется, когда сверяешься</p>'+
+      '<div class="action-box"><div class="cap">Следующий по очереди</div>'+
+      '<p class="body" style="font-weight:600">'+esc(q0.d.name)+'</p>'+
+      '<p class="body">закрыть сегодня ≈ '+fmtT(q0.c.remaining)+'</p>'+
+      '<p class="mut" style="margin-top:6px">'+debtReason(q0)+'</p>'+
+      '<button class="btn small" data-act="debt-goto" data-id="'+esc(q0.d.id)+'" data-kind="'+q0.d.kind+'">Провёл платёж</button></div>';
+    if(queue.length > 1){
+      let tail = "потом: "+esc(queue[1].d.name);
+      if(queue.length > 2) tail += " · "+esc(queue[2].d.name);
+      h += '<p class="tiny-note">'+tail+'</p>';
+    }
+    if(sm.burnOpen > 0){
+      const k = sm.open.filter(x=> x.d.penaltyDaily > 0).length;
+      h += '<p class="mut" style="margin-top:8px">пеня капает: ≈ '+fmtT(sm.burnOpen)+'/день по '+k+' МФО · '+
+        '<button class="mini" data-act="debt-hod" data-h="penalty">что с этим делать</button></p>';
+    }
+    h += '</div>';
+  }
+
+  /* --- К нулю --- */
+  h += '<div class="card">'+eyebrow("Долги · к нулю", sm.closedCount>0 ? (DEBT_FLASH?"ok flash":"ok") : "");
+  let dots = "";
+  const closedSorted = sm.closed.slice().sort((a,b)=> (a.d.closedAt||"") < (b.d.closedAt||"") ? -1 : 1);
+  for(const x of closedSorted) dots += '<span class="dled on"></span>';
+  for(const x of queue) dots += '<span class="dled"></span>';
+  h += '<div class="dotrow">'+dots+'</div>';
+  h += '<div class="stats" style="grid-template-columns:1fr 1fr">'+
+    '<div class="stat"><div class="n">'+sm.closedCount+'</div><div class="l">закрыто из '+sm.totalCount+'</div></div>'+
+    '<div class="stat"><div class="n" style="font-size:17px">'+fmtT(sm.totalPaid)+'</div><div class="l">выплачено</div></div></div>';
+  if(sm.burnStopped > 0 && sm.burnOpen > 0)
+    h += '<p class="mut" style="margin-top:10px">Пеня остановлена: ≈ '+fmtT(sm.burnStopped)+'/день — эти деньги больше не горят.</p>';
+  if(sm.burnStopped > 0 && sm.burnOpen === 0)
+    h += '<p class="mut" style="margin-top:10px">Пеня: 0 ₸/день. Ничего не горит. Остановлено: ≈ '+fmtT(sm.burnStopped)+'/день.</p>';
+  h += '<p class="dmono" style="margin-top:10px">осталось ≈ '+fmtT(sm.totalRemaining)+(sm.totalAccrued>0 ? ' · в т.ч. пеня ≈ '+fmtT(sm.totalAccrued) : '')+'</p>'+
+    '<p class="tiny-note">каждый остаток — на свою дату сверки; даты — в списке</p>';
+  if(sm.instRemaining > 0)
+    h += '<p class="tiny-note">из них рассрочки 0%: '+fmtT(sm.instRemaining)+' — не горят, идут по графику</p>';
+  h += '</div>';
+  DEBT_FLASH = false;
+
+  /* --- Список: две свёрнутые группы + полка закрытых --- */
+  h += '<div class="card">'+eyebrow("Долги · список");
+  const groups = [
+    {id:"debts_g_mfo",  name:"МФО",   items: queue.filter(x=> x.d.kind === "mfo")},
+    {id:"debts_g_bank", name:"Банки", items: queue.filter(x=> x.d.kind === "bank")},
+  ];
+  for(const g of groups){
+    if(!g.items.length) continue;
+    const sum = g.items.reduce((a,x)=> a + x.c.remaining, 0);
+    const open = EXPANDED.has(g.id);
+    h += '<div class="s-item'+(open?" open":"")+'">'+
+      '<button class="s-head" data-act="expand" data-id="'+g.id+'"><span class="nm">'+g.name+' · '+g.items.length+'</span>'+
+      '<span class="pill">≈ '+fmtT(sum)+'</span><span class="ar" aria-hidden="true">›</span></button>'+
+      '<div class="s-body">'+(open ? g.items.map(x=> debtRowHtml(x, ctx)).join("") : "")+'</div></div>';
+  }
+  if(sm.closed.length){
+    const open = EXPANDED.has("debts_g_closed");
+    h += '<div class="s-item'+(open?" open":"")+'">'+
+      '<button class="s-head" data-act="expand" data-id="debts_g_closed"><span class="nm">Закрытые · '+sm.closed.length+'</span>'+
+      '<span class="pill">'+fmtT(sm.paidClosed)+'</span><span class="ar" aria-hidden="true">›</span></button>'+
+      '<div class="s-body">';
+    if(open){
+      for(const x of closedSorted){
+        let fact = "";
+        if(x.d.penaltyDaily > 0) fact = " Пеня ≈"+fmtT(x.d.penaltyDaily)+"/день остановлена.";
+        else if(x.d.monthly) fact = " Платёж "+fmtT(x.d.monthly)+"/мес свободен.";
+        h += '<div class="p-row"><span class="p-name thin">'+esc(x.d.name)+' · закрыт '+fmtD(x.d.closedAt)+'.'+fact+'</span>'+
+          '<span class="pill">'+fmtT(x.c.paidTotal)+'</span>'+
+          '<button class="mini" data-act="debt-del" data-id="'+esc(x.d.id)+'">убрать</button></div>';
+      }
+    }
+    h += '</div></div>';
+  }
+  h += '</div>';
+
+  /* --- Ходы --- */
+  h += '<div class="card">'+eyebrow("Долги · ходы","quiet")+
+    '<p class="mut">Это не советы — это двери. Они существуют, даже если ни одну не откроешь.</p>';
+  for(const c of HODY){
+    const open = EXPANDED.has(c.id);
+    h += '<div class="s-item'+(open?" open":"")+'">'+
+      '<button class="s-head" data-act="expand" data-id="'+c.id+'"><span class="nm" style="font-size:14.5px">'+c.t+'</span><span class="ar" aria-hidden="true">›</span></button>'+
+      '<div class="s-body">'+c.steps.map((st,i)=> i === c.steps.length-1 && st.indexOf("Что уточнить") === 0
+        ? '<p class="tiny-note">'+st+'</p>' : '<p class="mut" style="margin-top:10px">'+st+'</p>').join("")+'</div></div>';
+  }
+  h += '<p class="tiny-note">Если давит не долг, а голова — аптечка во вкладке «Я». Она для этого и лежит.</p></div>';
+
+  return h;
+}
+
+function debtsDataCardHtml(){
+  const n = (S.debts||[]).length;
+  const k = (S.debts||[]).filter(d=> d.closedAt).length;
+  let h = '<div class="card">'+eyebrow("Долги · данные");
+  if(!n){
+    h += '<p class="mut">Здесь пусто — и в коде приложения твоих цифр нет и не будет. Приложение лежит в открытом репозитории, поэтому данные заезжают только с этого телефона: вставь строку из бота или добавь долг руками. Никуда не уходят, ни к чему не подключаются.</p>';
+  } else {
+    h += '<p class="mut">Долгов: '+n+', закрытых: '+k+'. Всё лежит только на этом телефоне.</p>';
+  }
+  h += '<textarea class="backup-box" id="debtsta" placeholder="Вставь строку из бота..."></textarea>'+
+    '<div class="btnrow"><button class="btn small" data-act="debts-preview">Проверить</button>'+
+    '<button class="btn ghost small" data-act="expand" data-id="debtadd">Добавить руками</button></div>';
+  if(DEBTS_PREVIEW){
+    h += '<div class="note" style="margin-top:12px"><p class="mut">'+esc(DEBTS_PREVIEW.text)+'</p>'+
+      '<div class="btnrow"><button class="btn small" data-act="debts-merge">Добавить</button>'+
+      '<button class="btn quiet small" data-act="debts-cancel">отмена</button></div></div>';
+  }
+  if(EXPANDED.has("debtadd")){
+    h += '<input type="text" id="dadd-name" placeholder="Кому должен" maxlength="40">'+
+      '<select id="dadd-kind"><option value="bank">Банк</option><option value="mfo">МФО</option></select>'+
+      '<input type="text" inputmode="numeric" id="dadd-bal" placeholder="Остаток, ₸">'+
+      '<input type="date" id="dadd-asof" value="'+CTX.key+'">'+
+      '<input type="text" inputmode="numeric" id="dadd-monthly" placeholder="Платёж в месяц, ₸ — если банк">'+
+      '<input type="date" id="dadd-end"><p class="tiny-note">конец графика — если банк</p>'+
+      '<input type="text" inputmode="numeric" id="dadd-pen" placeholder="Пеня, ₸/день — если капает">'+
+      '<input type="text" inputmode="numeric" id="dadd-rate" placeholder="Ставка, % годовых — если знаешь">'+
+      '<input type="text" id="dadd-note" placeholder="Заметка" maxlength="120">'+
+      '<button class="btn small" data-act="debt-add">Добавить</button>'+
+      '<p class="tiny-note">Для старта хватит трёх полей: кому, сколько, на какую дату. Остальное — когда захочешь.</p>';
+  }
+  if(n) h += '<div class="minirow"><button class="mini" data-act="debts-wipe">стереть данные модуля</button></div>';
+  return h + '</div>';
+}
 
 /* ================= РЕНДЕР ================= */
 
@@ -2239,7 +2647,9 @@ const ACTIONS = {
       for(const k in o.days){ const r = o.days[k]; if(r && r.weekly && !(o.weeks||{})[weekKeyOf(k)]) inRec++; }
       const mine = stats();
       const myDays = Object.keys(S.days).length;
-      RESTORE_PREVIEW = {data:o, text:"В копии "+nDays(inDays)+" и "+nRec(inRec)+". У тебя "+nDays(myDays)+" и "+nRec(mine.records)+". Новых дней придёт: "+fresh+". Ничего не будет удалено."};
+      let dtxt = "";
+      if(Array.isArray(o.debts) && o.debts.length) dtxt = " Долгов в копии: "+o.debts.length+".";
+      RESTORE_PREVIEW = {data:o, text:"В копии "+nDays(inDays)+" и "+nRec(inRec)+". У тебя "+nDays(myDays)+" и "+nRec(mine.records)+". Новых дней придёт: "+fresh+"."+dtxt+" Ничего не будет удалено."};
       rerender();
     }catch(e){ RESTORE_PREVIEW = null; markToast("Это не похоже на копию Пульта"); }
   },
@@ -2252,6 +2662,7 @@ const ACTIONS = {
     (o.customMissions||[]).forEach(m=>{ if(m && m.text && !S.customMissions.some(x=>x.text===m.text)) S.customMissions.push(m); });
     (o.customQuestions||[]).forEach(q=>{ if(q && S.customQuestions.indexOf(q)<0) S.customQuestions.push(q); });
     if(o.rider && o.rider.helps && !S.rider.helps) S.rider = o.rider;
+    if(Array.isArray(o.debts)) mergeDebts(normalizeDebts(o.debts));
     S.idsV = 0; migrateIds();   /* дни из старой копии могли прийти с позиционными ключами m0/m1 */
     RESTORE_PREVIEW = null;
     commit("Дни добавлены"); rerender();
@@ -2320,6 +2731,124 @@ const ACTIONS = {
   "ret-back"(){ const rec = day(CTX.key); rec.returned = true; save(); render(); window.scrollTo(0,0); },
   "ret-normal"(){ const rec = day(CTX.key); rec.returnSeen = true; save(); render(); window.scrollTo(0,0); },
   "rb-keep"(d){ RB[d.k] = !RB[d.k]; rerender(); },
+  /* ================= ДОЛГИ: действия =================
+     Мутации только пяти видов: pays.push / pays.splice (undo) / balance+asOf (сверка) /
+     closedAt (закрытие) / splice долга. Каждая уменьшающая — через window.confirm. */
+  "debts-preview"(){
+    const v = val("#debtsta");
+    if(!v){ markToast("Вставь строку в поле выше"); return; }
+    if(v.length > 500000){ markToast("Строка слишком длинная — это точно экспорт долгов?"); return; }
+    let o;
+    try{ o = JSON.parse(v); }catch(e){ markToast("Это не похоже на строку с долгами"); return; }
+    let raw = Array.isArray(o) ? o : (o && Array.isArray(o.debts) ? o.debts : null);
+    const list = normalizeDebts(raw || []);
+    if(!list.length){ markToast("Это не похоже на строку с долгами"); return; }
+    const n = list.length;
+    const k = list.filter(d=> d.closedAt).length;
+    let p = 0; for(const d of list) p += d.pays.length;
+    let m = 0, u = 0;
+    for(const d of list){ (S.debts||[]).some(x=> x.id === d.id) ? u++ : m++; }
+    DEBTS_PREVIEW = {list, text:"В строке "+n+" долгов ("+k+" закрытых), платежей: "+p+". Новых: "+m+", обновятся: "+u+". Ничего не будет удалено."};
+    rerender();
+  },
+  "debts-cancel"(){ DEBTS_PREVIEW = null; rerender(); },
+  "debts-merge"(){
+    if(!DEBTS_PREVIEW) return;
+    const list = DEBTS_PREVIEW.list;
+    mergeDebts(list);
+    const n = list.length, k = list.filter(d=> d.closedAt).length;
+    DEBTS_PREVIEW = null;
+    commit(S.off.debts
+      ? "Заехало: "+n+" долгов. Модуль выключен — включи выше, когда захочешь видеть."
+      : "Заехало: "+n+" долгов, закрытых: "+k+".");
+    rerender();
+  },
+  "debt-add"(){
+    const name = val("#dadd-name");
+    const bal = parseInt(val("#dadd-bal").replace(/[^\d]/g,""), 10);
+    if(!name || !isFinite(bal)){ markToast("Нужны хотя бы имя и остаток"); return; }
+    const kindEl = $("#dadd-kind");
+    const num = id => { const x = parseInt(val(id).replace(/[^\d.,]/g,"").replace(",","."), 10); return isFinite(x) && x > 0 ? x : null; };
+    const fnum = id => { const x = parseFloat(val(id).replace(/[^\d.,]/g,"").replace(",",".")); return isFinite(x) && x > 0 ? x : 0; };
+    const dt = id => { const v = val(id); return /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : null; };
+    S.debts.push(normalizeDebts([{
+      id: "m"+Date.now().toString(36),
+      name, kind: kindEl ? kindEl.value : "bank",
+      balance: bal, asOf: dt("#dadd-asof") || CTX.key,
+      monthly: num("#dadd-monthly"), endDate: dt("#dadd-end"),
+      rate: fnum("#dadd-rate") || null, penaltyDaily: fnum("#dadd-pen"),
+      note: val("#dadd-note"), pays: [], closedAt: null,
+    }])[0]);
+    EXPANDED.delete("debtadd");
+    commit("Добавлен"); rerender();
+  },
+  "debts-wipe"(){
+    if(!window.confirm("Стереть все долги и платежи из Пульта? Бота на компе это не тронет.")) return;
+    S.debts = []; save(); markToast("Стёрто"); rerender();
+  },
+  "debt-goto"(d){
+    EXPANDED.add("debts_g_"+(d.kind === "mfo" ? "mfo" : "bank"));
+    EXPANDED.add("debt_"+d.id);
+    rerender();
+    const el = document.querySelector('[data-act="debt-row"][data-id="'+(window.CSS && CSS.escape ? CSS.escape(d.id) : d.id)+'"]');
+    if(el) el.scrollIntoView({block:"start"});
+  },
+  "debt-hod"(d){
+    EXPANDED.add("hod_"+d.h);
+    rerender();
+    const el = document.querySelector('[data-id="hod_'+d.h+'"]');
+    if(el) el.scrollIntoView({block:"start"});
+  },
+  "debt-row"(d){
+    EXPANDED.has("debt_"+d.id) ? EXPANDED.delete("debt_"+d.id) : EXPANDED.add("debt_"+d.id);
+    rerender();
+  },
+  "debt-pay"(d){
+    const debt = (S.debts||[]).find(x=> x.id === d.id); if(!debt) return;
+    const a = parseInt(val("#pay_a_"+d.id).replace(/[^\d]/g,""), 10);
+    if(!a || a <= 0){ markToast("Нужна сумма в тенге"); return; }
+    let d8 = val("#pay_d_"+d.id);
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(d8)) d8 = CTX.key;
+    const ok = $("#pay_ok_"+d.id);
+    if(!ok || !ok.checked){ markToast("Отметь «списание видел» — без этого не считается"); return; }
+    debt.pays.push({d:d8, a:Math.round(a)});
+    debt.pays.sort((x,y)=> x.d < y.d ? -1 : x.d > y.d ? 1 : 0);
+    commit("Записано: "+fmtT(a)); rerender();
+  },
+  "debt-fix"(d){
+    const debt = (S.debts||[]).find(x=> x.id === d.id); if(!debt) return;
+    const v = parseInt(val("#fix_"+d.id).replace(/[^\d]/g,""), 10);
+    if(!isFinite(v) || v < 0){ markToast("Нужна сумма в тенге"); return; }
+    debt.balance = Math.round(v);
+    debt.asOf = CTX.key;
+    EXPANDED.delete("debtfix_"+d.id);
+    commit("Остаток обновлён на "+fmtD(CTX.key)); rerender();
+  },
+  "debt-close-ask"(d){
+    const debt = (S.debts||[]).find(x=> x.id === d.id); if(!debt || debt.closedAt) return;
+    if(!window.confirm("«"+debt.name+"» закрыт полностью? Он уедет в «Закрытые» и выйдет из очереди.")) return;
+    debt.closedAt = CTX.key;
+    DEBT_FLASH = true;
+    EXPANDED.delete("debt_"+d.id);
+    const left = (S.debts||[]).filter(x=> !x.closedAt).length;
+    commit("Минус один. Осталось "+left+"."); rerender();
+  },
+  "debt-unpay"(d){
+    const debt = (S.debts||[]).find(x=> x.id === d.id); if(!debt) return;
+    const sep = d.k.lastIndexOf("|");
+    const pd = d.k.slice(0, sep), pa = Number(d.k.slice(sep+1));
+    if(!window.confirm("Убрать платёж "+fmtT(pa)+" от "+fmtD(pd)+"? Он выйдет из всех счётчиков.")) return;
+    const i = debt.pays.findIndex(p=> p.d === pd && p.a === pa);
+    if(i >= 0) debt.pays.splice(i, 1);
+    commit("Убрано"); rerender();
+  },
+  "debt-del"(d){
+    const i = (S.debts||[]).findIndex(x=> x.id === d.id); if(i < 0) return;
+    if(!window.confirm("Убрать «"+S.debts[i].name+"» совсем? Его платежи уйдут из всех счётчиков.")) return;
+    S.debts.splice(i, 1);
+    commit("Убрано"); rerender();
+  },
+
   rebuild(){
     if(!RB.missions) S.customMissions = [];
     if(!RB.questions) S.customQuestions = [];
