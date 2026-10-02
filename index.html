@@ -987,7 +987,8 @@ function setlistItems(ctx, rec, quiet){
 /* ================= ДОЛГИ: модель и чистая математика =================
    Схема долга: {id, name, kind:'bank'|'mfo', balance (тг на asOf), asOf,
    monthly|null, endDate|null (КОНТРАКТНЫЙ конец графика, не прогноз), rate|null,
-   penaltyDaily (тг/день, дробь допустима), pays:[{d,a}], note, closedAt|null}.
+   penaltyDaily (тг/день, дробь допустима), pays:[{d,a,post?}], note, closedAt|null}.
+   post=1 — платёж в день сверки, записанный после неё (ещё не в остатке).
    closedAt долга — ДАТА закрытия долга; не путать с S.days[k].closedAt (время отбоя дня).
    Запрещённые поля: currency, курс, дата выплаты, хранимый accrued, percent.
    Математика — только чистые функции от (долг, ctx.key): ноль записи в S на рендере. */
@@ -1019,7 +1020,7 @@ function normalizeDebts(list){
     if(Array.isArray(raw.pays)){
       d.pays = raw.pays
         .filter(p=> p && DATE_RE.test(String(p.d)) && isFinite(p.a) && p.a > 0)
-        .map(p=> ({d:String(p.d), a:Math.round(Number(p.a))}))
+        .map(p=> p.post ? {d:String(p.d), a:Math.round(Number(p.a)), post:1} : {d:String(p.d), a:Math.round(Number(p.a))})
         .sort((a,b)=> a.d < b.d ? -1 : a.d > b.d ? 1 : 0)
         .slice(0,500);
     }
@@ -1032,7 +1033,7 @@ function debtCalc(d, tk){
   const days = Math.max(0, dayNum(tk) - dayNum(d.asOf));
   const accrued = (d.penaltyDaily||0) * days;
   let paidAfter = 0, paidTotal = 0;
-  for(const p of (d.pays||[])){ paidTotal += p.a; if(p.d > d.asOf) paidAfter += p.a; }
+  for(const p of (d.pays||[])){ paidTotal += p.a; if(p.d > d.asOf || (p.d === d.asOf && p.post)) paidAfter += p.a; }
   const remaining = Math.max(0, Math.round(d.balance + accrued - paidAfter));
   let monthsLeft = null;
   if(d.kind === "bank" && d.endDate){
@@ -1083,9 +1084,10 @@ function mergeDebts(list){
   for(const inc of list){
     const mine = (S.debts||[]).find(x=> x.id === inc.id);
     if(!mine){ S.debts.push(inc); continue; }
-    const seenP = {};
-    for(const p of mine.pays) seenP[p.d+"|"+p.a] = 1;
-    for(const p of inc.pays) if(!seenP[p.d+"|"+p.a]){ mine.pays.push(p); seenP[p.d+"|"+p.a] = 1; }
+    /* по количеству: два одинаковых платежа в один день — это два платежа */
+    const have = {};
+    for(const p of mine.pays) have[p.d+"|"+p.a] = (have[p.d+"|"+p.a]||0) + 1;
+    for(const p of inc.pays){ const k = p.d+"|"+p.a; if(have[k] > 0) have[k]--; else mine.pays.push(p); }
     mine.pays.sort((a,b)=> a.d < b.d ? -1 : a.d > b.d ? 1 : 0);
     if(inc.asOf >= mine.asOf){
       mine.balance = inc.balance; mine.asOf = inc.asOf;
@@ -2811,7 +2813,8 @@ const ACTIONS = {
     if(!/^\d{4}-\d{2}-\d{2}$/.test(d8)) d8 = CTX.key;
     const ok = $("#pay_ok_"+d.id);
     if(!ok || !ok.checked){ markToast("Отметь «списание видел» — без этого не считается"); return; }
-    debt.pays.push({d:d8, a:Math.round(a)});
+    /* платёж в день сверки, записанный ПОСЛЕ неё, в остатке ещё не учтён — помечаем post */
+    debt.pays.push(d8 === debt.asOf ? {d:d8, a:Math.round(a), post:1} : {d:d8, a:Math.round(a)});
     debt.pays.sort((x,y)=> x.d < y.d ? -1 : x.d > y.d ? 1 : 0);
     commit("Записано: "+fmtT(a)); rerender();
   },
@@ -2821,6 +2824,7 @@ const ACTIONS = {
     if(!isFinite(v) || v < 0){ markToast("Нужна сумма в тенге"); return; }
     debt.balance = Math.round(v);
     debt.asOf = CTX.key;
+    for(const p of debt.pays) if(p.d === debt.asOf) delete p.post;  /* цифра банка их уже учла */
     EXPANDED.delete("debtfix_"+d.id);
     commit("Остаток обновлён на "+fmtD(CTX.key)); rerender();
   },
