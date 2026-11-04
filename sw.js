@@ -65,6 +65,8 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   const sameOrigin = url.origin === self.location.origin;
   if (!sameOrigin && RUNTIME_HOSTS.indexOf(url.hostname) === -1) return;
+  /* только свои файлы в корне сайта: у других проектов на этом же адресе (например, /jessipinkman/) свой service worker */
+  if (sameOrigin && url.pathname.split('/').length > 2) return;
 
   const isNavigation = request.mode === 'navigate' ||
     (sameOrigin && (url.pathname === '/' || url.pathname.endsWith('/index.html')));
