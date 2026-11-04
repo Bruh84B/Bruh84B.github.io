@@ -1,7 +1,7 @@
 /* Пульт — service worker.
    Навигация: сеть с таймаутом 2 с, иначе мгновенно кеш (полусеть на площадке — типовой случай).
    Статика: cache-first. Шрифты живут в отдельном кеше, который не сбрасывается релизами. */
-const CORE_CACHE = 'pult-core-v16';
+const CORE_CACHE = 'pult-core-v17';
 const RUNTIME_CACHE = 'pult-runtime';
 const NAV_TIMEOUT = 2000;
 
@@ -65,6 +65,8 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   const sameOrigin = url.origin === self.location.origin;
   if (!sameOrigin && RUNTIME_HOSTS.indexOf(url.hostname) === -1) return;
+  /* только свои файлы в корне сайта: у других проектов на этом же адресе (например, /jessipinkman/) свой service worker */
+  if (sameOrigin && url.pathname.split('/').length > 2) return;
 
   const isNavigation = request.mode === 'navigate' ||
     (sameOrigin && (url.pathname === '/' || url.pathname.endsWith('/index.html')));
